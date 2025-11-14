@@ -5,7 +5,7 @@ import app.config.ThymeleafConfig;
 import app.controllers.*;
 import app.persistence.*;
 import app.services.*;
-import io.javalin.Javalin;//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
+import io.javalin.Javalin;
 import io.javalin.rendering.template.JavalinThymeleaf;
 
 import java.util.logging.Logger;
