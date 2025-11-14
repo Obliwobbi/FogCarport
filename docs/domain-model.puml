@@ -3,13 +3,20 @@ skinparam classAttributeIconSize 0
 skinparam packageStyle rectangle
 
 package "app.entities" {
-    class User {
-        - userId: int
+    class Customer {
+        - customerId: int
         - name: String
         - email: String
         - phone: String
         - address: String
-        - isAdmin: boolean
+    }
+
+    class Employee {
+            - customerId: int
+            - name: String
+            - email: String
+            - phone: String
+            - isAdmin: boolean
     }
 
     class OrderRequest {
@@ -56,10 +63,10 @@ package "app.entities" {
         - bomId: int
         - createdDate: Date
         - totalPrice: double
-        - materialLines : List<BillOfMaterialsLine>
+        - materialLines : List<MaterialsLine>
     }
 
-    class BillOfMaterialsLine {
+    class MaterialsLine {
         - lineId: int
         - quantity: int
         - unitPrice: double
@@ -121,7 +128,19 @@ package "app.services" {
     }
 }
 
+Customer -> OrderRequest
+OrderRequest ..> Drawing : creates
+OrderRequest ..> Carport : creates
 
+BillOfMaterials -> MaterialsLine
+MaterialsLine -> Material
 
+Employee ..> Quote : creates
+Employee ..> Order : creates
+
+Order *-- Quote
+Order *-- BillOfMaterials
+Quote *-- Drawing
+Quote *-- Carport
 @enduml
 
