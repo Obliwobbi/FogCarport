@@ -1,0 +1,79 @@
+@startuml Domain Model
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+
+    class Customer {
+
+        name
+        email
+        phone
+        address
+    }
+
+    class Employee {
+            name
+            email
+            phone
+    }
+
+    class OrderRequest {
+      createdDate
+      status
+
+    }
+
+    class Carport {
+        width
+        length
+        height
+        withShed
+        shedWidth
+        shedLength
+    }
+
+    class Drawing {
+
+    }
+
+    class Quote {
+         totalPrice
+         createdDate
+         validUntil
+         status:
+    }
+
+    class Order {
+        orderDate
+        status: String
+        deliveryDate
+        BillOfMaterials
+    }
+
+    class BillOfMaterials {
+        createdDate
+        totalPrice
+    }
+
+    class Material {
+       description
+       unit
+       unitType
+       price
+    }
+
+
+Customer -> OrderRequest
+OrderRequest ..> Drawing : creates
+OrderRequest ..> Carport : creates
+
+BillOfMaterials -> Material
+
+Employee ..> Quote : creates
+Employee ..> Order : creates
+
+Order *-- Quote
+Order *-- BillOfMaterials
+Quote *-- Drawing
+Quote *-- Carport
+@enduml
+
