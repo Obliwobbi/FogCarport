@@ -16,9 +16,5 @@ public class MaterialsLine {
     private int quantity;
     private double unitPrice;
     private Material material;
-
-    public double getTotalPrice() {
-        return quantity * unitPrice;
-    }
 }
 

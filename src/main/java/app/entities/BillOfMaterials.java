@@ -25,15 +25,5 @@ public class BillOfMaterials {
         this.totalPrice = totalPrice;
         this.materialLines = new ArrayList<>();
     }
-
-    public void addMaterialLine(MaterialsLine line) {
-        this.materialLines.add(line);
-    }
-
-    public void calculateTotalPrice() {
-        this.totalPrice = materialLines.stream()
-                .mapToDouble(MaterialsLine::getTotalPrice)
-                .sum();
-    }
 }
 
