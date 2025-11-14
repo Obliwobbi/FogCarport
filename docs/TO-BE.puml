@@ -2,12 +2,20 @@
 |Kunde|
 start
 :Åbner hjemmeside;
+
+repeat
 :Indtaster mål på carport;
-:Sender forespørgsel;
+
+    |Carport Shop|
+    :Modtager kundeinput;
+    :Validerer mål på carport;
+
+    |Kunde|
+    :Modtager 2D tegning;
+
+repeat while (Accepter Tegning) is (Nej) not  (Ja)
 
 |Carport Shop|
-:Modtager kundeinput;
-:Validerer mål på carport;
 :Sender forespørgsel til sælger;
 
 |Sælger|
@@ -23,7 +31,7 @@ start
 |Sælger|
 :Udarbejder tilbud manuelt;
 
-|FogMail System|
+|Carport Shop|
 :Modtager tilbud;
 :Sender tilbud til kunde;
 
@@ -35,7 +43,7 @@ start
 :Modtager accept;
 :Opretter ordre manuelt;
 
-|FogMail System|
+|Carport Shop|
 :Sender ordrebekræftelse;
 
 |Kunde|
