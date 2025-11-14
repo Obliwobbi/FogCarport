@@ -25,6 +25,9 @@ public class Main
     public static void main(String[] args)
     {
         // Initializing Javalin and Jetty webserver
+        LOGGER.info("Starting FogCarport application...");
+        LOGGER.info("Database configuration: " + String.format(URL, DB));
+        LOGGER.info("Connection pool initialized");
 
         Javalin app = Javalin.create(config ->
         {
@@ -32,6 +35,8 @@ public class Main
             config.fileRenderer(new JavalinThymeleaf(ThymeleafConfig.templateEngine()));
             config.staticFiles.add("/templates");
         }).start(7070);
+
+        LOGGER.info("FogCarport application started successfully on port 7070");
 
         // Routing
     }
