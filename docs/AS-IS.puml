@@ -1,37 +1,48 @@
 @startuml
-'https://plantuml.com/activity-diagram-beta
-
+|Kunde|
 start
-:ClickServlet.handleRequest();
-:new page;
-if (Page.onSecurityCheck) then (true)
-  :Page.onInit();
-  if (isForward?) then (no)
-    :Process controls;
-    if (continue processing?) then (no)
-      stop
-    endif
+:Åbner hjemmeside;
+:Indtaster mål på carport;
+:Sender forespørgsel;
 
-    if (isPost?) then (yes)
-      :Page.onPost();
-    else (no)
-      :Page.onGet();
-    endif
-    :Page.onRender();
-  endif
-else (false)
-endif
+|Carport Shop|
+:Modtager kundeinput;
+:Sender forespørgsel til sælger;
 
-if (do redirect?) then (yes)
-  :redirect process;
-else
-  if (do forward?) then (yes)
-    :Forward request;
-  else (no)
-    :Render page template;
-  endif
-endif
+|Sælger|
+:Åbner forespørgsel;
+:Kontakter kunde ved behov;
+:Indtaster carportmål manuelt i system;
 
+|Stykliste Beregner|
+:Modtager mål fra sælger;
+:Beregner styklisten;
+:Sender uddateret styklisten til sælger;
+
+|Sælger|
+:Udarbejder tilbud manuelt;
+
+|FogMail System|
+:Modtager tilbud;
+:Sender tilbud til kunde;
+
+|Kunde|
+:Modtager tilbud;
+:Accepterer tilbud;
+
+|Sælger|
+:Modtager accept;
+
+|Lager System|
+:Renskriver styklisten til nuværende lagerstatus;
+
+|Sælger|
+:Opretter ordre manuelt;
+
+|FogMail System|
+:Sender ordrebekræftelse;
+
+|Kunde|
+:Modtager ordrebekræftelse;
 stop
-
 @enduml
