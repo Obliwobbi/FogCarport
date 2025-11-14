@@ -1,0 +1,127 @@
+@startuml Domain Model
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+
+package "app.entities" {
+    class User {
+        - userId: int
+        - name: String
+        - email: String
+        - phone: String
+        - address: String
+        - isAdmin: boolean
+    }
+
+    class OrderRequest {
+        - requestId: int
+        - createdDate: Date
+        - status: String
+        - customerComment: String
+    }
+
+    class Carport {
+        - carportId: int
+        - width: double
+        - length: double
+        - height: double
+        - withShed: boolean
+        - shedWidth: double
+        - shedLength: double
+    }
+
+    class Drawing {
+        - drawingId: int
+        - drawingData: String
+        - accepted: boolean
+        - createdDate: Date
+    }
+
+    class Quote {
+        - quoteId: int
+        - totalPrice: double
+        - createdDate: Date
+        - validUntil: Date
+        - status: String
+    }
+
+    class Order {
+        - orderId: int
+        - orderDate: Date
+        - status: String
+        - deliveryDate: Date
+        - billOfMaterials : BillOfMaterials
+    }
+
+    class BillOfMaterials {
+        - bomId: int
+        - createdDate: Date
+        - totalPrice: double
+        - materialLines : List<BillOfMaterialsLine>
+    }
+
+    class BillOfMaterialsLine {
+        - lineId: int
+        - quantity: int
+        - unitPrice: double
+        - material : Material
+    }
+
+    class Material {
+        - materialId: int
+        - description: String
+        - unit: double
+        - unitType: String
+        - price: double
+    }
+}
+
+package "app.persistence" {
+    interface UserMapper {
+        + findById(int): Customer
+        + findAll(): List<Customer>
+        + create(Customer): void
+        + update(Customer): void
+    }
+
+    interface RequestMapper {
+        + findById(int): Request
+        + findByCustomerId(int): List<Request>
+        + create(Request): void
+        + update(Request): void
+    }
+
+    interface MaterialMapper {
+        + findById(int): Material
+        + findAll(): List<Material>
+        + update(Material): void
+    }
+
+    interface OrderMapper {
+        + findById(int): Order
+        + create(Order): void
+        + update(Order): void
+    }
+}
+
+package "app.services" {
+    class CarportService {
+        + calculateBillOfMaterials(Carport): BillOfMaterials
+        + generateDrawing(Carport): Drawing
+        + validateMeasurements(Carport): boolean
+    }
+
+    class QuoteService {
+        + createQuote(Request, BillOfMaterials): Quote
+        + sendQuoteToCustomer(Quote): void
+    }
+
+    class OrderService {
+        + createOrder(Quote): Order
+        + sendOrderConfirmation(Order): void
+    }
+}
+
+
+
+@enduml
+
