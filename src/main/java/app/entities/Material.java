@@ -11,11 +11,15 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class Material {
-    private int materialId;
+public class Material
+{
+    private int id;
+    private String name;
     private String description;
-    private double unit;
-    private String unitType;
+    private int unit; //1
+    private String unitType; //Rulle, stk osv.
+    private double materialLength; //20m på en rulle
+    private double materialWidth; //2m
+    private double materialHeight; //35mm
     private double price;
 }
-
