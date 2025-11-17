@@ -11,7 +11,49 @@
 
 <main>
     <section class="body">
-<h1>this is carport</h1>
+        <h1>Indtast mål til din carport</h1>
+        <form th:action="@{/create-carport}" method="post" class="carport-form">
+
+            <label for="width">Vælg Bredde:</label>
+
+            <select name="carportWidth" id="Width">
+                <option selected=""></option>
+                <option value="240 cm">240 cm</option>
+                <option value="270 cm">270 cm</option>
+                <option value="300 cm">300 cm</option>
+                <option value="330 cm">330 cm</option>
+                <option value="360 cm">360 cm</option>
+                <option value="390 cm">390 cm</option>
+                <option value="420 cm">420 cm</option>
+                <option value="450 cm">450 cm</option>
+                <option value="480 cm">480 cm</option>
+                <option value="510 cm">510 cm</option>
+                <option value="540 cm">540 cm</option>
+                <option value="570 cm">570 cm</option>
+                <option value="600 cm">600 cm</option>
+            </select>
+
+            <label for="length">Vælg længde:</label>
+
+            <select name="carportLength" id="length" required="">
+                <option selected=""></option>
+                <option value="240 cm">240 cm</option>
+                <option value="270 cm">270 cm</option>
+                <option value="300 cm">300 cm</option>
+                <option value="330 cm">330 cm</option>
+                <option value="360 cm">360 cm</option>
+                <option value="390 cm">390 cm</option>
+                <option value="420 cm">420 cm</option>
+                <option value="450 cm">450 cm</option>
+                <option value="480 cm">480 cm</option>
+                <option value="510 cm">510 cm</option>
+                <option value="540 cm">540 cm</option>
+                <option value="570 cm">570 cm</option>
+            </select>
+
+            <button type="submit">Se Tegning</button>
+
+        </form>
     </section>
 </main>
 
