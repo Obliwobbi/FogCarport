@@ -11,10 +11,10 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class MaterialsLine {
+public class MaterialsLine
+{
     private int lineId;
     private int quantity;
-    private double unitPrice;
+    private double linePrice;
     private Material material;
 }
-

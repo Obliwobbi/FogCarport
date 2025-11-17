@@ -11,7 +11,8 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class Carport {
+public class Carport
+{
     private int carportId;
     private double width;
     private double length;
