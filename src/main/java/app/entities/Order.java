@@ -18,8 +18,9 @@ public class Order {
     private LocalDateTime orderDate;
     private String status;
     private LocalDateTime deliveryDate;
+    private Drawing drawing;
+    private Carport carport;
     private BillOfMaterials billOfMaterials;
-    private Quote quote;
 
     public Order(int orderId, LocalDateTime orderDate, String status, LocalDateTime deliveryDate) {
         this.orderId = orderId;
