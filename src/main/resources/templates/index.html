@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="da" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>FogCarport</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link rel="stylesheet" href="/css/stylesheet.css" th:href="@{/css/stylesheet.css}"/>
+    <link rel="stylesheet" href="/css/index.css" th:href="@{/css/index.css}"/>
+</head>
+<body>
+
+<main>
+    <section class="index-body">
+        <div class="middle">
+            <img src="/images/fog-logo.svg" th:src="@{/images/fog-logo.svg}" alt="Fog Logo"
+                 class="index-logo"/>
+            <h1>Fog Projektet</h1>
+            <h2>Carport</h2>
+        </div>
+        <div class="buttons">
+            <a class="customer-button" href="carport.html" th:href="@{/carport}">Kunde</a>
+            <a class="employee-button" href="employee.html" th:href="@{/employee}">Sælger</a>
+        </div>
+    </section>
+</main>
+
+
+</body>
+</html>
