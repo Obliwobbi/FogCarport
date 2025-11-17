@@ -1,0 +1,122 @@
+@startuml Domain Model
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+
+package "app.entities" {
+    class Customer {
+    }
+
+    class Employee {
+    }
+
+    class Carport {
+    }
+
+    class Drawing {
+    }
+
+    class Order {
+    }
+
+    class BillOfMaterials {
+    }
+
+    class MaterialsLine {
+    }
+
+    class Material {
+    }
+}
+
+package "app.persistence" {
+    class CustomerMapper {
+    }
+
+    class MaterialMapper {
+    }
+
+    class OrderMapper {
+    }
+
+    class CarportMapper{
+    }
+
+    class DrawingMapper{
+    }
+
+}
+
+package "app.controllers" {
+    class OrderController{
+    }
+
+    class CarportController{
+    }
+
+    class ContactController{
+    }
+
+    class DrawingController{
+    }
+
+}
+
+package "app.services" {
+    interface CarportService {
+    }
+
+    class CarportServiceImpl{
+    }
+
+    interface OrderService {
+    }
+
+    class OrderServiceImpl{
+    }
+
+    interface CustomerService{
+    }
+
+    class CustomerServiceImpl{
+    }
+}
+
+ContactController -> CustomerService
+ContactController -> OrderService
+
+CustomerService --> CustomerServiceImpl
+CustomerMapper <-- CustomerServiceImpl
+CustomerMapper ..> Customer : Creates
+Customer ..> Order : Creates
+
+
+CarportController --> CarportService
+CarportService --> CarportServiceImpl
+CarportServiceImpl ..> Drawing : Creates
+CarportServiceImpl ..> Carport : Creates
+
+DrawingController -> CarportService
+
+
+OrderServiceImpl --> MaterialMapper
+OrderController --> OrderService
+OrderService --> OrderServiceImpl
+OrderMapper <-- OrderServiceImpl
+OrderMapper ..> Order : Creates
+Order *-- Drawing
+Order *-- Carport
+
+
+BillOfMaterials *- MaterialsLine
+MaterialsLine *-- Material
+
+
+MaterialMapper ..> Material : Creates
+
+
+Employee ..> Order : Updates
+
+
+Order *-- BillOfMaterials
+@enduml
+
