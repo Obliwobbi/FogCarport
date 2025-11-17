@@ -30,7 +30,7 @@ public class Main
         {
             config.staticFiles.add("/public");
             config.fileRenderer(new JavalinThymeleaf(ThymeleafConfig.templateEngine()));
-            config.staticFiles.add("/templates/carport");
+            config.staticFiles.add("/templates/");
         }).start(7070);
 
         // Routing
