@@ -144,13 +144,11 @@ public class CarportMapper
             if (rowsAffected == 1)
             {
                 return true;
-            }
-            else
+            } else
             {
                 throw new DatabaseException("Carport blev ikke opdateret - id: " + carport.getCarportId());
             }
-        }
-        catch (SQLException e)
+        } catch (SQLException e)
         {
             throw new DatabaseException("Fejl ved opdatering af carport: " + e.getMessage());
         }
@@ -171,16 +169,15 @@ public class CarportMapper
             {
                 return true;
             }
-        }
-        catch (SQLException e)
+        } catch (SQLException e)
         {
             throw new DatabaseException("Fejl ved sletning af carport med id: " + carportId);
         }
         return false;
     }
-    }
-
-
 }
+
+
+
 
 
