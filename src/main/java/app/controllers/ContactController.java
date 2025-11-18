@@ -17,6 +17,7 @@ public class ContactController {
     public void addRoutes(Javalin app)
     {
         app.get("/contact", ctx -> showContactPage(ctx));
+
         app.post("/contact", ctx -> handleCreateCustomer(ctx));
     }
 
@@ -34,6 +35,8 @@ public class ContactController {
                     Integer.parseInt(ctx.formParam("zipcode")),
                     ctx.formParam("city")
             );
+            ctx.sessionAttribute("successMessage", "Kontakt info modtaget - du hører fra os snarest");
+            ctx.redirect("/success");
         }
         catch (DatabaseException e)
             {
