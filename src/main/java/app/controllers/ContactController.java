@@ -35,7 +35,12 @@ public class ContactController {
                     ctx.formParam("city")
             );
         }
-        catch (DatabaseException | IllegalArgumentException e)
+        catch (DatabaseException e)
+            {
+                ctx.attribute("errorMessage", e.getMessage() + "fejl ved indlæsning af kunde info");
+                ctx.render("contact.html");
+            }
+        catch (IllegalArgumentException e)
             {
                 ctx.attribute("errorMessage", e.getMessage());
                 ctx.render("contact.html");
