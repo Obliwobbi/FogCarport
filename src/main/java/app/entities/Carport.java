@@ -22,5 +22,14 @@ public class Carport
     private double shedLength;
     private String customerWishes;
 
+    public Carport(int carportId, double width, double length, double height, boolean withShed, String customerWishes)
+    {
+        this.carportId = carportId;
+        this.width = width;
+        this.length = length;
+        this.height = height;
+        this.withShed = withShed;
+        this.customerWishes = customerWishes;
+    }
 }
 
