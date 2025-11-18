@@ -14,8 +14,13 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class CustomerMapperTest
 {
+    private final static String USER = "postgres";
+    private static final String PASSWORD = "ModigsteFryser47";
+    private static final String URL = "jdbc:postgresql://164.92.247.68:5432/%s?currentSchema=test";
+    private static final String DB = "fogcarport";
+
     private static ConnectionPool connectionPool;
-    private CustomerMapper customerMapper;
+    private static CustomerMapper customerMapper;
 
     @BeforeAll
     public static void setUpClass()
@@ -23,31 +28,14 @@ class CustomerMapperTest
         try
         {
             connectionPool = ConnectionPool.getInstance(USER, PASSWORD, URL, "fogcarport");
-            carportMapper = new CarportMapper(connectionPool);
+            customerMapper = new CustomerMapper(connectionPool);
 
             try (Connection testConnection = connectionPool.getConnection())
             {
                 try (Statement stmt = testConnection.createStatement())
                 {
-                    stmt.execute("DROP TABLE IF EXISTS test.materials_lines CASCADE");
-                    stmt.execute("DROP TABLE IF EXISTS test.orders CASCADE");
-                    stmt.execute("DROP TABLE IF EXISTS test.bills_of_materials CASCADE");
-                    stmt.execute("DROP TABLE IF EXISTS test.drawings CASCADE");
-                    stmt.execute("DROP TABLE IF EXISTS test.carports CASCADE");
-                    stmt.execute("DROP TABLE IF EXISTS test.materials CASCADE");
-                    stmt.execute("DROP TABLE IF EXISTS test.customers CASCADE");
-                    stmt.execute("DROP TABLE IF EXISTS test.employees CASCADE");
 
-                    // Create Employees Table
-                    stmt.execute("""
-                                CREATE TABLE test.employees (
-                                    employee_id SERIAL PRIMARY KEY,
-                                    name VARCHAR(100) NOT NULL,
-                                    email VARCHAR(100) UNIQUE NOT NULL,
-                                    phone VARCHAR(20),
-                                    is_admin BOOLEAN DEFAULT FALSE
-                                )
-                            """);
+                    stmt.execute("DROP TABLE IF EXISTS test.customers CASCADE");
 
                     // Create Customers Table
                     stmt.execute("""
@@ -64,92 +52,15 @@ class CustomerMapperTest
                                 )
                             """);
 
-                    // Create Materials Table
-                    stmt.execute("""
-                                CREATE TABLE test.materials (
-                                    id SERIAL PRIMARY KEY,
-                                    name VARCHAR(100) NOT NULL,
-                                    description VARCHAR(255),
-                                    unit INT NOT NULL,
-                                    unit_type VARCHAR(50) NOT NULL,
-                                    material_length DECIMAL(10, 2),
-                                    material_width DECIMAL(10, 2),
-                                    material_height DECIMAL(10, 2),
-                                    price DECIMAL(10, 2) NOT NULL
-                                )
-                            """);
-
-                    // Create Carports Table
-                    stmt.execute("""
-                                CREATE TABLE test.carports (
-                                    carport_id SERIAL PRIMARY KEY,
-                                    width DECIMAL(10, 2) NOT NULL,
-                                    length DECIMAL(10, 2) NOT NULL,
-                                    height DECIMAL(10, 2) NOT NULL,
-                                    with_shed BOOLEAN DEFAULT FALSE,
-                                    shed_width DECIMAL(10, 2),
-                                    shed_length DECIMAL(10, 2),
-                                    customer_wishes VARCHAR(250)
-                                )
-                            """);
-
-                    // Create Drawings Table
-                    stmt.execute("""
-                                CREATE TABLE test.drawings (
-                                    drawing_id SERIAL PRIMARY KEY,
-                                    drawing_data TEXT NOT NULL,
-                                    accepted BOOLEAN DEFAULT FALSE,
-                                    created_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-                                )
-                            """);
-
-                    // Create Bills of Materials Table
-                    stmt.execute("""
-                                CREATE TABLE test.bills_of_materials (
-                                    bom_id SERIAL PRIMARY KEY,
-                                    created_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                                    total_price DECIMAL(12, 2) NOT NULL
-                                )
-                            """);
-
-                    // Create Orders Table
-                    stmt.execute("""
-                                CREATE TABLE test.orders (
-                                    order_id SERIAL PRIMARY KEY,
-                                    order_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                                    status VARCHAR(50) NOT NULL DEFAULT 'AFVENTER ACCEPT',
-                                    delivery_date TIMESTAMP,
-                                    drawing_id INT,
-                                    carport_id INT NOT NULL,
-                                    bom_id INT,
-                                    CONSTRAINT fk_drawing FOREIGN KEY (drawing_id) REFERENCES test.drawings(drawing_id) ON DELETE SET NULL,
-                                    CONSTRAINT fk_carport FOREIGN KEY (carport_id) REFERENCES test.carports(carport_id) ON DELETE CASCADE,
-                                    CONSTRAINT fk_bom FOREIGN KEY (bom_id) REFERENCES test.bills_of_materials(bom_id) ON DELETE SET NULL
-                                )
-                            """);
-
-                    // Create Materials Lines Table
-                    stmt.execute("""
-                                CREATE TABLE test.materials_lines (
-                                    line_id SERIAL PRIMARY KEY,
-                                    bom_id INT NOT NULL,
-                                    material_id INT,
-                                    material_name VARCHAR(100) NOT NULL,
-                                    unit_type VARCHAR(50) NOT NULL,
-                                    quantity INT NOT NULL,
-                                    unit_price DECIMAL(10, 2) NOT NULL,
-                                    line_price DECIMAL(10, 2) NOT NULL,
-                                    CONSTRAINT fk_bom FOREIGN KEY (bom_id) REFERENCES test.bills_of_materials(bom_id) ON DELETE CASCADE,
-                                    CONSTRAINT fk_material FOREIGN KEY (material_id) REFERENCES test.materials(id) ON DELETE SET NULL
-                                )
-                            """);
                 }
-            } catch (SQLException e)
+            }
+            catch (SQLException e)
             {
                 e.printStackTrace();
                 fail("Database connection failed: " + e.getMessage());
             }
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             e.printStackTrace();
             fail("Failed to set up test database");
@@ -167,7 +78,7 @@ class CustomerMapperTest
              Statement stmt = connection.createStatement())
         {
             stmt.execute("SET search_path TO test");
-            stmt.execute("TRUNCATE TABLE customers RESTART IDENTITY CASCADE");
+            stmt.execute("TRUNCATE TABLE test.customers RESTART IDENTITY CASCADE");
         }
     }
 
@@ -213,7 +124,8 @@ class CustomerMapperTest
         );
 
         // Act & Assert
-        assertThrows(DatabaseException.class, () -> {
+        assertThrows(DatabaseException.class, () ->
+        {
             customerMapper.newCustomer(
                     "Jane", "Smith", "duplicate@test.com", "87654321",
                     "Avenue", "2", 2900, "Hellerup"
