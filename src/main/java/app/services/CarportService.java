@@ -12,5 +12,7 @@ public interface CarportService
     void deleteCarport(int id) throws DatabaseException;
 
     void updateCarport(Carport carport) throws DatabaseException;
+
+    Double validateShedWidth(double carportWidth, double shedWidth);
 }
 

@@ -30,10 +30,19 @@ public class CarportController
             boolean withShed = ctx.formParam("withShed") != null; //returns true if checked else false
             String customerWishes = ctx.formParam("customerWishes");
 
-            double shedWidth = Double.parseDouble(ctx.formParam("shedWidth"));
-            double shedLength = Double.parseDouble(ctx.formParam("shedLength"));
+            double shedWidth = 0.0;
+            double shedLength = 0.0;
+
+            if(withShed)
+            {
+                shedWidth = Double.parseDouble(ctx.formParam("shedWidth"));
+                shedLength = Double.parseDouble(ctx.formParam("shedLength"));
+                shedWidth = carportservice.validateShedWidth(carportWidth, shedWidth);
+            }
 
             carportservice.createCarport(carportWidth, carportLength, carportHeight, withShed, shedWidth, shedLength, customerWishes);
+
+            //TODO WILL NEED TO REDIRECT TO drawing.html, FOR THE MOMENT IT JUST TAKES TO contact.html
             ctx.redirect("/contact");
         }
         catch (NullPointerException | NumberFormatException e)
@@ -43,10 +52,9 @@ public class CarportController
         }
         catch (DatabaseException e)
         {
-            ctx.sessionAttribute("carportErrorLAbel", e.getMessage());
+            ctx.sessionAttribute("carportErrorLabel", e.getMessage());
             ctx.redirect("/carport");
         }
-
     }
 }
 

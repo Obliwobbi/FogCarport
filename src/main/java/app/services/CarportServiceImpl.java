@@ -31,5 +31,11 @@ public class CarportServiceImpl implements CarportService
     {
         carportMapper.updateCarport(carport);
     }
+
+    @Override
+    public Double validateShedWidth(double carportWidth, double shedWidth)
+    {
+        return Math.min(carportWidth, shedWidth);
+    }
 }
 
