@@ -1,16 +1,13 @@
 package app.entities;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.Data;
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
+
 public class Carport
 {
     private int carportId;
@@ -32,4 +29,5 @@ public class Carport
         this.customerWishes = customerWishes;
     }
 }
+
 

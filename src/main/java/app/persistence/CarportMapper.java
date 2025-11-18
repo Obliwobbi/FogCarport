@@ -36,9 +36,10 @@ public class CarportMapper
                                     rs.getBoolean("with_shed"),
                                     rs.getDouble("shed_width"),
                                     rs.getDouble("shed_length"),
-                                    rs.getString("customerWishes"));
+                                    rs.getString("customer_wishes"));
                         }
-                    } else
+                    }
+                    else
                     {
                         return new Carport(
                                 rs.getInt("carport_id"),
@@ -46,11 +47,13 @@ public class CarportMapper
                                 rs.getDouble("length"),
                                 rs.getDouble("height"),
                                 rs.getBoolean("with_shed"),
-                                rs.getString("customerWishes"));
+                                rs.getString("customer_wishes"));
                     }
-                return null;
+
+                throw new DatabaseException("Der blev ikke fundet en carport med id: " + carportId);
             }
-        } catch (SQLException e)
+        }
+        catch (SQLException e)
         {
             throw new DatabaseException("Database ved hentning af data for carport " + e);
         }
@@ -58,7 +61,7 @@ public class CarportMapper
 
     public Carport createCarport(double width, double length, double height, boolean withShed, double shedWidth, double shedLength, String customerWishes) throws DatabaseException
     {
-        String sql = "INSERT INTO carport (width, length, height, with_shed, shed_width, shed_length, customer_wishes)" +
+        String sql = "INSERT INTO carports (width, length, height, with_shed, shed_width, shed_length, customer_wishes)" +
                 "VALUES(?,?,?,?,?,?,?)";
 
         try (
@@ -75,7 +78,8 @@ public class CarportMapper
             {
                 ps.setDouble(5, shedWidth);
                 ps.setDouble(6, shedLength);
-            } else
+            }
+            else
             {
                 ps.setNull(5, Types.NUMERIC);
                 ps.setNull(6, Types.NUMERIC);
@@ -97,18 +101,21 @@ public class CarportMapper
                 if (withShed)
                 {
                     return new Carport(carportId, width, length, height, withShed, shedWidth, shedLength, customerWishes);
-                } else
+                }
+                else
                 {
                     return new Carport(carportId, width, length, height, withShed, customerWishes);
                 }
             }
-        } catch (
+        }
+        catch (
                 SQLException e)
         {
             if (e.getSQLState().equals("23505")) // error code is the standard for catching unique constraint errors in PostgresSQL
             {
                 throw new DatabaseException("carport findes allerede");
-            } else
+            }
+            else
             {
                 throw new DatabaseException("Databasefejl ved oprettelse af carport " + e.getMessage());
             }
@@ -134,7 +141,8 @@ public class CarportMapper
             {
                 ps.setDouble(5, carport.getShedWidth());
                 ps.setDouble(6, carport.getShedLength());
-            } else
+            }
+            else
             {
                 ps.setNull(5, Types.NUMERIC);
                 ps.setNull(6, Types.NUMERIC);
@@ -144,11 +152,13 @@ public class CarportMapper
             if (rowsAffected == 1)
             {
                 return true;
-            } else
+            }
+            else
             {
                 throw new DatabaseException("Carport blev ikke opdateret - id: " + carport.getCarportId());
             }
-        } catch (SQLException e)
+        }
+        catch (SQLException e)
         {
             throw new DatabaseException("Fejl ved opdatering af carport: " + e.getMessage());
         }
@@ -169,7 +179,8 @@ public class CarportMapper
             {
                 return true;
             }
-        } catch (SQLException e)
+        }
+        catch (SQLException e)
         {
             throw new DatabaseException("Fejl ved sletning af carport med id: " + carportId);
         }
