@@ -28,7 +28,8 @@ CREATE TABLE employees (
 -- Customers Table
 CREATE TABLE customers (
     customer_id SERIAL PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
+    firstname VARCHAR(100) NOT NULL,
+    lastname VARCHAR(100) NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
     phone VARCHAR(20),
     street VARCHAR(100),
