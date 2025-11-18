@@ -12,7 +12,7 @@
 <main>
     <section class="body">
         <h1>Indtast mål til din carport</h1>
-        <form th:action="@{/create-carport}" method="post" class="carport-form">
+        <form th:action="@{/carport/create-carport}" method="post" class="carport-form">
 
             <label for="carportwidth">Vælg bredde:</label>
 
@@ -122,6 +122,7 @@
             <label for="customerWishes">Særlige ønsker eller evt. bemærkninger</label>
             <textarea name="customerWishes" id="customerWishes"></textarea>
 
+            <p th:if="${session.carportErrorLabel != null}" th:text="${session.carportErrorLabel}"></p>
             <button type="submit">Se Tegning</button>
 
         </form>
