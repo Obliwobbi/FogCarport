@@ -20,5 +20,7 @@ public class Carport
     private boolean withShed;
     private double shedWidth;
     private double shedLength;
+    private String customerWishes;
+
 }
 
