@@ -118,7 +118,42 @@ public class CarportMapper
 
     public boolean updateCarport(Carport carport) throws DatabaseException
     {
-        return true;
+        String sql = "UPDATE carports SET width = ?, length = ?, height = ?, with_shed = ?, shed_width = ?, shed_length = ?, customer_wishes = ? WHERE carport_id = ?";
+
+        try (Connection connection = connectionPool.getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql))
+        {
+            ps.setDouble(1, carport.getWidth());
+            ps.setDouble(2, carport.getLength());
+            ps.setDouble(3, carport.getHeight());
+            ps.setBoolean(4, carport.isWithShed());
+            ps.setString(7, carport.getCustomerWishes());
+            ps.setInt(8, carport.getCarportId());
+
+            if (carport.isWithShed())
+            {
+                ps.setDouble(5, carport.getShedWidth());
+                ps.setDouble(6, carport.getShedLength());
+            } else
+            {
+                ps.setNull(5, Types.NUMERIC);
+                ps.setNull(6, Types.NUMERIC);
+            }
+            int rowsAffected = ps.executeUpdate();
+
+            if (rowsAffected == 1)
+            {
+                return true;
+            }
+            else
+            {
+                throw new DatabaseException("Carport blev ikke opdateret - id: " + carport.getCarportId());
+            }
+        }
+        catch (SQLException e)
+        {
+            throw new DatabaseException("Fejl ved opdatering af Carport: " + e.getMessage());
+        }
     }
 
     public boolean deleteCarport(int carportId) throws DatabaseException
