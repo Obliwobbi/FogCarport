@@ -13,7 +13,8 @@ import lombok.ToString;
 @ToString
 public class Customer {
     private int customerId;
-    private String name;
+    private String firstName;
+    private String lastName;
     private String email;
     private String phone;
     private String street;
