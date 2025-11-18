@@ -66,58 +66,77 @@
             </select>
 
             <div>
-                <input type="checkbox" id="withShed">
+                <input type="checkbox" name="withShed" id="withShed">
                 <label for="withShed">Redskabskur</label>
                 <p>Bemærk! Der skal beregnes 15 cm tagudhæng på hver side af redskabsrummet</p>
             </div>
 
-            <label for="shedWidth">Skur bredde:</label>
-            <select name="shedWidth" id="shedWidth">
-                <option selected=""></option>
-                <option value="120">120 cm</option>
-                <option value="150">150 cm</option>
-                <option value="180">180 cm</option>
-                <option value="210">210 cm</option>
-                <option value="240">240 cm</option>
-                <option value="270">270 cm</option>
-                <option value="300">300 cm</option>
-                <option value="330">330 cm</option>
-                <option value="360">360 cm</option>
-                <option value="390">390 cm</option>
-                <option value="420">420 cm</option>
-                <option value="450">450 cm</option>
-                <option value="480">480 cm</option>
-                <option value="510">510 cm</option>
-                <option value="540">540 cm</option>
-                <option value="570">570 cm</option>
-            </select>
+            <div>
+                <label for="shedWidth">Skur bredde:</label>
+                <div class="shed-width">
+                    <select name="shedWidth" id="shedWidth" >
+                        <option selected=""></option>
+                        <option value="120">120 cm</option>
+                        <option value="150">150 cm</option>
+                        <option value="180">180 cm</option>
+                        <option value="210">210 cm</option>
+                        <option value="240">240 cm</option>
+                        <option value="270">270 cm</option>
+                        <option value="300">300 cm</option>
+                        <option value="330">330 cm</option>
+                        <option value="360">360 cm</option>
+                        <option value="390">390 cm</option>
+                        <option value="420">420 cm</option>
+                        <option value="450">450 cm</option>
+                        <option value="480">480 cm</option>
+                        <option value="510">510 cm</option>
+                        <option value="540">540 cm</option>
+                        <option value="570">570 cm</option>
+                    </select>
 
-            <label for="shedlength">Skur længde:</label>
-            <select name="shedLength" id="shedlength">
-                <option selected=""></option>
-                <option value="120">120 cm</option>
-                <option value="150">150 cm</option>
-                <option value="180">180 cm</option>
-                <option value="210">210 cm</option>
-                <option value="240">240 cm</option>
-                <option value="270">270 cm</option>
-                <option value="300">300 cm</option>
-                <option value="330">330 cm</option>
-                <option value="360">360 cm</option>
-                <option value="390">390 cm</option>
-                <option value="420">420 cm</option>
-                <option value="450">450 cm</option>
-                <option value="480">480 cm</option>
-                <option value="510">510 cm</option>
-                <option value="540">540 cm</option>
-                <option value="570">570 cm</option>
-                <option value="600">600 cm</option>
-                <option value="630">630 cm</option>
-                <option value="660">660 cm</option>
-                <option value="690">690 cm</option>
-                <option value="720">720 cm</option>
-                <option value="750">750 cm</option>
-            </select>
+                    <div class="shed-width-tooltip">
+                        Bemærk! skur bredde må ikke være bredere end carporten, <br>
+                        isåfald sættes bredde til det samme på tegningen
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <label for="shedlength">Skur længde:</label>
+                <div class="shed-length">
+                    <select name="shedLength" id="shedlength">
+                        <option selected=""></option>
+                        <option value="120">120 cm</option>
+                        <option value="150">150 cm</option>
+                        <option value="180">180 cm</option>
+                        <option value="210">210 cm</option>
+                        <option value="240">240 cm</option>
+                        <option value="270">270 cm</option>
+                        <option value="300">300 cm</option>
+                        <option value="330">330 cm</option>
+                        <option value="360">360 cm</option>
+                        <option value="390">390 cm</option>
+                        <option value="420">420 cm</option>
+                        <option value="450">450 cm</option>
+                        <option value="480">480 cm</option>
+                        <option value="510">510 cm</option>
+                        <option value="540">540 cm</option>
+                        <option value="570">570 cm</option>
+                        <option value="600">600 cm</option>
+                        <option value="630">630 cm</option>
+                        <option value="660">660 cm</option>
+                        <option value="690">690 cm</option>
+                        <option value="720">720 cm</option>
+                        <option value="750">750 cm</option>
+                    </select>
+
+                    <!--TODO NEED NEW MESSAGE AND TO VALIDATE IN CONTROLLER/SERVICE-->
+                    <div class="shed-length-tooltip">
+                        Bemærk, skur længde må ikke være længere end carporten, <br>
+                        isåfald sættes længden til det samme
+                    </div>
+                </div>
+            </div>
 
             <label for="customerWishes">Særlige ønsker eller evt. bemærkninger</label>
             <textarea name="customerWishes" id="customerWishes"></textarea>

@@ -1,4 +1,4 @@
-.body{
+.body {
     background: silver;
     display: flex;
     flex-direction: column;
@@ -12,3 +12,23 @@
     flex-direction: column;
 }
 
+
+.shed-length-tooltip, .shed-width-tooltip {
+    visibility: hidden;
+    background: #333;
+    color: #fff;
+    padding: 8px;
+    border-radius: 6px;
+    position: absolute;
+    width: 200px;
+    font-size: 16px;
+    z-index: 10;
+}
+
+.shed-length:hover .shed-length-tooltip {
+    visibility: visible;
+}
+
+.shed-width:hover .shed-width-tooltip {
+    visibility: visible;
+}
