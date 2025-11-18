@@ -235,12 +235,20 @@ class CarportMapperTest
     }
 
     @Test
-    void testupdateCarport()
+    void testupdateCarport() throws DatabaseException
     {
+        Carport carportEdited = carportMapper.getCarportById(1);
+        carportEdited.setHeight(300);
+
+        assertTrue(carportMapper.updateCarport(carportEdited));
+        assertEquals(300,carportMapper.getCarportById(1).getHeight());
     }
 
     @Test
-    void testdeleteCarport()
+    void testdeleteCarport() throws DatabaseException
     {
+        assertTrue(carportMapper.deleteCarport(3));
+        assertThrows(DatabaseException.class,
+                () -> carportMapper.getCarportById(3));
     }
 }
