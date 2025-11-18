@@ -52,7 +52,7 @@ public class CarportMapper
             }
         } catch (SQLException e)
         {
-            throw new DatabaseException("Database error while fetching Carport: " + e);
+            throw new DatabaseException("Database ved hentning af data for carport " + e);
         }
     }
 
@@ -152,13 +152,32 @@ public class CarportMapper
         }
         catch (SQLException e)
         {
-            throw new DatabaseException("Fejl ved opdatering af Carport: " + e.getMessage());
+            throw new DatabaseException("Fejl ved opdatering af carport: " + e.getMessage());
         }
     }
 
     public boolean deleteCarport(int carportId) throws DatabaseException
     {
-        return true;
+        String sql = "DELETE FROM carport WHERE carport_id = ?";
+
+
+        try (Connection connection = connectionPool.getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql))
+        {
+            ps.setInt(1, carportId);
+            int rowsAffected = ps.executeUpdate();
+
+            if (rowsAffected == 1)
+            {
+                return true;
+            }
+        }
+        catch (SQLException e)
+        {
+            throw new DatabaseException("Fejl ved sletning af carport med id: " + carportId);
+        }
+        return false;
+    }
     }
 
 
