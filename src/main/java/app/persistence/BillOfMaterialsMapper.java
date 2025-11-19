@@ -5,7 +5,6 @@ import app.entities.MaterialsLine;
 import app.exceptions.DatabaseException;
 
 import java.sql.*;
-import java.time.LocalDateTime;
 import java.util.List;
 
 public class BillOfMaterialsMapper
@@ -29,7 +28,7 @@ public class BillOfMaterialsMapper
 
                 String sql = """
                         INSERT INTO bills_of_materials (total_price)
-                        VALUES (?) RETURNING bom_id, created_date
+                        VALUES (?) RETURNING bom_id
                         """;
 
                 try (PreparedStatement ps = connection.prepareStatement(sql))
@@ -41,11 +40,7 @@ public class BillOfMaterialsMapper
                         if (rs.next())
                         {
                             int bomId = rs.getInt("bom_id");
-                            Timestamp ts = rs.getTimestamp("created_date");
-                            LocalDateTime createdDate = ts.toLocalDateTime();
-
                             bom.setBomId(bomId);
-                            bom.setCreatedDate(createdDate);
                         }
                     }
                 }
@@ -85,11 +80,10 @@ public class BillOfMaterialsMapper
             {
                 if (rs.next())
                 {
-                    Timestamp ts = rs.getTimestamp("created_date");
-                    LocalDateTime createdDate = ts.toLocalDateTime();
+
                     double totalPrice = rs.getDouble("total_price");
 
-                    BillOfMaterials bom = new BillOfMaterials(bomId, createdDate, totalPrice);
+                    BillOfMaterials bom = new BillOfMaterials(bomId, totalPrice);
 
                     bom.setMaterialLines(materialsLinesMapper.getMaterialLinesByBomId(bomId));
 
