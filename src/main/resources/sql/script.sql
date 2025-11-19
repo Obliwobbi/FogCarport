@@ -73,14 +73,12 @@ CREATE TABLE drawings
     drawing_id   SERIAL PRIMARY KEY,
     drawing_data TEXT      NOT NULL,
     accepted     BOOLEAN            DEFAULT FALSE,
-    created_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
+    );
 
 -- Bills of Materials Table
 CREATE TABLE bills_of_materials
 (
     bom_id       SERIAL PRIMARY KEY,
-    created_date TIMESTAMP      NOT NULL DEFAULT CURRENT_TIMESTAMP,
     total_price  DECIMAL(12, 2) NOT NULL
 );
 
@@ -88,12 +86,13 @@ CREATE TABLE bills_of_materials
 CREATE TABLE orders
 (
     order_id      SERIAL PRIMARY KEY,
-    order_date    TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    order_date    TIMESTAMP WITH TIME ZONE   NOT NULL DEFAULT now(),
     status        VARCHAR(50) NOT NULL DEFAULT 'AFVENTER ACCEPT',
-    delivery_date TIMESTAMP,
+    delivery_date TIMESTAMP WITH TIME ZONE,
     drawing_id    INT,
     carport_id    INT         NOT NULL,
     bom_id        INT,
+    customer_id   INT         NOT NULL,
     CONSTRAINT fk_drawing FOREIGN KEY (drawing_id) REFERENCES drawings (drawing_id) ON DELETE SET NULL,
     CONSTRAINT fk_carport FOREIGN KEY (carport_id) REFERENCES carports (carport_id) ON DELETE CASCADE,
     CONSTRAINT fk_bom FOREIGN KEY (bom_id) REFERENCES bills_of_materials (bom_id) ON DELETE SET NULL
@@ -157,37 +156,3 @@ VALUES ('Brædt 25x200', '25x200 mm. trykimp. Brædt', 1, 'stk', 540.00, 20.00, 
        ('Bræddebolt', 'Bræddebolt 10 x 120 mm.', 1, 'stk', 12.00, 1.00, 1.00, 5.00),
        ('Firkantskiver', 'Firkantskiver 40x40x11mm', 1, 'stk', NULL, 4.00, 1.10, 3.00),
        ('Tagplade', 'Plastmo Ecolite blåtonet', 1, 'stk', 600.00, 109.00, 0.50, 450.00);
-
--- ============================================
--- Comments
--- ============================================
-
-COMMENT
-ON TABLE employees IS 'Stores employee/admin information';
-COMMENT
-ON TABLE customers IS 'Stores customer information with full address details';
-COMMENT
-ON TABLE materials IS 'Stores available building materials with dimensions and prices';
-COMMENT
-ON TABLE carports IS 'Stores carport specifications';
-COMMENT
-ON TABLE drawings IS 'Stores technical drawings for carports';
-COMMENT
-ON TABLE bills_of_materials IS 'Stores bill of materials with total prices';
-COMMENT
-ON TABLE materials_lines IS 'Individual line items in a bill of materials';
-COMMENT
-ON TABLE orders IS 'Stores customer orders linking all entities together';
-
-COMMENT
-ON COLUMN materials.unit IS 'Quantity per unit (e.g., 1 for single item, 200 for pack of 200)';
-COMMENT
-ON COLUMN materials.material_length IS 'Length in cm (NULL for items without length)';
-COMMENT
-ON COLUMN materials.material_width IS 'Width in cm (NULL for items without width)';
-COMMENT
-ON COLUMN materials.material_height IS 'Height/thickness in cm (NULL for items without height)';
-COMMENT
-ON COLUMN customers.house_number IS 'House number (can include letters like 12A)';
-COMMENT
-ON COLUMN materials_lines.line_price IS 'Total price for this line (quantity * unit price)';
