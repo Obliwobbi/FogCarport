@@ -5,7 +5,6 @@ import app.exceptions.DatabaseException;
 import app.services.CarportService;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 
