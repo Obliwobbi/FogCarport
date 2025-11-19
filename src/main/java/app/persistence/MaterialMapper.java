@@ -2,6 +2,7 @@ package app.persistence;
 
 import app.entities.Material;
 import app.exceptions.DatabaseException;
+import org.jetbrains.annotations.Nullable;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -26,30 +27,54 @@ public class MaterialMapper
              PreparedStatement ps = connection.prepareStatement(sql))
         {
             ps.setInt(1, materialId);
-            try (ResultSet rs = ps.executeQuery())
-            {
-                if (rs.next())
-                {
-                    return new Material(
-                            rs.getInt("id"),
-                            rs.getString("name"),
-                            rs.getString("description"),
-                            rs.getInt("unit"),
-                            rs.getString("unit_type"),
-                            rs.getDouble("material_length"),
-                            rs.getDouble("material_width"),
-                            rs.getDouble("material_height"),
-                            rs.getDouble("price")
-                    );
-                }
-            }
+            Material rs = getMaterial(ps);
+            if (rs != null) return rs;
         }
         catch (SQLException e)
         {
             throw new DatabaseException(e.getMessage());
         }
+        return null;
+    }
 
+    public Material getMaterialByName(String materialName) throws DatabaseException
+    {
+        String sql = "SELECT * FROM materials WHERE name = ?";
 
+        try (Connection connection = connectionPool.getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql))
+        {
+            ps.setString(1, materialName);
+            Material rs = getMaterial(ps);
+            if (rs != null) return rs;
+        }
+        catch (SQLException e)
+        {
+            throw new DatabaseException(e.getMessage());
+        }
+        return null;
+    }
+
+    @Nullable
+    private Material getMaterial(PreparedStatement ps) throws SQLException
+    {
+        try (ResultSet rs = ps.executeQuery())
+        {
+            if (rs.next())
+            {
+                return new Material(
+                        rs.getInt("id"),
+                        rs.getString("name"),
+                        rs.getString("description"),
+                        rs.getInt("unit"),
+                        rs.getString("unit_type"),
+                        rs.getDouble("material_length"),
+                        rs.getDouble("material_width"),
+                        rs.getDouble("material_height"),
+                        rs.getDouble("price")
+                );
+            }
+        }
         return null;
     }
 
