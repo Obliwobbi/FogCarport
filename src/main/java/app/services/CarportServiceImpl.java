@@ -8,6 +8,11 @@ public class CarportServiceImpl implements CarportService
 {
     private CarportMapper carportMapper;
 
+    public CarportServiceImpl(CarportMapper carportMapper)
+    {
+        this.carportMapper = carportMapper;
+    }
+
     @Override
     public Carport getCarportById(int id) throws DatabaseException
     {

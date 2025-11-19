@@ -33,6 +33,11 @@ public class Main
             config.staticFiles.add("/templates/");
         }).start(7070);
 
+        CarportMapper carportMapper = new CarportMapper(connectionPool);
+        CarportService carportService = new CarportServiceImpl(carportMapper);
+        CarportController carportController = new CarportController(carportService);
+
         // Routing
+        carportController.addRoutes(app);
     }
 }
