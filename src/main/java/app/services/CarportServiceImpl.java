@@ -38,9 +38,22 @@ public class CarportServiceImpl implements CarportService
     }
 
     @Override
-    public Double validateShedWidth(double carportWidth, double shedWidth)
+    public double validateShedMeasurement(double carportMeasurement, double shedMeasurement)
     {
-        return Math.min(carportWidth, shedWidth);
+        return Math.min(carportMeasurement, shedMeasurement);
+    }
+
+    @Override
+    public boolean validateShedTotalSize(double carportLength, double carportWidth, double shedLength, double shedWidth)
+    {
+        double remainingCarportLength = carportLength - shedLength;
+        double remainingCarportWidth = carportWidth - shedWidth;
+
+        if(remainingCarportLength < 240 || remainingCarportWidth < 240)
+        {
+            throw new IllegalArgumentException("Der er ikke plads til bilen, med nuværende skur mål, Minimum 240x240 til carport");
+        }
+        return true;
     }
 }
 
