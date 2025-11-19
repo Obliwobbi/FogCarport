@@ -71,28 +71,28 @@ CREATE TABLE carports
 CREATE TABLE drawings
 (
     drawing_id   SERIAL PRIMARY KEY,
-    drawing_data TEXT      NOT NULL,
-    accepted     BOOLEAN            DEFAULT FALSE,
-    );
+    drawing_data TEXT NOT NULL,
+    accepted     BOOLEAN DEFAULT FALSE
+);
 
 -- Bills of Materials Table
 CREATE TABLE bills_of_materials
 (
-    bom_id       SERIAL PRIMARY KEY,
-    total_price  DECIMAL(12, 2) NOT NULL
+    bom_id      SERIAL PRIMARY KEY,
+    total_price DECIMAL(12, 2) NOT NULL
 );
 
 -- Orders Table
 CREATE TABLE orders
 (
     order_id      SERIAL PRIMARY KEY,
-    order_date    TIMESTAMP WITH TIME ZONE   NOT NULL DEFAULT now(),
-    status        VARCHAR(50) NOT NULL DEFAULT 'AFVENTER ACCEPT',
+    order_date    TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
+    status        VARCHAR(50)              NOT NULL DEFAULT 'AFVENTER ACCEPT',
     delivery_date TIMESTAMP WITH TIME ZONE,
     drawing_id    INT,
-    carport_id    INT         NOT NULL,
+    carport_id    INT                      NOT NULL,
     bom_id        INT,
-    customer_id   INT         NOT NULL,
+    customer_id   INT                      NOT NULL,
     CONSTRAINT fk_drawing FOREIGN KEY (drawing_id) REFERENCES drawings (drawing_id) ON DELETE SET NULL,
     CONSTRAINT fk_carport FOREIGN KEY (carport_id) REFERENCES carports (carport_id) ON DELETE CASCADE,
     CONSTRAINT fk_bom FOREIGN KEY (bom_id) REFERENCES bills_of_materials (bom_id) ON DELETE SET NULL
