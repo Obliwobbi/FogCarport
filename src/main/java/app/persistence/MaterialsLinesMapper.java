@@ -62,9 +62,11 @@ public class MaterialsLinesMapper
     {
         List<MaterialsLine> lines = new ArrayList<>();
 
-        String sql = "SELECT ml.line_id, ml.quantity, ml.line_price, ml.material_id " +
-                "FROM materials_lines ml " +
-                "WHERE ml.bom_id = ?";
+        String sql = """
+                SELECT ml.line_id, ml.quantity, ml.line_price, ml.material_id 
+                FROM materials_lines ml 
+                WHERE ml.bom_id = ?
+                """;
 
         try (Connection connection = connectionPool.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql))
@@ -99,4 +101,61 @@ public class MaterialsLinesMapper
         }
         return lines;
     }
+
+    public boolean updateMaterialLineName(MaterialsLine line, String newMaterialName) throws DatabaseException
+    {
+        boolean result = false;
+        String sql = """
+                UPDATE materials_lines
+                SET material_name='?'
+                WHERE line_id=?;
+                """;
+
+        try (Connection connection = connectionPool.getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql))
+        {
+            ps.setString(1, newMaterialName);
+            ps.setInt(2, line.getLineId());
+
+            int rowsAffected = ps.executeUpdate();
+            if (rowsAffected > 0)
+            {
+                result = true;
+            } else
+            {
+                throw new DatabaseException("Ingen material line fundet med id: " + line.getLineId());
+            }
+        }
+        catch (SQLException e)
+        {
+            throw new DatabaseException("Fejl ved hentning af materials_lines: " + e.getMessage());
+        }
+        return result;
+    }
+
+    public boolean deleteMaterialLine(MaterialsLine line) throws DatabaseException
+    {
+        boolean result = false;
+        String sql = """
+                DELETE FROM materials_lines
+                WHERE line_id=?;
+                """;
+
+        try (Connection connection = connectionPool.getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql))
+        {
+            ps.setInt(1, line.getLineId());
+            int rowsAffected = ps.executeUpdate();
+            if (rowsAffected == 1)
+            {
+                result = true;
+            }
+        }
+        catch (SQLException e)
+        {
+            throw new DatabaseException(e.getMessage() + "Fejl ved sletning af ordrelinje med id: " + line.getLineId());
+        }
+        return result;
+    }
+
 }
