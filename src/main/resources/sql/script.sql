@@ -191,4 +191,3 @@ COMMENT
 ON COLUMN customers.house_number IS 'House number (can include letters like 12A)';
 COMMENT
 ON COLUMN materials_lines.line_price IS 'Total price for this line (quantity * unit price)';
-
