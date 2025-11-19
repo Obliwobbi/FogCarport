@@ -14,9 +14,9 @@
         <h1>Indtast mål til din carport</h1>
         <form th:action="@{/carport/create-carport}" method="post" class="carport-form">
 
-            <label for="carportwidth">Vælg bredde:</label>
+            <label for="carportWidth">Vælg bredde:</label>
 
-            <select name="carportWidth" id="carportWidth">
+            <select name="carportWidth" id="carportWidth" required="">
                 <option selected=""></option>
                 <option value="240">240 cm</option>
                 <option value="270">270 cm</option>
@@ -61,7 +61,6 @@
             <label for="carportheight">Vælg højde:</label>
 
             <select name="carportHeight" id="carportHeight" required="">
-                <option selected=""></option>
                 <option value="225">225 cm</option>
             </select>
 
