@@ -1,24 +1,19 @@
 package app.entities;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
 public class Order
 {
     private int orderId;
     private LocalDateTime orderDate;
     private String status; //AFVENTER ACCEPT, ACCEPTERET, BETALT
-    private LocalDateTime deliveryDate;
+    private LocalDate deliveryDate;
     private Drawing drawing;
     private Carport carport;
     private BillOfMaterials billOfMaterials;
