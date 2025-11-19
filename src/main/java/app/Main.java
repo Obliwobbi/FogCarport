@@ -30,9 +30,17 @@ public class Main
         {
             config.staticFiles.add("/public");
             config.fileRenderer(new JavalinThymeleaf(ThymeleafConfig.templateEngine()));
-            config.staticFiles.add("/templates");
+            config.staticFiles.add("/templates/");
         }).start(7070);
 
+        CarportMapper carportMapper = new CarportMapper(connectionPool);
+        CarportService carportService = new CarportServiceImpl(carportMapper);
+        CarportController carportController = new CarportController(carportService);
+
+        HomeController homeController = new HomeController();
+
         // Routing
+        homeController.addRoutes(app);
+        carportController.addRoutes(app);
     }
 }
