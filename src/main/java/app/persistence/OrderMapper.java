@@ -37,7 +37,6 @@ public class OrderMapper
     {
         String sql = "DELETE FROM orders WHERE order_id = ?";
 
-
         try (Connection connection = connectionPool.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql))
         {

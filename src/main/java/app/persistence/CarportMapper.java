@@ -168,7 +168,6 @@ public class CarportMapper
     {
         String sql = "DELETE FROM carports WHERE carport_id = ?";
 
-
         try (Connection connection = connectionPool.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql))
         {
