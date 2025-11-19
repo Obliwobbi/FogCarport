@@ -37,7 +37,10 @@ public class Main
         CarportService carportService = new CarportServiceImpl(carportMapper);
         CarportController carportController = new CarportController(carportService);
 
+        HomeController homeController = new HomeController();
+
         // Routing
+        homeController.addRoutes(app);
         carportController.addRoutes(app);
     }
 }
