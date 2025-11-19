@@ -16,9 +16,16 @@ public class OrderMapper
         this.connectionPool = connectionPool;
     }
 
-    public Order createOrder(LocalDateTime orderDate, String status, LocalDateTime deliveryDate, Drawing drawing, Carport carport, BillOfMaterials billOfMaterials) throws DatabaseException
+    public Order createOrder(LocalDateTime orderDate, String status, LocalDateTime deliveryDate, Drawing drawing, Carport carport, BillOfMaterials billOfMaterials, Customer customer) throws DatabaseException
     {
-        return null;
+        String sql = "INSERT INTO orders (order_date, status, delivery_date, drawing_id, carport_id, bom_id, customer_id)" +
+                "VALUES (?,?,?,?,?,?)";
+
+        try(Connection connection = connectionPool.getConnection();
+            PreparedStatement ps = connection.prepareStatement(sql))
+        {
+
+        }
     }
 
     public List<Order> getAllOrders() throws DatabaseException
