@@ -13,6 +13,8 @@ public interface CarportService
 
     void updateCarport(Carport carport) throws DatabaseException;
 
-    Double validateShedWidth(double carportWidth, double shedWidth);
+    double validateShedMeasurement(double carportWidth, double shedWidth);
+
+    boolean validateShedTotalSize(double carportLength, double carportWidth, double shedLength, double shedWidth);
 }
 
