@@ -16,5 +16,5 @@ public class Order
     private Drawing drawing;
     private Carport carport;
     private BillOfMaterials billOfMaterials;
-
+    private Customer customer;
 }
