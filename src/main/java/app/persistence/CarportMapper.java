@@ -108,8 +108,7 @@ public class CarportMapper
                 }
             }
         }
-        catch (
-                SQLException e)
+        catch (SQLException e)
         {
             if (e.getSQLState().equals("23505")) // error code is the standard for catching unique constraint errors in PostgresSQL
             {

@@ -21,11 +21,45 @@ public class OrderMapper
         String sql = "INSERT INTO orders (order_date, status, delivery_date, drawing_id, carport_id, bom_id, customer_id)" +
                 "VALUES (?,?,?,?,?,?)";
 
-        try(Connection connection = connectionPool.getConnection();
-            PreparedStatement ps = connection.prepareStatement(sql))
+        try (Connection connection = connectionPool.getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS))
         {
+            ps.setTimestamp(1, Timestamp.valueOf(orderDate));
+            ps.setString(2, status);
+            ps.setTimestamp(3, Timestamp.valueOf(deliveryDate));
+            ps.setInt(4, drawing.getDrawingId());
+            ps.setInt(5, carport.getCarportId());
+            ps.setInt(6, billOfMaterials.getBomId());
+            ps.setInt(7, customer.getCustomerId());
+
+            int rowsAffected = ps.executeUpdate();
+
+            if (rowsAffected != 1)
+            {
+                throw new DatabaseException("Uventet fejl");
+            }
+
+            ResultSet rs = ps.getGeneratedKeys();
+
+            if (rs.next())
+            {
+                int orderId = rs.getInt(1);
+                return new Order(orderId, orderDate, status, deliveryDate, drawing, carport, billOfMaterials, customer);
+            }
 
         }
+        catch (SQLException e)
+        {
+            if (e.getSQLState().equals("23505")) // error code is the standard for catching unique constraint errors in PostgresSQL
+            {
+                throw new DatabaseException("ordre findes allerede");
+            }
+            else
+            {
+                throw new DatabaseException("Databasefejl ved oprettelse af ordre " + e.getMessage());
+            }
+        }
+        return null;
     }
 
     public List<Order> getAllOrders() throws DatabaseException
