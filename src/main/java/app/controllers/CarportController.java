@@ -37,24 +37,29 @@ public class CarportController
             {
                 shedWidth = Double.parseDouble(ctx.formParam("shedWidth"));
                 shedLength = Double.parseDouble(ctx.formParam("shedLength"));
-                shedWidth = carportservice.validateShedWidth(carportWidth, shedWidth);
+                shedWidth = carportservice.validateShedMeasurement(carportWidth, shedWidth);
+                shedLength = carportservice.validateShedMeasurement(carportLength,shedLength);
+
+                carportservice.validateShedTotalSize(carportLength,carportWidth,shedWidth,shedLength);
             }
 
             carportservice.createCarport(carportWidth, carportLength, carportHeight, withShed, shedWidth, shedLength, customerWishes);
 
             //TODO WILL NEED TO REDIRECT TO drawing.html, FOR THE MOMENT IT JUST TAKES TO contact.html
-            ctx.redirect("/contact");
+            ctx.sessionAttribute("carportErrorLabel", "");
+            ctx.render("/contact");
         }
         catch (NullPointerException | NumberFormatException e)
         {
             ctx.sessionAttribute("carportErrorLabel", "Du skal udfylde alle nødvendige felter");
             ctx.redirect("/carport");
         }
-        catch (DatabaseException e)
+        catch (DatabaseException | IllegalArgumentException e)
         {
             ctx.sessionAttribute("carportErrorLabel", e.getMessage());
             ctx.redirect("/carport");
         }
+
     }
 }
 
