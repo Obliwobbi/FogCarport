@@ -2,8 +2,6 @@ package app.persistence;
 
 import app.entities.*;
 import app.exceptions.DatabaseException;
-import javassist.bytecode.analysis.Type;
-
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -85,7 +83,18 @@ public class OrderMapper
             {
                 while (rs.next())
                 {
+                    Integer bomId = (Integer) rs.getObject(7); //return null, if column is null
 
+                    Order order = new Order(rs.getInt(1),
+                            rs.getTimestamp(2).toLocalDateTime(),
+                            rs.getString(3),
+                            rs.getTimestamp(4).toLocalDateTime(),
+                            rs.getInt(5),
+                            rs.getInt(6),
+                            bomId,
+                            rs.getInt(8));
+
+                    orders.add(order);
                 }
             }
         }
