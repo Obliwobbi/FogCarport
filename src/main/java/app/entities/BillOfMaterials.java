@@ -5,7 +5,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,17 +12,16 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @ToString
-public class BillOfMaterials {
+public class BillOfMaterials
+{
     private int bomId;
-    private LocalDateTime createdDate;
     private double totalPrice;
     private List<MaterialsLine> materialLines = new ArrayList<>();
 
-    public BillOfMaterials(int bomId, LocalDateTime createdDate, double totalPrice) {
+    public BillOfMaterials(int bomId, double totalPrice)
+    {
         this.bomId = bomId;
-        this.createdDate = createdDate;
         this.totalPrice = totalPrice;
         this.materialLines = new ArrayList<>();
     }
 }
-

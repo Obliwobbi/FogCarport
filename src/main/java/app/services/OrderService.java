@@ -1,0 +1,31 @@
+package app.services;
+
+import app.dto.OrderWithDetailsDTO;
+import app.entities.*;
+import app.exceptions.DatabaseException;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+public interface OrderService
+{
+    OrderWithDetailsDTO getOrderwithDetails(int orderId) throws DatabaseException;
+
+    List<Order> getAllOrders() throws DatabaseException;
+
+    Order createOrder(LocalDateTime orderDate, String status, LocalDateTime deliveryDate, Integer drawingId, int carportId, Integer billOfMaterialsId, int customerId) throws DatabaseException;
+
+    void deleteOrder(int orderId) throws DatabaseException;
+
+    void updateOrderStatus(int orderId, String status) throws DatabaseException;
+
+    void updateOrderDeliveryDate(int orderId, LocalDateTime deliveryDate) throws DatabaseException;
+
+    void updateOrderBillOfMaterials(int orderId, int billOfMaterialsId) throws DatabaseException;
+
+    void updateCarport(Carport carport) throws DatabaseException;
+
+    List<Order> getOrdersByStatus(String status) throws DatabaseException;
+
+}
+

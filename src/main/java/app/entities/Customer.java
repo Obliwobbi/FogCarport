@@ -1,21 +1,19 @@
 package app.entities;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
-@Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
+@Data
 public class Customer {
     private int customerId;
-    private String name;
+    private String firstName;
+    private String lastName;
     private String email;
     private String phone;
-    private String address;
+    private String street;
+    private String houseNumber;
+    private int zipcode;
+    private String city;
 }
 

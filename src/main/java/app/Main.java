@@ -16,8 +16,8 @@ public class Main
     private static final Logger LOGGER = Logger.getLogger(Main.class.getName());
 
     private static final String USER = "postgres";
-    private static final String PASSWORD = "postgres";
-    private static final String URL = "jdbc:postgresql://localhost:5432/%s?currentSchema=public";
+    private static final String PASSWORD = "ModigsteFryser47";
+    private static final String URL = "jdbc:postgresql://164.92.247.68:5432/%s?currentSchema=public";
     private static final String DB = "fogcarport";
 
     private static final ConnectionPool connectionPool = ConnectionPool.getInstance(USER, PASSWORD, URL, DB);
@@ -30,9 +30,27 @@ public class Main
         {
             config.staticFiles.add("/public");
             config.fileRenderer(new JavalinThymeleaf(ThymeleafConfig.templateEngine()));
-            config.staticFiles.add("/templates");
+            config.staticFiles.add("/templates/");
         }).start(7070);
 
+
+        CarportMapper carportMapper = new CarportMapper(connectionPool);
+        OrderMapper orderMapper = new OrderMapper(connectionPool);
+        BillOfMaterialsMapper bOMMapper = new BillOfMaterialsMapper(connectionPool);
+        DrawingMapper drawingMapper = new DrawingMapper(connectionPool);
+        CustomerMapper customerMapper = new CustomerMapper(connectionPool);
+
+        HomeController homeController = new HomeController();
+
+        CarportService carportService = new CarportServiceImpl(carportMapper);
+        CarportController carportController = new CarportController(carportService);
+
+        OrderService orderService = new OrderServiceImpl(orderMapper,carportMapper,bOMMapper,drawingMapper,customerMapper);
+        OrderController orderController = new OrderController(orderService);
+
         // Routing
+        homeController.addRoutes(app);
+        carportController.addRoutes(app);
+        orderController.addRoutes(app);
     }
 }
