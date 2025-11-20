@@ -1,12 +1,11 @@
 package app.persistence;
 
+import app.exceptions.DatabaseException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -77,7 +76,6 @@ class MaterialsLinesMapperTest
                                 )
                             """);
 
-
                     // Create Materials Lines Table
                     stmt.execute("""
                                 CREATE TABLE test.materials_lines (
@@ -114,22 +112,22 @@ class MaterialsLinesMapperTest
     }
 
     @Test
-    void createMaterialLine()
+    void createMaterialLine() throws DatabaseException
     {
     }
 
     @Test
-    void getMaterialLinesByBomId()
+    void getMaterialLinesByBomId() throws DatabaseException
     {
     }
 
     @Test
-    void updateMaterialLineName()
+    void updateMaterialLineName() throws DatabaseException
     {
     }
 
     @Test
-    void deleteMaterialLine()
+    void deleteMaterialLine() throws DatabaseException
     {
     }
 }
