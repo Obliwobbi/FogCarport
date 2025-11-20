@@ -1,5 +1,6 @@
 package app.persistence;
 
+import app.entities.BillOfMaterials;
 import app.entities.Material;
 import app.entities.MaterialsLine;
 import app.exceptions.DatabaseException;
@@ -8,6 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.sql.*;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -192,7 +194,13 @@ class MaterialsLinesMapperTest
     @Test
     void getMaterialLinesByBomId() throws DatabaseException
     {
+        BillOfMaterialsMapper billOfMaterialsMapper = new BillOfMaterialsMapper(connectionPool);
+        BillOfMaterials billOfMaterials = billOfMaterialsMapper.getBillOfMaterialsById(2);
 
+        assertNotNull(billOfMaterials);
+
+        List<MaterialsLine> materialsLineList = materialsLinesMapper.getMaterialLinesByBomId(billOfMaterials.getBomId());
+        assertNotNull(materialsLineList);
     }
 
     @Test
