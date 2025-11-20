@@ -1,5 +1,7 @@
 package app.persistence;
 
+import app.entities.Material;
+import app.exceptions.DatabaseException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -25,7 +27,7 @@ class MaterialMapperTest
     @BeforeAll
     public static void setUpClass()
     {
-        connectionPool = ConnectionPool.getInstance(USER, PASSWORD, URL, "fogcarport");
+        connectionPool = ConnectionPool.getInstance(USER, PASSWORD, URL, DB);
         materialMapper = new MaterialMapper(connectionPool);
 
         try (Connection testConnection = connectionPool.getConnection())
@@ -37,18 +39,18 @@ class MaterialMapperTest
 
                 // Create Materials Table
                 stmt.execute("""
-                                CREATE TABLE test.materials (
-                                    id SERIAL PRIMARY KEY,
-                                    name VARCHAR(100) NOT NULL,
-                                    description VARCHAR(255),
-                                    unit INT NOT NULL,
-                                    unit_type VARCHAR(50) NOT NULL,
-                                    material_length DECIMAL(10, 2),
-                                    material_width DECIMAL(10, 2),
-                                    material_height DECIMAL(10, 2),
-                                    price DECIMAL(10, 2) NOT NULL
-                                )
-                            """);
+                            CREATE TABLE test.materials (
+                                id SERIAL PRIMARY KEY,
+                                name VARCHAR(100) NOT NULL,
+                                description VARCHAR(255),
+                                unit INT NOT NULL,
+                                unit_type VARCHAR(50) NOT NULL,
+                                material_length DECIMAL(10, 2),
+                                material_width DECIMAL(10, 2),
+                                material_height DECIMAL(10, 2),
+                                price DECIMAL(10, 2) NOT NULL
+                            )
+                        """);
 
             }
             catch (SQLException e)
@@ -91,21 +93,44 @@ class MaterialMapperTest
 
                 stmt.execute("SELECT setval('test.materials_id_seq', 3, true)");
             }
-        } catch (SQLException e)
+        }
+        catch (SQLException e)
         {
             fail("Failed to insert test data: " + e.getMessage());
         }
     }
 
-    @DisplayName ("Find material in DB by ID")
+    @DisplayName("Find material in DB by ID")
     @Test
-    void getMaterialById()
+    void getMaterialById() throws DatabaseException
     {
+        Material material = materialMapper.getMaterialById(1);
+
+        assertNotNull(material);
+        assertEquals("Brædt 25x200", material.getName());
+        assertEquals("25x200 mm. trykimp. Brædt", material.getDescription());
+        assertEquals(1, material.getUnit());
+        assertEquals("stk", material.getUnitType());
+        assertEquals(540, material.getMaterialLength());
+        assertEquals(20, material.getMaterialWidth());
+        assertEquals(2.50, material.getMaterialHeight());
+        assertEquals(300, material.getPrice());
     }
 
     @DisplayName("Find material in DB by NAME")
     @Test
-    void getMaterialByName()
+    void getMaterialByName() throws DatabaseException
     {
+        Material material = materialMapper.getMaterialByName("Bundskruer");
+
+        assertNotNull(material);
+        assertEquals(3, material.getId());
+        assertEquals("Plastmo bundskruer 200 stk.", material.getDescription());
+        assertEquals(200, material.getUnit());
+        assertEquals("pakke", material.getUnitType());
+        assertEquals(0, material.getMaterialLength());
+        assertEquals(0, material.getMaterialWidth());
+        assertEquals(0, material.getMaterialHeight());
+        assertEquals(150, material.getPrice());
     }
 }
