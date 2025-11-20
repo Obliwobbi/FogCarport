@@ -1,5 +1,7 @@
 package app.persistence;
 
+import app.entities.Material;
+import app.entities.MaterialsLine;
 import app.exceptions.DatabaseException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -174,6 +176,17 @@ class MaterialsLinesMapperTest
     @Test
     void createMaterialLine() throws DatabaseException
     {
+        // Arrange
+        int bomId = 1;
+        Material material = new Material(2, "Skruer 4.5x60", "4,5 x 60 mm. skruer 200 stk.", 200, "pakke", 0, 0, 0, 120.00);
+        MaterialsLine line = new MaterialsLine(0, 10, 1200.00, material);
+
+        // Act
+        materialsLinesMapper.createMaterialLine(bomId, line);
+
+        // Assert
+        assertTrue(line.getLineId() > 0, "LineId skal være sat efter oprettelse");
+        assertEquals(4, line.getLineId(), "Næste line_id skal være 4");
     }
 
     @Test
