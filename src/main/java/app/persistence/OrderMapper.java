@@ -186,14 +186,14 @@ public class OrderMapper
         return false;
     }
 
-    public boolean updateOrderBillOfMaterials(int orderId, BillOfMaterials billOfMaterials) throws DatabaseException
+    public boolean updateOrderBillOfMaterials(int orderId, int billOfMaterialsId) throws DatabaseException
     {
         String sql = "UPDATE orders SET bom_id = ? WHERE order_id = ?";
 
         try (Connection connection = connectionPool.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql))
         {
-            ps.setInt(1, billOfMaterials.getBomId());
+            ps.setInt(1, billOfMaterialsId);
             ps.setInt(2, orderId);
 
             int rowsAffected = ps.executeUpdate();
