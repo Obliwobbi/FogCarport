@@ -133,4 +133,20 @@ class MaterialMapperTest
         assertEquals(0, material.getMaterialHeight());
         assertEquals(150, material.getPrice());
     }
+
+    @DisplayName("Fail: Find material by ID")
+    @Test
+    void getMaterialByIdFail() throws DatabaseException
+    {
+        Material material = materialMapper.getMaterialById(4);
+        assertNull(material);
+    }
+
+    @DisplayName("Fail: Find material by Name")
+    @Test
+    void getMaterialByNameFail() throws DatabaseException
+    {
+        Material material = materialMapper.getMaterialByName("Skurer");
+        assertNull(material);
+    }
 }
