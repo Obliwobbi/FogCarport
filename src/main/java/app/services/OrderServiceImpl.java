@@ -6,7 +6,9 @@ import app.exceptions.DatabaseException;
 import app.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class OrderServiceImpl implements OrderService
 {
@@ -85,5 +87,15 @@ public class OrderServiceImpl implements OrderService
     {
         carportMapper.updateCarport(carport);
     }
+
+    @Override
+    public List<Order> getOrdersByStatus(String status) throws DatabaseException
+    {
+        return orderMapper.getAllOrders().stream()
+                .filter(order -> order.getStatus().equals(status))
+                .sorted(Comparator.comparing(Order::getOrderDate))
+                .collect(Collectors.toList());
+    }
+
 }
 
