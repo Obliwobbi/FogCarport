@@ -2,9 +2,11 @@ package app.persistence;
 
 import app.entities.*;
 import app.exceptions.DatabaseException;
+import javassist.bytecode.analysis.Type;
 
 import java.sql.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 public class OrderMapper
@@ -16,10 +18,10 @@ public class OrderMapper
         this.connectionPool = connectionPool;
     }
 
-    public Order createOrder(LocalDateTime orderDate, String status, LocalDateTime deliveryDate, Drawing drawing, Carport carport, BillOfMaterials billOfMaterials, Customer customer) throws DatabaseException
+    public Order createOrder(LocalDateTime orderDate, String status, LocalDateTime deliveryDate, Integer drawingId, int carportId, Integer billOfMaterialsId, int customerId) throws DatabaseException
     {
         String sql = "INSERT INTO orders (order_date, status, delivery_date, drawing_id, carport_id, bom_id, customer_id)" +
-                "VALUES (?,?,?,?,?,?)";
+                "VALUES (?,?,?,?,?,?,?)";
 
         try (Connection connection = connectionPool.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS))
@@ -27,10 +29,19 @@ public class OrderMapper
             ps.setTimestamp(1, Timestamp.valueOf(orderDate));
             ps.setString(2, status);
             ps.setTimestamp(3, Timestamp.valueOf(deliveryDate));
-            ps.setInt(4, drawing.getDrawingId());
-            ps.setInt(5, carport.getCarportId());
-            ps.setInt(6, billOfMaterials.getBomId());
-            ps.setInt(7, customer.getCustomerId());
+            ps.setInt(4, drawingId);
+            ps.setInt(5, carportId);
+
+            if (billOfMaterialsId != null)
+            {
+                ps.setInt(6, billOfMaterialsId);
+            }
+            else
+            {
+                ps.setNull(6, Types.INTEGER);
+            }
+
+            ps.setInt(7, customerId);
 
             int rowsAffected = ps.executeUpdate();
 
@@ -44,9 +55,8 @@ public class OrderMapper
             if (rs.next())
             {
                 int orderId = rs.getInt(1);
-                return new Order(orderId, orderDate, status, deliveryDate, drawing, carport, billOfMaterials, customer);
+                return new Order(orderId, orderDate, status, deliveryDate, drawingId, carportId, billOfMaterialsId, customerId);
             }
-
         }
         catch (SQLException e)
         {
@@ -64,7 +74,26 @@ public class OrderMapper
 
     public List<Order> getAllOrders() throws DatabaseException
     {
-        return null;
+        String sql = "SELECT * FROM orders";
+
+        List<Order> orders = new ArrayList<>();
+
+        try (Connection connection = connectionPool.getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql))
+        {
+            try (ResultSet rs = ps.executeQuery())
+            {
+                while (rs.next())
+                {
+
+                }
+            }
+        }
+        catch (SQLException e)
+        {
+            throw new DatabaseException("Kunne ikke hente ordrer fra databasen " + e.getMessage());
+        }
+        return orders;
     }
 
     public boolean updateOrderStatus(int orderId, String status) throws DatabaseException
