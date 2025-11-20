@@ -2,6 +2,7 @@ package app.persistence;
 
 import app.entities.*;
 import app.exceptions.DatabaseException;
+
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -68,6 +69,38 @@ public class OrderMapper
             }
         }
         return null;
+    }
+
+    public Order getOrderById(int orderId) throws DatabaseException
+    {
+        String sql = "SELECT * FROM orders WHERE order_id= ?";
+
+        try (Connection connection = connectionPool.getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql))
+        {
+            ps.setInt(1, orderId);
+            try (ResultSet rs = ps.executeQuery())
+            {
+                if (rs.next())
+                {
+                    Integer bomId = (Integer) rs.getObject(7); //return null, if column is null
+
+                    return new Order(orderId,
+                            rs.getTimestamp("order_date").toLocalDateTime(),
+                            rs.getString("status"),
+                            rs.getTimestamp("delivery_date").toLocalDateTime(),
+                            rs.getInt("drawing_id"),
+                            rs.getInt("carport_id"),
+                            bomId,
+                            rs.getInt("customer_id"));
+                }
+            }
+            throw new DatabaseException("Der blev ikke fundet en ordre med id: " + orderId);
+        }
+        catch (SQLException e)
+        {
+            throw new DatabaseException("Fejl ved hentning af data for order" + e.getMessage());
+        }
     }
 
     public List<Order> getAllOrders() throws DatabaseException
