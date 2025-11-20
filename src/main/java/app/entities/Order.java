@@ -11,7 +11,7 @@ public class Order
 {
     private int orderId;
     private LocalDateTime orderDate;
-    private String status; //NY ORDRE, AFVENTER ACCEPT, AFSENDT, ACCEPTERET, BETALT
+    private String status; //AFVENTER ACCEPT, ACCEPTERET, BETALT
     private LocalDateTime deliveryDate;
     private int drawingId;
     private int carportId;

@@ -102,20 +102,21 @@ public class MaterialsLinesMapper
         return lines;
     }
 
-    public boolean updateMaterialLineName(MaterialsLine line, String newMaterialName) throws DatabaseException
+    public boolean updateMaterialLineName(int bomId, MaterialsLine line, String newMaterialName) throws DatabaseException
     {
         boolean result = false;
         String sql = """
                 UPDATE materials_lines
                 SET material_name='?'
-                WHERE line_id=?;
+                WHERE bom_id=? AND line_id=?;
                 """;
 
         try (Connection connection = connectionPool.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql))
         {
             ps.setString(1, newMaterialName);
-            ps.setInt(2, line.getLineId());
+            ps.setInt(2, bomId);
+            ps.setInt(3, line.getLineId());
 
             int rowsAffected = ps.executeUpdate();
             if (rowsAffected > 0)
