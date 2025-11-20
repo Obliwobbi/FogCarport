@@ -17,7 +17,7 @@ class MaterialsLinesMapperTest
     private static final String DB = "fogcarport";
 
     private static ConnectionPool connectionPool;
-    private static MaterialsLinesMapper  materialsLinesMapper;
+    private static MaterialsLinesMapper materialsLinesMapper;
 
     @BeforeAll
     public static void setUpClass()
@@ -52,20 +52,19 @@ class MaterialsLinesMapperTest
                                 )
                             """);
 
-                    // Create Materials Table
+                    // Create Materials Table FIRST
                     stmt.execute("""
-                                CREATE TABLE materials_lines (
-                                    line_id SERIAL PRIMARY KEY,
-                                    bom_id INT NOT NULL,
-                                    material_id INT NULL,
-                                    material_name VARCHAR(100) NOT NULL,
-                                    unit_type VARCHAR(50) NOT NULL,
-                                    quantity INT NOT NULL,
-                                    unit_price DECIMAL(10, 2) NOT NULL,
-                                    line_price DECIMAL(10, 2) NOT NULL,
-                                    CONSTRAINT fk_bom FOREIGN KEY (bom_id) REFERENCES bills_of_materials (bom_id) ON DELETE CASCADE,
-                                    CONSTRAINT fk_material FOREIGN KEY (material_id) REFERENCES materials (id) ON DELETE SET NULL
-                                );
+                            CREATE TABLE test.materials (
+                                id SERIAL PRIMARY KEY,
+                                name VARCHAR(100) NOT NULL,
+                                description VARCHAR(255),
+                                unit INT NOT NULL,
+                                unit_type VARCHAR(50) NOT NULL,
+                                material_length DECIMAL(10, 2),
+                                material_width DECIMAL(10, 2),
+                                material_height DECIMAL(10, 2),
+                                price DECIMAL(10, 2) NOT NULL
+                            )
                             """);
 
                     // Create Bills of Materials Table
@@ -109,6 +108,67 @@ class MaterialsLinesMapperTest
     @BeforeEach
     void setUp()
     {
+        try (Connection connection = connectionPool.getConnection())
+        {
+            try (Statement stmt = connection.createStatement())
+            {
+
+                stmt.execute("DELETE FROM test.materials_lines");
+                stmt.execute("DELETE FROM test.bills_of_materials");
+                stmt.execute("DELETE FROM test.materials");
+
+                stmt.execute("""
+                        INSERT INTO materials (id, name, description, unit, unit_type, material_length, material_width, material_height, price)
+                        VALUES (1, 'Brædt 25x200', '25x200 mm. trykimp. Brædt', 1, 'stk', 540.00, 20.00, 2.50, 300.00)
+                        """);
+
+                stmt.execute("""
+                        INSERT INTO materials (id, name, description, unit, unit_type, material_length, material_width, material_height, price)
+                        VALUES (2, 'Skruer 4.5x60', '4,5 x 60 mm. skruer 200 stk.', 200, 'pakke', NULL, NULL, NULL, 120.00)
+                        """);
+
+                stmt.execute("""
+                        INSERT INTO materials (id, name, description, unit, unit_type, material_length, material_width, material_height, price)
+                        VALUES (3, 'Bundskruer', 'Plastmo bundskruer 200 stk.', 200, 'pakke', NULL, NULL, NULL, 150.00)
+                        """);
+
+                // Insert test bills of materials
+                stmt.execute("""
+                        INSERT INTO test.bills_of_materials (bom_id, total_price)
+                        VALUES (1, 1200.00)
+                        """);
+
+                stmt.execute("""
+                        INSERT INTO test.bills_of_materials (bom_id, total_price)
+                        VALUES (2, 450.00)
+                        """);
+
+                // Insert test materials lines
+                stmt.execute("""
+                        INSERT INTO test.materials_lines (line_id, bom_id, material_id, material_name, unit_type, quantity, unit_price, line_price)
+                        VALUES (1, 1, 1, 'Brædt 25x200', 'stk', 4, 300.00, 1200.00)
+                        """);
+
+                stmt.execute("""
+                        INSERT INTO test.materials_lines (line_id, bom_id, material_id, material_name, unit_type, quantity, unit_price, line_price)
+                        VALUES (2, 2, 2, 'Skruer 4.5x60', 'pakke', 2, 120.00, 240.00)
+                        """);
+
+                stmt.execute("""
+                        INSERT INTO test.materials_lines (line_id, bom_id, material_id, material_name, unit_type, quantity, unit_price, line_price)
+                        VALUES (3, 2, 3, 'Bundskruer', 'pakke', 1, 150.00, 150.00)
+                        """);
+
+                // Reset sequences
+                stmt.execute("SELECT setval('test.materials_id_seq', 3, true)");
+                stmt.execute("SELECT setval('test.bills_of_materials_bom_id_seq', 2, true)");
+                stmt.execute("SELECT setval('test.materials_lines_line_id_seq', 3, true)");
+            }
+        }
+        catch (SQLException e)
+        {
+            fail("Failed to insert test data: " + e.getMessage());
+        }
     }
 
     @Test
