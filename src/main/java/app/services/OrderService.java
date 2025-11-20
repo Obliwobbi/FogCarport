@@ -24,7 +24,5 @@ public interface OrderService
     void updateOrderBillOfMaterials(int orderId, int billOfMaterialsId) throws DatabaseException;
 
     void updateCarport(Carport carport) throws DatabaseException;
-
-    List<Order> getOrdersByStatus(String status) throws DatabaseException;
 }
 
