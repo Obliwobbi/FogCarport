@@ -28,11 +28,14 @@ public class MaterialMapper
         {
             ps.setInt(1, materialId);
             Material rs = getMaterial(ps);
-            if (rs != null) return rs;
+            if (rs != null)
+            {
+                return rs;
+            }
         }
         catch (SQLException e)
         {
-            throw new DatabaseException(e.getMessage());
+            throw new DatabaseException("Fejl ved hentning af material på id:" + e.getMessage());
         }
         return null;
     }
@@ -46,11 +49,14 @@ public class MaterialMapper
         {
             ps.setString(1, materialName);
             Material rs = getMaterial(ps);
-            if (rs != null) return rs;
+            if (rs != null)
+            {
+                return rs;
+            }
         }
         catch (SQLException e)
         {
-            throw new DatabaseException(e.getMessage());
+            throw new DatabaseException("Fejl ved hentning af material på navn: " + e.getMessage());
         }
         return null;
     }
