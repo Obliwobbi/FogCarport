@@ -1,5 +1,8 @@
 package app.persistence;
 
+import app.entities.Order;
+import app.exceptions.DatabaseException;
+import com.sun.source.tree.AssertTree;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -7,6 +10,9 @@ import org.junit.jupiter.api.Test;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -18,7 +24,7 @@ class OrderMapperTest
     private static final String DB = "fogcarport";
 
     private static ConnectionPool connectionPool;
-    private static CarportMapper carportMapper;
+    private static OrderMapper orderMapper;
 
 
     @BeforeAll
@@ -27,7 +33,7 @@ class OrderMapperTest
         try
         {
             connectionPool = ConnectionPool.getInstance(USER, PASSWORD, URL, "fogcarport");
-            carportMapper = new CarportMapper(connectionPool);
+            orderMapper = new OrderMapper(connectionPool);
 
             try (Connection testConnection = connectionPool.getConnection())
             {
@@ -207,32 +213,50 @@ class OrderMapperTest
     }
 
     @Test
-    void createOrder()
+    void createOrder() throws DatabaseException
     {
+        LocalDateTime delivery = LocalDateTime.of(2026, 2, 10, 0, 0);
+        LocalDateTime orderDate = LocalDateTime.of(2025, 2, 3, 0, 0);
+        Order order = orderMapper.createOrder(orderDate, "Status", delivery, 1, 1, null, 1);
+
+        assertEquals(order, orderMapper.getOrderById(4));
     }
 
     @Test
-    void getAllOrders()
+    void getAllOrders() throws DatabaseException
     {
+        List<Order> orders = orderMapper.getAllOrders();
+
+        assertEquals(orderMapper.getOrderById(1), orders.get(0));
+        assertEquals(orderMapper.getOrderById(2), orders.get(1));
+        assertEquals(orderMapper.getOrderById(3), orders.get(2));
     }
 
     @Test
-    void updateOrderStatus()
+    void updateOrderStatus() throws DatabaseException
     {
+        assertTrue(orderMapper.updateOrderStatus(1, "GODKENDT"));
+
     }
 
     @Test
-    void updateOrderDeliveryDate()
+    void updateOrderDeliveryDate() throws DatabaseException
     {
+        LocalDateTime delivery = LocalDateTime.of(2026, 2, 10, 0, 0);
+        assertTrue(orderMapper.updateOrderDeliveryDate(3, delivery));
     }
 
     @Test
-    void updateOrderBillOfMaterials()
+    void updateOrderBillOfMaterials() throws DatabaseException
     {
+        assertTrue(orderMapper.updateOrderBillOfMaterials(1,1));
     }
 
     @Test
-    void deleteOrder()
+    void deleteOrder() throws DatabaseException
     {
+        assertTrue(orderMapper.deleteOrder(3));
+        assertThrows(DatabaseException.class,
+                () -> orderMapper.getOrderById(3));
     }
 }
