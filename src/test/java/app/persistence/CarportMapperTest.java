@@ -46,47 +46,6 @@ class CarportMapperTest
                     stmt.execute("DROP TABLE IF EXISTS test.customers CASCADE");
                     stmt.execute("DROP TABLE IF EXISTS test.employees CASCADE");
 
-                    // Create Employees Table
-                    stmt.execute("""
-                                CREATE TABLE test.employees (
-                                    employee_id SERIAL PRIMARY KEY,
-                                    name VARCHAR(100) NOT NULL,
-                                    email VARCHAR(100) UNIQUE NOT NULL,
-                                    phone VARCHAR(20),
-                                    is_admin BOOLEAN DEFAULT FALSE
-                                )
-                            """);
-
-                    // Create Customers Table
-                    stmt.execute("""
-                                CREATE TABLE test.customers (
-                                    customer_id SERIAL PRIMARY KEY,
-                                    firstname VARCHAR(100) NOT NULL,
-                                    lastname VARCHAR(100) NOT NULL,
-                                    email VARCHAR(100) UNIQUE NOT NULL,
-                                    phone VARCHAR(20),
-                                    street VARCHAR(100),
-                                    house_number VARCHAR(10),
-                                    zipcode INT,
-                                    city VARCHAR(100)
-                                )
-                            """);
-
-                    // Create Materials Table
-                    stmt.execute("""
-                                CREATE TABLE test.materials (
-                                    id SERIAL PRIMARY KEY,
-                                    name VARCHAR(100) NOT NULL,
-                                    description VARCHAR(255),
-                                    unit INT NOT NULL,
-                                    unit_type VARCHAR(50) NOT NULL,
-                                    material_length DECIMAL(10, 2),
-                                    material_width DECIMAL(10, 2),
-                                    material_height DECIMAL(10, 2),
-                                    price DECIMAL(10, 2) NOT NULL
-                                )
-                            """);
-
                     // Create Carports Table
                     stmt.execute("""
                                 CREATE TABLE test.carports (
@@ -98,57 +57,6 @@ class CarportMapperTest
                                     shed_width DECIMAL(10, 2),
                                     shed_length DECIMAL(10, 2),
                                     customer_wishes VARCHAR(250)
-                                )
-                            """);
-
-                    // Create Drawings Table
-                    stmt.execute("""
-                                CREATE TABLE test.drawings (
-                                    drawing_id SERIAL PRIMARY KEY,
-                                    drawing_data TEXT NOT NULL,
-                                    accepted BOOLEAN DEFAULT FALSE,
-                                    created_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-                                )
-                            """);
-
-                    // Create Bills of Materials Table
-                    stmt.execute("""
-                                CREATE TABLE test.bills_of_materials (
-                                    bom_id SERIAL PRIMARY KEY,
-                                    created_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                                    total_price DECIMAL(12, 2) NOT NULL
-                                )
-                            """);
-
-                    // Create Orders Table
-                    stmt.execute("""
-                                CREATE TABLE test.orders (
-                                    order_id SERIAL PRIMARY KEY,
-                                    order_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                                    status VARCHAR(50) NOT NULL DEFAULT 'AFVENTER ACCEPT',
-                                    delivery_date TIMESTAMP,
-                                    drawing_id INT,
-                                    carport_id INT NOT NULL,
-                                    bom_id INT,
-                                    CONSTRAINT fk_drawing FOREIGN KEY (drawing_id) REFERENCES test.drawings(drawing_id) ON DELETE SET NULL,
-                                    CONSTRAINT fk_carport FOREIGN KEY (carport_id) REFERENCES test.carports(carport_id) ON DELETE CASCADE,
-                                    CONSTRAINT fk_bom FOREIGN KEY (bom_id) REFERENCES test.bills_of_materials(bom_id) ON DELETE SET NULL
-                                )
-                            """);
-
-                    // Create Materials Lines Table
-                    stmt.execute("""
-                                CREATE TABLE test.materials_lines (
-                                    line_id SERIAL PRIMARY KEY,
-                                    bom_id INT NOT NULL,
-                                    material_id INT,
-                                    material_name VARCHAR(100) NOT NULL,
-                                    unit_type VARCHAR(50) NOT NULL,
-                                    quantity INT NOT NULL,
-                                    unit_price DECIMAL(10, 2) NOT NULL,
-                                    line_price DECIMAL(10, 2) NOT NULL,
-                                    CONSTRAINT fk_bom FOREIGN KEY (bom_id) REFERENCES test.bills_of_materials(bom_id) ON DELETE CASCADE,
-                                    CONSTRAINT fk_material FOREIGN KEY (material_id) REFERENCES test.materials(id) ON DELETE SET NULL
                                 )
                             """);
                 }

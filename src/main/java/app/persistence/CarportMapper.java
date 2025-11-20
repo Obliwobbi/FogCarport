@@ -108,8 +108,7 @@ public class CarportMapper
                 }
             }
         }
-        catch (
-                SQLException e)
+        catch (SQLException e)
         {
             if (e.getSQLState().equals("23505")) // error code is the standard for catching unique constraint errors in PostgresSQL
             {
@@ -167,7 +166,6 @@ public class CarportMapper
     public boolean deleteCarport(int carportId) throws DatabaseException
     {
         String sql = "DELETE FROM carports WHERE carport_id = ?";
-
 
         try (Connection connection = connectionPool.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql))
