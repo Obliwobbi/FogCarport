@@ -132,4 +132,13 @@ class CustomerMapperTest
             );
         });
     }
+
+    @Test
+    void getCustomerById() throws DatabaseException
+    {
+        Customer customer = customerMapper.newCustomer("Jens", "Jensen", "test@mail.dk", "12345678",
+                "Gade","2", 2900, "Hellerup");
+
+        assertEquals(customer,customerMapper.getCustomerByID(1));
+    }
 }
