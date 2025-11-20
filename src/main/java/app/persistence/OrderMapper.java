@@ -58,16 +58,9 @@ public class OrderMapper
             }
         }
         catch (SQLException e)
-        {
-            if (e.getSQLState().equals("23505")) // error code is the standard for catching unique constraint errors in PostgresSQL
-            {
-                throw new DatabaseException("ordre findes allerede");
-            }
-            else
             {
                 throw new DatabaseException("Databasefejl ved oprettelse af ordre " + e.getMessage());
             }
-        }
         return null;
     }
 
