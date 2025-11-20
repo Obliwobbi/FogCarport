@@ -27,11 +27,13 @@ public class OrderController
     {
         try
         {
+            List<Order> newOrders = orderService.getOrdersByStatus("NY ORDRE");
             List<Order> pendingOrders = orderService.getOrdersByStatus("AFVENTER ACCEPT");
             List<Order> paidOrders = orderService.getOrdersByStatus("BETALT");
             List<Order> inTransitOrders = orderService.getOrdersByStatus("AFSENDT");
             List<Order> doneOrders = orderService.getOrdersByStatus("AFSLUTTET");
 
+            ctx.attribute("newOrders", newOrders);
             ctx.attribute("pendingOrders", pendingOrders);
             ctx.attribute("paidOrders", paidOrders);
             ctx.attribute("inTransitOrders", inTransitOrders);
