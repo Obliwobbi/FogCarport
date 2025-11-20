@@ -53,7 +53,7 @@ public class OrderServiceImpl implements OrderService
     @Override
     public Order createOrder(LocalDateTime orderDate, String status, LocalDateTime deliveryDate, Integer drawingId, int carportId, Integer billOfMaterialsId, int customerId) throws DatabaseException
     {
-        orderMapper.createOrder(orderDate, status, deliveryDate, drawingId, carportId, billOfMaterialsId, customerId);
+        return orderMapper.createOrder(orderDate, status, deliveryDate, drawingId, carportId, billOfMaterialsId, customerId);
     }
 
     @Override
