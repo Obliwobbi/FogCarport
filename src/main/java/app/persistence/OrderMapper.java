@@ -120,13 +120,13 @@ public class OrderMapper
 
                     Order order = new Order(
                             orderId,
-                            rs.getTimestamp(2).toLocalDateTime(),
-                            rs.getString(3),
-                            rs.getTimestamp(4).toLocalDateTime(),
-                            rs.getInt(5),
-                            rs.getInt(6),
+                            rs.getTimestamp("order_date").toLocalDateTime(),
+                            rs.getString("status"),
+                            rs.getTimestamp("delivery_date").toLocalDateTime(),
+                            rs.getInt("drawing_id"),
+                            rs.getInt("carport_id"),
                             materialsLines,
-                            rs.getInt(8));
+                            rs.getInt("customer_id"));
 
                     orders.add(order);
                 }
