@@ -1,11 +1,10 @@
 -- ============================================
--- Fog Carport Database Schema
+-- Fog Carport Database Schema (Without BOM)
 -- ============================================
 
 -- Drop tables in reverse order of dependencies to avoid foreign key conflicts
 DROP TABLE IF EXISTS materials_lines CASCADE;
 DROP TABLE IF EXISTS orders CASCADE;
-DROP TABLE IF EXISTS bills_of_materials CASCADE;
 DROP TABLE IF EXISTS drawings CASCADE;
 DROP TABLE IF EXISTS carports CASCADE;
 DROP TABLE IF EXISTS materials CASCADE;
@@ -75,14 +74,7 @@ CREATE TABLE drawings
     accepted     BOOLEAN DEFAULT FALSE
 );
 
--- Bills of Materials Table
-CREATE TABLE bills_of_materials
-(
-    bom_id      SERIAL PRIMARY KEY,
-    total_price DECIMAL(12, 2) NOT NULL
-);
-
--- Orders Table
+-- Orders Table (now includes total_price from BOM)
 CREATE TABLE orders
 (
     order_id      SERIAL PRIMARY KEY,
@@ -91,25 +83,25 @@ CREATE TABLE orders
     delivery_date TIMESTAMP WITH TIME ZONE,
     drawing_id    INT,
     carport_id    INT                      NOT NULL,
-    bom_id        INT,
     customer_id   INT                      NOT NULL,
+    total_price   DECIMAL(12, 2)           NOT NULL DEFAULT 0.00,
     CONSTRAINT fk_drawing FOREIGN KEY (drawing_id) REFERENCES drawings (drawing_id) ON DELETE SET NULL,
     CONSTRAINT fk_carport FOREIGN KEY (carport_id) REFERENCES carports (carport_id) ON DELETE CASCADE,
-    CONSTRAINT fk_bom FOREIGN KEY (bom_id) REFERENCES bills_of_materials (bom_id) ON DELETE SET NULL
+    CONSTRAINT fk_customer FOREIGN KEY (customer_id) REFERENCES customers (customer_id) ON DELETE CASCADE
 );
 
--- Materials Lines Table (junction table between BOM and Materials)
+-- Materials Lines Table (now references orders directly)
 CREATE TABLE materials_lines
 (
     line_id       SERIAL PRIMARY KEY,
-    bom_id        INT            NOT NULL,
+    order_id      INT            NOT NULL,
     material_id   INT NULL,
     material_name VARCHAR(100)   NOT NULL,
     unit_type     VARCHAR(50)    NOT NULL,
     quantity      INT            NOT NULL,
     unit_price    DECIMAL(10, 2) NOT NULL,
     line_price    DECIMAL(10, 2) NOT NULL,
-    CONSTRAINT fk_bom FOREIGN KEY (bom_id) REFERENCES bills_of_materials (bom_id) ON DELETE CASCADE,
+    CONSTRAINT fk_order FOREIGN KEY (order_id) REFERENCES orders(order_id) ON DELETE CASCADE,
     CONSTRAINT fk_material FOREIGN KEY (material_id) REFERENCES materials (id) ON DELETE SET NULL
 );
 
@@ -121,8 +113,8 @@ CREATE INDEX idx_orders_status ON orders (status);
 CREATE INDEX idx_orders_order_date ON orders (order_date);
 CREATE INDEX idx_orders_drawing ON orders (drawing_id);
 CREATE INDEX idx_orders_carport ON orders (carport_id);
-CREATE INDEX idx_orders_bom ON orders (bom_id);
-CREATE INDEX idx_materials_lines_bom ON materials_lines (bom_id);
+CREATE INDEX idx_orders_customer ON orders (customer_id);
+CREATE INDEX idx_materials_lines_order ON materials_lines (order_id);
 CREATE INDEX idx_materials_lines_material ON materials_lines (material_id);
 CREATE INDEX idx_customers_email ON customers (email);
 CREATE INDEX idx_customers_zipcode ON customers (zipcode);
@@ -130,7 +122,7 @@ CREATE INDEX idx_employees_email ON employees (email);
 CREATE INDEX idx_materials_name ON materials (name);
 
 -- ============================================
--- Sample Data (Optional - Comment out if not needed)
+-- Sample Data
 -- ============================================
 
 -- Insert sample employees
@@ -138,9 +130,7 @@ INSERT INTO employees (name, email, phone, is_admin)
 VALUES ('Admin User', 'admin@fogcarport.dk', '+45 12345678', TRUE),
        ('Sales Person', 'sales@fogcarport.dk', '+45 23456789', FALSE);
 
--- Insert sample materials (REPLACE WITH YOUR ACTUAL MATERIALS!)
--- Note: unit = quantity per unit (e.g., 1 for single items, 200 for a pack of 200 screws)
--- Dimensions are in cm where applicable, NULL for items without dimensions
+-- Insert sample materials
 INSERT INTO materials (name, description, unit, unit_type, material_length, material_width, material_height, price)
 VALUES ('Brædt 25x200', '25x200 mm. trykimp. Brædt', 1, 'stk', 540.00, 20.00, 2.50, 300.00),
        ('Brædt 25x125', '25x125 mm. trykimp. Brædt', 1, 'stk', 360.00, 12.50, 2.50, 200.00),
@@ -156,9 +146,6 @@ VALUES ('Brædt 25x200', '25x200 mm. trykimp. Brædt', 1, 'stk', 540.00, 20.00, 
        ('Bræddebolt', 'Bræddebolt 10 x 120 mm.', 1, 'stk', 12.00, 1.00, 1.00, 5.00),
        ('Firkantskiver', 'Firkantskiver 40x40x11mm', 1, 'stk', NULL, 4.00, 1.10, 3.00),
        ('Tagplade', 'Plastmo Ecolite blåtonet', 1, 'stk', 600.00, 109.00, 0.50, 450.00);
--- ============================================
--- Comprehensive Test Data with All Order Statuses
--- ============================================
 
 -- Insert test customers
 INSERT INTO customers (firstname, lastname, email, phone, street, house_number, zipcode, city)
@@ -184,68 +171,68 @@ VALUES ('SVG drawing data for standard carport 600x780...', TRUE),
        ('SVG drawing data for black carport 600x780...', FALSE),
        ('SVG drawing data for extra large shed 780x780...', TRUE);
 
--- Insert test bills of materials
-INSERT INTO bills_of_materials (total_price)
-VALUES (15000.00),
-       (22000.00),
-       (28000.00),
-       (18000.00),
-       (32000.00);
-
 -- Insert test orders with all 5 status types
-INSERT INTO orders (order_date, status, delivery_date, drawing_id, carport_id, bom_id, customer_id)
+INSERT INTO orders (order_date, status, delivery_date, drawing_id, carport_id, customer_id, total_price)
 VALUES
     -- NY ORDRE: Brand new order, just created
-    ('2024-01-20 09:00:00', 'NY ORDRE', '2024-02-20 10:00:00', 4, 4, NULL, 4),
+    ('2024-01-20 09:00:00', 'NY ORDRE', '2024-02-20 10:00:00', 4, 4, 4, 18000.00),
 
     -- AFVENTER ACCEPT: Waiting for customer approval
-    ('2024-01-15 10:30:00', 'AFVENTER ACCEPT', '2024-02-15 10:00:00', 1, 1, 1, 1),
+    ('2024-01-15 10:30:00', 'AFVENTER ACCEPT', '2024-02-15 10:00:00', 1, 1, 1, 15000.00),
 
     -- BETALT: Customer has paid, ready for production
-    ('2024-01-10 14:20:00', 'BETALT', '2024-02-10 12:00:00', 2, 2, 2, 2),
+    ('2024-01-10 14:20:00', 'BETALT', '2024-02-10 12:00:00', 2, 2, 2, 22000.00),
 
     -- AFSENDT: Order has been shipped
-    ('2024-01-05 09:15:00', 'AFSENDT', '2024-02-01 08:00:00', 3, 3, 3, 3),
+    ('2024-01-05 09:15:00', 'AFSENDT', '2024-02-01 08:00:00', 3, 3, 3, 28000.00),
 
     -- AFSLUTTET: Order completed and delivered
-    ('2023-12-20 11:00:00', 'AFSLUTTET', '2024-01-20 14:00:00', 5, 5, 5, 5);
+    ('2023-12-20 11:00:00', 'AFSLUTTET', '2024-01-20 14:00:00', 5, 5, 5, 32000.00);
 
--- Insert material lines for the BOMs
-INSERT INTO materials_lines (bom_id, material_id, material_name, unit_type, quantity, unit_price, line_price)
+-- Insert material lines directly for orders
+INSERT INTO materials_lines (order_id, material_id, material_name, unit_type, quantity, unit_price, line_price)
 VALUES
-    -- BOM 1 (Order 2 - AFVENTER ACCEPT)
-    (1, 1, 'Brædt 25x200', 'stk', 10, 300.00, 3000.00),
-    (1, 4, 'Reglar 45x95', 'stk', 8, 250.00, 2000.00),
-    (1, 5, 'Stolpe 97x97', 'stk', 4, 400.00, 1600.00),
-    (1, 14, 'Tagplade', 'stk', 15, 450.00, 6750.00),
-    (1, 6, 'Bundskruer', 'pakke', 2, 150.00, 300.00),
+    -- Order 2 (AFVENTER ACCEPT) - total: 15000.00
+    (2, 1, 'Brædt 25x200', 'stk', 10, 300.00, 3000.00),
+    (2, 4, 'Reglar 45x95', 'stk', 8, 250.00, 2000.00),
+    (2, 5, 'Stolpe 97x97', 'stk', 4, 400.00, 1600.00),
+    (2, 14, 'Tagplade', 'stk', 15, 450.00, 6750.00),
+    (2, 6, 'Bundskruer', 'pakke', 2, 150.00, 300.00),
+    (2, 10, 'Skruer 4.5x60', 'pakke', 3, 120.00, 360.00),
 
-    -- BOM 2 (Order 3 - BETALT)
-    (2, 1, 'Brædt 25x200', 'stk', 12, 300.00, 3600.00),
-    (2, 2, 'Brædt 25x125', 'stk', 10, 200.00, 2000.00),
-    (2, 4, 'Reglar 45x95', 'stk', 12, 250.00, 3000.00),
-    (2, 5, 'Stolpe 97x97', 'stk', 6, 400.00, 2400.00),
-    (2, 14, 'Tagplade', 'stk', 20, 450.00, 9000.00),
-    (2, 6, 'Bundskruer', 'pakke', 3, 150.00, 450.00),
+    -- Order 3 (BETALT) - total: 22000.00
+    (3, 1, 'Brædt 25x200', 'stk', 12, 300.00, 3600.00),
+    (3, 2, 'Brædt 25x125', 'stk', 10, 200.00, 2000.00),
+    (3, 4, 'Reglar 45x95', 'stk', 12, 250.00, 3000.00),
+    (3, 5, 'Stolpe 97x97', 'stk', 6, 400.00, 2400.00),
+    (3, 14, 'Tagplade', 'stk', 20, 450.00, 9000.00),
+    (3, 6, 'Bundskruer', 'pakke', 3, 150.00, 450.00),
+    (3, 10, 'Skruer 4.5x60', 'pakke', 5, 120.00, 600.00),
 
-    -- BOM 3 (Order 4 - AFSENDT)
-    (3, 1, 'Brædt 25x200', 'stk', 15, 300.00, 4500.00),
-    (3, 2, 'Brædt 25x125', 'stk', 12, 200.00, 2400.00),
-    (3, 4, 'Reglar 45x95', 'stk', 15, 250.00, 3750.00),
-    (3, 5, 'Stolpe 97x97', 'stk', 8, 400.00, 3200.00),
-    (3, 14, 'Tagplade', 'stk', 25, 450.00, 11250.00),
-    (3, 10, 'Skruer 4.5x60', 'pakke', 4, 120.00, 480.00),
+    -- Order 4 (AFSENDT) - total: 28000.00
+    (4, 1, 'Brædt 25x200', 'stk', 15, 300.00, 4500.00),
+    (4, 2, 'Brædt 25x125', 'stk', 12, 200.00, 2400.00),
+    (4, 4, 'Reglar 45x95', 'stk', 15, 250.00, 3750.00),
+    (4, 5, 'Stolpe 97x97', 'stk', 8, 400.00, 3200.00),
+    (4, 14, 'Tagplade', 'stk', 25, 450.00, 11250.00),
+    (4, 10, 'Skruer 4.5x60', 'pakke', 4, 120.00, 480.00),
+    (4, 6, 'Bundskruer', 'pakke', 4, 150.00, 600.00),
+    (4, 7, 'Hulbånd', 'rulle', 3, 75.00, 225.00),
 
-    -- BOM 4 (if needed for other orders)
-    (4, 1, 'Brædt 25x200', 'stk', 11, 300.00, 3300.00),
-    (4, 4, 'Reglar 45x95', 'stk', 10, 250.00, 2500.00),
-    (4, 5, 'Stolpe 97x97', 'stk', 5, 400.00, 2000.00),
-    (4, 14, 'Tagplade', 'stk', 18, 450.00, 8100.00),
+    -- Order 1 (NY ORDRE) - total: 18000.00
+    (1, 1, 'Brædt 25x200', 'stk', 11, 300.00, 3300.00),
+    (1, 4, 'Reglar 45x95', 'stk', 10, 250.00, 2500.00),
+    (1, 5, 'Stolpe 97x97', 'stk', 5, 400.00, 2000.00),
+    (1, 14, 'Tagplade', 'stk', 18, 450.00, 8100.00),
+    (1, 6, 'Bundskruer', 'pakke', 3, 150.00, 450.00),
+    (1, 10, 'Skruer 4.5x60', 'pakke', 5, 120.00, 600.00),
 
-    -- BOM 5 (Order 5 - AFSLUTTET)
+    -- Order 5 (AFSLUTTET) - total: 32000.00
     (5, 1, 'Brædt 25x200', 'stk', 18, 300.00, 5400.00),
     (5, 2, 'Brædt 25x125', 'stk', 15, 200.00, 3000.00),
     (5, 3, 'Lægte 38x73', 'stk', 20, 150.00, 3000.00),
     (5, 4, 'Reglar 45x95', 'stk', 18, 250.00, 4500.00),
     (5, 5, 'Stolpe 97x97', 'stk', 10, 400.00, 4000.00),
-    (5, 14, 'Tagplade', 'stk', 30, 450.00, 13500.00);
+    (5, 14, 'Tagplade', 'stk', 30, 450.00, 13500.00),
+    (5, 6, 'Bundskruer', 'pakke', 5, 150.00, 750.00),
+    (5, 10, 'Skruer 4.5x60', 'pakke', 6, 120.00, 720.00);

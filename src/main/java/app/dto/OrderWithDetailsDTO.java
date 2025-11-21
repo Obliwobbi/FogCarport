@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -16,7 +17,7 @@ public class OrderWithDetailsDTO {
     private String status;
     private LocalDateTime deliveryDate;
     private Drawing drawing;
+    private List<MaterialsLine> materialsLines;
     private Carport carport;
-    private BillOfMaterials billOfMaterials;
     private Customer customer;
 }

@@ -36,16 +36,16 @@ public class Main
 
         CarportMapper carportMapper = new CarportMapper(connectionPool);
         OrderMapper orderMapper = new OrderMapper(connectionPool);
-        BillOfMaterialsMapper bOMMapper = new BillOfMaterialsMapper(connectionPool);
         DrawingMapper drawingMapper = new DrawingMapper(connectionPool);
         CustomerMapper customerMapper = new CustomerMapper(connectionPool);
+        MaterialsLinesMapper materialsLinesMapper = new MaterialsLinesMapper(connectionPool);
 
         HomeController homeController = new HomeController();
 
         CarportService carportService = new CarportServiceImpl(carportMapper);
         CarportController carportController = new CarportController(carportService);
 
-        OrderService orderService = new OrderServiceImpl(orderMapper,carportMapper,bOMMapper,drawingMapper,customerMapper);
+        OrderService orderService = new OrderServiceImpl(orderMapper,carportMapper, drawingMapper,customerMapper);
         OrderController orderController = new OrderController(orderService);
 
         // Routing
