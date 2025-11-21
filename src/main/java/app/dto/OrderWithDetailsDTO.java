@@ -20,4 +20,13 @@ public class OrderWithDetailsDTO {
     private List<MaterialsLine> materialsLines;
     private Carport carport;
     private Customer customer;
+
+    public double getTotalPrice() {
+        if (materialsLines == null || materialsLines.isEmpty()) {
+            return 0.0;
+        }
+        return materialsLines.stream()
+                .mapToDouble(line -> line.getQuantity() * line.getLinePrice())
+                .sum();
+    }
 }
