@@ -1,5 +1,6 @@
 package app.persistence;
 
+import app.dto.OrderWithDetailsDTO;
 import app.entities.Order;
 import app.exceptions.DatabaseException;
 import com.sun.source.tree.AssertTree;
@@ -275,4 +276,55 @@ class OrderMapperTest
         assertThrows(DatabaseException.class,
                 () -> orderMapper.getOrderById(3));
     }
+    @Test
+    void getAllOrdersByStatus() throws DatabaseException {
+
+        List<OrderWithDetailsDTO> pendingOrders = orderMapper.getAllOrdersByStatus("AFVENTER ACCEPT");
+
+        assertEquals(1, pendingOrders.size());
+        OrderWithDetailsDTO order = pendingOrders.get(0);
+
+
+        assertEquals(1, order.getOrderId());
+        assertEquals("AFVENTER ACCEPT", order.getStatus());
+
+
+        assertNotNull(order.getCustomer());
+        assertEquals("Anders", order.getCustomer().getFirstName());
+        assertEquals("Andersen", order.getCustomer().getLastName());
+        assertEquals("anders@example.com", order.getCustomer().getEmail());
+
+
+        assertNotNull(order.getCarport());
+        assertEquals(600.0, order.getCarport().getWidth());
+        assertEquals(780.0, order.getCarport().getLength());
+        assertEquals(210.0, order.getCarport().getHeight());
+        assertFalse(order.getCarport().isWithShed());
+
+
+        assertNotNull(order.getDrawing());
+        assertEquals(1, order.getDrawing().getDrawingId());
+        assertFalse(order.getDrawing().isAccepted());
+    }
+
+    @Test
+    void getAllOrdersByStatusMultipleResults() throws DatabaseException {
+        LocalDateTime orderDate = LocalDateTime.of(2024, 1, 20, 15, 30);
+        LocalDateTime deliveryDate = LocalDateTime.of(2024, 2, 20, 10, 0);
+        orderMapper.createOrder(orderDate, "GODKENDT", deliveryDate, 2, 2, 2);
+
+        List<OrderWithDetailsDTO> approvedOrders = orderMapper.getAllOrdersByStatus("GODKENDT");
+
+        assertEquals(2, approvedOrders.size());
+        assertEquals(2, approvedOrders.get(0).getOrderId()); // 2024-01-10
+        assertEquals(4, approvedOrders.get(1).getOrderId()); // 2024-01-20
+    }
+
+    @Test
+    void getAllOrdersByStatusNoResults() throws DatabaseException {
+        List<OrderWithDetailsDTO> orders = orderMapper.getAllOrdersByStatus("IKKE_EKSISTERENDE");
+
+        assertTrue(orders.isEmpty());
+    }
+
 }
