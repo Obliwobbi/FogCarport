@@ -33,14 +33,19 @@ public class Main
             config.staticFiles.add("/templates/");
         }).start(7070);
 
-        HomeController homeController = new HomeController();
 
         CarportMapper carportMapper = new CarportMapper(connectionPool);
+        OrderMapper orderMapper = new OrderMapper(connectionPool);
+        DrawingMapper drawingMapper = new DrawingMapper(connectionPool);
+        CustomerMapper customerMapper = new CustomerMapper(connectionPool);
+        MaterialsLinesMapper materialsLinesMapper = new MaterialsLinesMapper(connectionPool);
+
+        HomeController homeController = new HomeController();
+
         CarportService carportService = new CarportServiceImpl(carportMapper);
         CarportController carportController = new CarportController(carportService);
 
-        OrderMapper orderMapper = new OrderMapper(connectionPool);
-        OrderService orderService = new OrderServiceImpl(orderMapper);
+        OrderService orderService = new OrderServiceImpl(orderMapper,carportMapper, drawingMapper,customerMapper);
         OrderController orderController = new OrderController(orderService);
 
         // Routing

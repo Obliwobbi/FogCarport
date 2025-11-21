@@ -86,13 +86,6 @@ class OrderMapperTest
                                  )
                             """);
 
-                    // Create Bills of Materials Table
-                    stmt.execute("""
-                               CREATE TABLE test.bills_of_materials (
-                                     bom_id SERIAL PRIMARY KEY,
-                                     total_price DECIMAL(12, 2) NOT NULL
-                                 )
-                            """);
 
                     // Create Orders Table
                     stmt.execute("""
@@ -103,11 +96,9 @@ class OrderMapperTest
                                      delivery_date TIMESTAMP,
                                      drawing_id INT,
                                      carport_id INT NOT NULL,
-                                     bom_id INT,
-                                     customer_id INT NOT NULL,
+                                                                         customer_id INT NOT NULL,
                                      CONSTRAINT fk_drawing FOREIGN KEY (drawing_id) REFERENCES test.drawings(drawing_id) ON DELETE SET NULL,
                                      CONSTRAINT fk_carport FOREIGN KEY (carport_id) REFERENCES test.carports(carport_id) ON DELETE CASCADE,
-                                     CONSTRAINT fk_bom FOREIGN KEY (bom_id) REFERENCES test.bills_of_materials(bom_id) ON DELETE SET NULL,
                                      CONSTRAINT fk_customer FOREIGN KEY (customer_id) REFERENCES test.customers(customer_id) ON DELETE CASCADE
                                  )
                             """);
@@ -137,7 +128,6 @@ class OrderMapperTest
             {
                 // Delete in reverse order of dependencies
                 stmt.execute("DELETE FROM test.orders");
-                stmt.execute("DELETE FROM test.bills_of_materials");
                 stmt.execute("DELETE FROM test.drawings");
                 stmt.execute("DELETE FROM test.carports");
                 stmt.execute("DELETE FROM test.customers");
@@ -166,35 +156,28 @@ class OrderMapperTest
                                    (3, 'SVG drawing data for carport 3...', TRUE)
                         """);
 
-                // Insert test bills of materials
-                stmt.execute("""
-                            INSERT INTO test.bills_of_materials (bom_id, total_price)
-                            VALUES (1, 15000.00),
-                                   (2, 22000.00)
-                        """);
 
                 // Reset sequences
                 stmt.execute("SELECT setval('test.customers_customer_id_seq', 3, true)");
                 stmt.execute("SELECT setval('test.carports_carport_id_seq', 3, true)");
                 stmt.execute("SELECT setval('test.drawings_drawing_id_seq', 3, true)");
-                stmt.execute("SELECT setval('test.bills_of_materials_bom_id_seq', 2, true)");
 
                 // Insert test orders
                 stmt.execute("""
-                            INSERT INTO test.orders (order_id, order_date, status, delivery_date, drawing_id, carport_id, bom_id, customer_id)
-                            VALUES (1, '2024-01-15 10:30:00', 'AFVENTER ACCEPT', '2024-02-15 10:00:00', 1, 1, NULL, 1);
+                            INSERT INTO test.orders (order_id, order_date, status, delivery_date, drawing_id, carport_id, customer_id)
+                            VALUES (1, '2024-01-15 10:30:00', 'AFVENTER ACCEPT', '2024-02-15 10:00:00', 1, 1, 1);
                         
                         """);
 
                 stmt.execute("""
-                            INSERT INTO test.orders (order_id, order_date, status, delivery_date, drawing_id, carport_id, bom_id, customer_id)
-                            VALUES (2, '2024-01-10 14:20:00', 'GODKENDT', '2024-02-10 12:00:00', 2, 2, 1, 2);
+                            INSERT INTO test.orders (order_id, order_date, status, delivery_date, drawing_id, carport_id, customer_id)
+                            VALUES (2, '2024-01-10 14:20:00', 'GODKENDT', '2024-02-10 12:00:00', 2, 2, 2);
                         
                         """);
 
                 stmt.execute("""
-                            INSERT INTO test.orders (order_id, order_date, status, delivery_date, drawing_id, carport_id, bom_id, customer_id)
-                            VALUES (3, '2024-01-05 09:15:00', 'AFSENDT', '2024-02-01 08:00:00', 3, 3, 2, 3);
+                            INSERT INTO test.orders (order_id, order_date, status, delivery_date, drawing_id, carport_id, customer_id)
+                            VALUES (3, '2024-01-05 09:15:00', 'AFSENDT', '2024-02-01 08:00:00', 3, 3, 3);
                         """);
 
                 stmt.execute("SELECT setval('test.orders_order_id_seq', 3, true)");
@@ -217,7 +200,7 @@ class OrderMapperTest
     {
         LocalDateTime delivery = LocalDateTime.of(2026, 2, 10, 0, 0);
         LocalDateTime orderDate = LocalDateTime.of(2025, 2, 3, 0, 0);
-        Order order = orderMapper.createOrder(orderDate, "Status", delivery, 1, 1, null, 1);
+        Order order = orderMapper.createOrder(orderDate, "Status", delivery, 1, 1, 1);
 
         assertEquals(order, orderMapper.getOrderById(4));
     }
@@ -244,12 +227,6 @@ class OrderMapperTest
     {
         LocalDateTime delivery = LocalDateTime.of(2026, 2, 10, 0, 0);
         assertTrue(orderMapper.updateOrderDeliveryDate(3, delivery));
-    }
-
-    @Test
-    void updateOrderBillOfMaterials() throws DatabaseException
-    {
-        assertTrue(orderMapper.updateOrderBillOfMaterials(1,1));
     }
 
     @Test

@@ -1,0 +1,23 @@
+package app.dto;
+
+import app.entities.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class OrderWithDetailsDTO {
+    private int orderId;
+    private LocalDateTime orderDate;
+    private String status;
+    private LocalDateTime deliveryDate;
+    private Drawing drawing;
+    private List<MaterialsLine> materialsLines;
+    private Carport carport;
+    private Customer customer;
+}

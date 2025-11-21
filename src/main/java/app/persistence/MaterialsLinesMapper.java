@@ -19,11 +19,11 @@ public class MaterialsLinesMapper
         this.materialMapper = new MaterialMapper(connectionPool);
     }
 
-    public void createMaterialLine(int bomId, MaterialsLine line) throws DatabaseException
+    public void createMaterialLine(int orderId, MaterialsLine line) throws DatabaseException
     {
         String sql = """
                 INSERT INTO materials_lines
-                (bom_id, material_id, material_name, unit_type, quantity, unit_price, line_price)
+                (order_id, material_id, material_name, unit_type, quantity, unit_price, line_price)
                 VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING line_id
                 """;
 
@@ -36,7 +36,7 @@ public class MaterialsLinesMapper
         try (Connection connection = connectionPool.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql))
         {
-            ps.setInt(1, bomId);
+            ps.setInt(1, orderId);
             ps.setInt(2, material.getId());
             ps.setString(3, material.getName());
             ps.setString(4, material.getUnitType());
@@ -58,20 +58,20 @@ public class MaterialsLinesMapper
         }
     }
 
-    public List<MaterialsLine> getMaterialLinesByBomId(int bomId) throws DatabaseException
+    public List<MaterialsLine> getMaterialLinesByOrderId(int orderId) throws DatabaseException
     {
         List<MaterialsLine> lines = new ArrayList<>();
 
         String sql = """
-                SELECT ml.line_id, ml.quantity, ml.line_price, ml.material_id 
-                FROM materials_lines ml 
-                WHERE ml.bom_id = ?
+                SELECT *
+                FROM materials_lines
+                WHERE order_id = ?
                 """;
 
         try (Connection connection = connectionPool.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql))
         {
-            ps.setInt(1, bomId);
+            ps.setInt(1, orderId);
 
             try (ResultSet rs = ps.executeQuery())
             {
@@ -102,20 +102,20 @@ public class MaterialsLinesMapper
         return lines;
     }
 
-    public boolean updateMaterialLineName(int bomId, MaterialsLine line, String newMaterialName) throws DatabaseException
+    public boolean updateMaterialLineName(int orderId, MaterialsLine line, String newMaterialName) throws DatabaseException
     {
         boolean result = false;
         String sql = """
                 UPDATE materials_lines
                 SET material_name='?'
-                WHERE bom_id=? AND line_id=?;
+                WHERE order_id=? AND line_id=?;
                 """;
 
         try (Connection connection = connectionPool.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql))
         {
             ps.setString(1, newMaterialName);
-            ps.setInt(2, bomId);
+            ps.setInt(2, orderId);
             ps.setInt(3, line.getLineId());
 
             int rowsAffected = ps.executeUpdate();

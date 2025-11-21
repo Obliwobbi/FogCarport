@@ -3,6 +3,7 @@ package app.entities;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -15,6 +16,6 @@ public class Order
     private LocalDateTime deliveryDate;
     private int drawingId;
     private int carportId;
-    private Integer billOfMaterialsId;
+    private List<MaterialsLine> materialLines;
     private int customerId;
 }

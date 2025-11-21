@@ -11,16 +11,18 @@ import java.util.List;
 public class OrderMapper
 {
     private final ConnectionPool connectionPool;
+    private final MaterialsLinesMapper materialsLinesMapper;
 
     public OrderMapper(ConnectionPool connectionPool)
     {
         this.connectionPool = connectionPool;
+        this.materialsLinesMapper = new MaterialsLinesMapper(connectionPool);
     }
 
-    public Order createOrder(LocalDateTime orderDate, String status, LocalDateTime deliveryDate, Integer drawingId, int carportId, Integer billOfMaterialsId, int customerId) throws DatabaseException
+    public Order createOrder(LocalDateTime orderDate, String status, LocalDateTime deliveryDate, Integer drawingId, int carportId, int customerId) throws DatabaseException
     {
-        String sql = "INSERT INTO orders (order_date, status, delivery_date, drawing_id, carport_id, bom_id, customer_id)" +
-                "VALUES (?,?,?,?,?,?,?)";
+        String sql = "INSERT INTO orders (order_date, status, delivery_date, drawing_id, carport_id, customer_id)" +
+                "VALUES (?,?,?,?,?,?)";
 
         try (Connection connection = connectionPool.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS))
@@ -30,17 +32,7 @@ public class OrderMapper
             ps.setTimestamp(3, Timestamp.valueOf(deliveryDate));
             ps.setInt(4, drawingId);
             ps.setInt(5, carportId);
-
-            if (billOfMaterialsId != null)
-            {
-                ps.setInt(6, billOfMaterialsId);
-            }
-            else
-            {
-                ps.setNull(6, Types.INTEGER);
-            }
-
-            ps.setInt(7, customerId);
+            ps.setInt(6, customerId);
 
             int rowsAffected = ps.executeUpdate();
 
@@ -54,8 +46,23 @@ public class OrderMapper
             if (rs.next())
             {
                 int orderId = rs.getInt(1);
-                return new Order(orderId, orderDate, status, deliveryDate, drawingId, carportId, billOfMaterialsId, customerId);
+                List<MaterialsLine> lines = new ArrayList<>();
+
+                Order order = new Order(orderId, orderDate, status, deliveryDate, drawingId, carportId, lines, customerId);
+
+                lines = order.getMaterialLines();
+
+                if (lines != null)
+                {
+                    for (MaterialsLine line : lines)
+                    {
+                        materialsLinesMapper.createMaterialLine(orderId, line);
+                    }
+                }
+
+                return order;
             }
+
         }
         catch (SQLException e)
             {
@@ -76,15 +83,14 @@ public class OrderMapper
             {
                 if (rs.next())
                 {
-                    Integer bomId = (Integer) rs.getObject(7); //return null, if column is null
-
+                    List<MaterialsLine> materialsLines = materialsLinesMapper.getMaterialLinesByOrderId(orderId);
                     return new Order(orderId,
                             rs.getTimestamp("order_date").toLocalDateTime(),
                             rs.getString("status"),
                             rs.getTimestamp("delivery_date").toLocalDateTime(),
                             rs.getInt("drawing_id"),
                             rs.getInt("carport_id"),
-                            bomId,
+                            materialsLines,
                             rs.getInt("customer_id"));
                 }
             }
@@ -109,15 +115,17 @@ public class OrderMapper
             {
                 while (rs.next())
                 {
-                    Integer bomId = (Integer) rs.getObject(7); //return null, if column is null
+                    int orderId = rs.getInt("order_id");
+                    List<MaterialsLine> materialsLines = materialsLinesMapper.getMaterialLinesByOrderId(orderId);
 
-                    Order order = new Order(rs.getInt(1),
+                    Order order = new Order(
+                            orderId,
                             rs.getTimestamp(2).toLocalDateTime(),
                             rs.getString(3),
                             rs.getTimestamp(4).toLocalDateTime(),
                             rs.getInt(5),
                             rs.getInt(6),
-                            bomId,
+                            materialsLines,
                             rs.getInt(8));
 
                     orders.add(order);
@@ -179,29 +187,6 @@ public class OrderMapper
         return false;
     }
 
-    public boolean updateOrderBillOfMaterials(int orderId, int billOfMaterialsId) throws DatabaseException
-    {
-        String sql = "UPDATE orders SET bom_id = ? WHERE order_id = ?";
-
-        try (Connection connection = connectionPool.getConnection();
-             PreparedStatement ps = connection.prepareStatement(sql))
-        {
-            ps.setInt(1, billOfMaterialsId);
-            ps.setInt(2, orderId);
-
-            int rowsAffected = ps.executeUpdate();
-
-            if (rowsAffected == 1)
-            {
-                return true;
-            }
-        }
-        catch (SQLException e)
-        {
-            throw new DatabaseException("Kunne ikke opdatere ordre Materialeliste" + e.getMessage());
-        }
-        return false;
-    }
 
     public boolean deleteOrder(int orderId) throws DatabaseException
     {

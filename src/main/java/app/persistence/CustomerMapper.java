@@ -1,5 +1,6 @@
 package app.persistence;
 
+import app.entities.Carport;
 import app.entities.Customer;
 import app.exceptions.DatabaseException;
 
@@ -55,4 +56,35 @@ public class CustomerMapper
         return null;
     }
 
+    public Customer getCustomerByID(int customerId) throws DatabaseException
+    {
+        String sql = "SELECT * FROM customers WHERE customer_id= ?";
+
+        try (Connection connection = connectionPool.getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql))
+        {
+            ps.setInt(1, customerId);
+            try (ResultSet rs = ps.executeQuery())
+            {
+                if (rs.next())
+                {
+                    return new Customer(
+                            rs.getInt("customer_id"),
+                            rs.getString("firstname"),
+                            rs.getString("lastname"),
+                            rs.getString("email"),
+                            rs.getString("phone"),
+                            rs.getString("street"),
+                            rs.getString("house_number"),
+                            rs.getInt("zipcode"),
+                            rs.getString("city"));
+                }
+                throw new DatabaseException("Der blev ikke fundet en customer med id: " + customerId);
+            }
+        }
+        catch (SQLException e)
+        {
+            throw new DatabaseException("Database ved hentning af data for customer " + e);
+        }
+    }
 }
