@@ -17,5 +17,6 @@ public class Drawing {
     private int drawingId;
     private String drawingData;
     private boolean accepted;
+
 }
 
