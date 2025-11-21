@@ -6,8 +6,7 @@ import app.exceptions.DatabaseException;
 import app.persistence.*;
 
 import java.time.LocalDateTime;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class OrderServiceImpl implements OrderService
@@ -88,6 +87,14 @@ public class OrderServiceImpl implements OrderService
                 .sorted(Comparator.comparing(Order::getOrderDate))
                 .collect(Collectors.toList());
     }
-
+    public List<OrderWithDetailsDTO> convertToDTO(List<Order> orders) throws DatabaseException
+    {
+        List<OrderWithDetailsDTO> dtos = new ArrayList<>();
+        for (Order order : orders)
+        {
+            dtos.add(getOrderwithDetails(order.getOrderId()));
+        }
+        return dtos;
+    }
 }
 
