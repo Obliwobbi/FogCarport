@@ -107,7 +107,7 @@ public class MaterialsLinesMapper
         boolean result = false;
         String sql = """
                 UPDATE materials_lines
-                SET material_name='?'
+                SET material_name=?
                 WHERE order_id=? AND line_id=?;
                 """;
 
@@ -121,10 +121,39 @@ public class MaterialsLinesMapper
             int rowsAffected = ps.executeUpdate();
             if (rowsAffected > 0)
             {
+
                 result = true;
             } else
             {
                 throw new DatabaseException("Ingen material line fundet med id: " + line.getLineId());
+            }
+        }
+        catch (SQLException e)
+        {
+            throw new DatabaseException("Fejl ved hentning af materials_lines: " + e.getMessage());
+        }
+        return result;
+    }
+
+    public String getMaterialLineName(int orderId, MaterialsLine line) throws DatabaseException
+    {
+        String result = "";
+        String sql = """
+                SELECT material_name
+                FROM materials_lines WHERE  order_id=? AND line_id=?;
+                """;
+
+        try (Connection connection = connectionPool.getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql))
+        {
+            ps.setInt(1, orderId);
+            ps.setInt(2, line.getLineId());
+            try (ResultSet rs = ps.executeQuery())
+            {
+                if (rs.next())
+                {
+                    result = rs.getString("material_name");
+                }
             }
         }
         catch (SQLException e)
