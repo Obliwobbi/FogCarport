@@ -264,6 +264,20 @@ class MaterialsLinesMapperTest
     @Test
     void updateMaterialLineName() throws DatabaseException
     {
+        OrderMapper orderMapper = new OrderMapper(connectionPool);
+        Order order = orderMapper.getOrderById(2);
+        assertNotNull(order);
+
+        MaterialsLinesMapper materialsLinesMapper = new MaterialsLinesMapper(connectionPool);
+        List<MaterialsLine> materialsLinesList = materialsLinesMapper.getMaterialLinesByOrderId(order.getOrderId());
+        MaterialsLine materialsLine = materialsLinesList.get(0);
+
+        String newName = "Nyt test navn";
+
+        assertTrue(materialsLinesMapper.updateMaterialLineName(order.getOrderId(),materialsLine,newName));
+        String testNewName = materialsLinesMapper.getMaterialLineName(order.getOrderId(),materialsLine);
+
+        assertEquals(newName,testNewName);
     }
 
     @Test
