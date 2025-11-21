@@ -1,8 +1,8 @@
 package app.persistence;
 
-import app.entities.BillOfMaterials;
 import app.entities.Material;
 import app.entities.MaterialsLine;
+import app.entities.Order;
 import app.exceptions.DatabaseException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,10 +36,11 @@ class MaterialsLinesMapperTest
                 try (Statement stmt = testConnection.createStatement())
                 {
                     stmt.execute("DROP TABLE IF EXISTS test.materials_lines CASCADE");
-                    stmt.execute("DROP TABLE IF EXISTS test.bills_of_materials CASCADE");
+                    stmt.execute("DROP TABLE IF EXISTS test.orders CASCADE");
+                    stmt.execute("DROP TABLE IF EXISTS test.drawings CASCADE");
+                    stmt.execute("DROP TABLE IF EXISTS test.carports CASCADE");
                     stmt.execute("DROP TABLE IF EXISTS test.materials CASCADE");
                     stmt.execute("DROP TABLE IF EXISTS test.customers CASCADE");
-
 
                     // Create Customers Table
                     stmt.execute("""
@@ -56,7 +57,7 @@ class MaterialsLinesMapperTest
                                 )
                             """);
 
-                    // Create Materials Table FIRST
+                    // Create Materials Table
                     stmt.execute("""
                             CREATE TABLE test.materials (
                                 id SERIAL PRIMARY KEY,
@@ -71,11 +72,43 @@ class MaterialsLinesMapperTest
                             )
                             """);
 
-                    // Create Bills of Materials Table
+                    // Create Carports Table
                     stmt.execute("""
-                                CREATE TABLE test.bills_of_materials (
-                                    bom_id SERIAL PRIMARY KEY,
-                                    total_price DECIMAL(12, 2) NOT NULL
+                                CREATE TABLE test.carports (
+                                    carport_id SERIAL PRIMARY KEY,
+                                    width DECIMAL(10, 2) NOT NULL,
+                                    length DECIMAL(10, 2) NOT NULL,
+                                    height DECIMAL(10, 2) NOT NULL,
+                                    with_shed BOOLEAN DEFAULT FALSE,
+                                    shed_width DECIMAL(10, 2),
+                                    shed_length DECIMAL(10, 2),
+                                    customer_wishes VARCHAR(250)
+                                )
+                            """);
+
+                    // Create Drawings Table
+                    stmt.execute("""
+                                CREATE TABLE test.drawings (
+                                    drawing_id SERIAL PRIMARY KEY,
+                                    drawing_data TEXT NOT NULL,
+                                    accepted BOOLEAN DEFAULT FALSE
+                                )
+                            """);
+
+                    // Create Orders Table
+                    stmt.execute("""
+                                CREATE TABLE test.orders (
+                                    order_id SERIAL PRIMARY KEY,
+                                    order_date TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
+                                    status VARCHAR(50) NOT NULL DEFAULT 'NY ORDRE',
+                                    delivery_date TIMESTAMP WITH TIME ZONE,
+                                    drawing_id INT,
+                                    carport_id INT NOT NULL,
+                                    customer_id INT NOT NULL,
+                                    total_price DECIMAL(12, 2) NOT NULL DEFAULT 0.00,
+                                    CONSTRAINT fk_drawing FOREIGN KEY (drawing_id) REFERENCES test.drawings(drawing_id) ON DELETE SET NULL,
+                                    CONSTRAINT fk_carport FOREIGN KEY (carport_id) REFERENCES test.carports(carport_id) ON DELETE CASCADE,
+                                    CONSTRAINT fk_customer FOREIGN KEY (customer_id) REFERENCES test.customers(customer_id) ON DELETE CASCADE
                                 )
                             """);
 
@@ -83,14 +116,14 @@ class MaterialsLinesMapperTest
                     stmt.execute("""
                                 CREATE TABLE test.materials_lines (
                                     line_id SERIAL PRIMARY KEY,
-                                    bom_id INT NOT NULL,
+                                    order_id INT NOT NULL,
                                     material_id INT,
                                     material_name VARCHAR(100) NOT NULL,
                                     unit_type VARCHAR(50) NOT NULL,
                                     quantity INT NOT NULL,
                                     unit_price DECIMAL(10, 2) NOT NULL,
                                     line_price DECIMAL(10, 2) NOT NULL,
-                                    CONSTRAINT fk_bom FOREIGN KEY (bom_id) REFERENCES test.bills_of_materials(bom_id) ON DELETE CASCADE,
+                                    CONSTRAINT fk_order FOREIGN KEY (order_id) REFERENCES test.orders(order_id) ON DELETE CASCADE,
                                     CONSTRAINT fk_material FOREIGN KEY (material_id) REFERENCES test.materials(id) ON DELETE SET NULL
                                 )
                             """);
@@ -116,11 +149,21 @@ class MaterialsLinesMapperTest
         {
             try (Statement stmt = connection.createStatement())
             {
-
+                // Delete in reverse order of dependencies
                 stmt.execute("DELETE FROM test.materials_lines");
-                stmt.execute("DELETE FROM test.bills_of_materials");
+                stmt.execute("DELETE FROM test.orders");
+                stmt.execute("DELETE FROM test.drawings");
+                stmt.execute("DELETE FROM test.carports");
                 stmt.execute("DELETE FROM test.materials");
+                stmt.execute("DELETE FROM test.customers");
 
+                // Insert test customers
+                stmt.execute("""
+                        INSERT INTO test.customers (customer_id, firstname, lastname, email, phone, street, house_number, zipcode, city)
+                        VALUES (1, 'Anders', 'Andersen', 'anders@example.com', '+45 12345678', 'Hovedgaden', '10', 2000, 'Frederiksberg')
+                        """);
+
+                // Insert test materials
                 stmt.execute("""
                         INSERT INTO test.materials (id, name, description, unit, unit_type, material_length, material_width, material_height, price)
                         VALUES (1, 'Brædt 25x200', '25x200 mm. trykimp. Brædt', 1, 'stk', 540.00, 20.00, 2.50, 300.00)
@@ -136,36 +179,51 @@ class MaterialsLinesMapperTest
                         VALUES (3, 'Bundskruer', 'Plastmo bundskruer 200 stk.', 200, 'pakke', NULL, NULL, NULL, 150.00)
                         """);
 
-                // Insert test bills of materials
+                // Insert test carports
                 stmt.execute("""
-                        INSERT INTO test.bills_of_materials (bom_id, total_price)
-                        VALUES (1, 1200.00)
+                        INSERT INTO test.carports (carport_id, width, length, height, with_shed, shed_width, shed_length, customer_wishes)
+                        VALUES (1, 600, 780, 210, FALSE, NULL, NULL, 'Standard carport uden skur')
+                        """);
+
+                // Insert test drawings
+                stmt.execute("""
+                        INSERT INTO test.drawings (drawing_id, drawing_data, accepted)
+                        VALUES (1, 'SVG drawing data for carport 1...', FALSE)
+                        """);
+
+                // Insert test orders
+                stmt.execute("""
+                        INSERT INTO test.orders (order_id, order_date, status, delivery_date, drawing_id, carport_id, customer_id, total_price)
+                        VALUES (1, '2024-01-15 10:30:00', 'NY ORDRE', '2024-02-15 10:00:00', 1, 1, 1, 1200.00)
                         """);
 
                 stmt.execute("""
-                        INSERT INTO test.bills_of_materials (bom_id, total_price)
-                        VALUES (2, 450.00)
+                        INSERT INTO test.orders (order_id, order_date, status, delivery_date, drawing_id, carport_id, customer_id, total_price)
+                        VALUES (2, '2024-01-10 14:20:00', 'GODKENDT', '2024-02-10 12:00:00', 1, 1, 1, 450.00)
                         """);
 
                 // Insert test materials lines
                 stmt.execute("""
-                        INSERT INTO test.materials_lines (line_id, bom_id, material_id, material_name, unit_type, quantity, unit_price, line_price)
+                        INSERT INTO test.materials_lines (line_id, order_id, material_id, material_name, unit_type, quantity, unit_price, line_price)
                         VALUES (1, 1, 1, 'Brædt 25x200', 'stk', 4, 300.00, 1200.00)
                         """);
 
                 stmt.execute("""
-                        INSERT INTO test.materials_lines (line_id, bom_id, material_id, material_name, unit_type, quantity, unit_price, line_price)
+                        INSERT INTO test.materials_lines (line_id, order_id, material_id, material_name, unit_type, quantity, unit_price, line_price)
                         VALUES (2, 2, 2, 'Skruer 4.5x60', 'pakke', 2, 120.00, 240.00)
                         """);
 
                 stmt.execute("""
-                        INSERT INTO test.materials_lines (line_id, bom_id, material_id, material_name, unit_type, quantity, unit_price, line_price)
+                        INSERT INTO test.materials_lines (line_id, order_id, material_id, material_name, unit_type, quantity, unit_price, line_price)
                         VALUES (3, 2, 3, 'Bundskruer', 'pakke', 1, 150.00, 150.00)
                         """);
 
                 // Reset sequences
+                stmt.execute("SELECT setval('test.customers_customer_id_seq', 1, true)");
                 stmt.execute("SELECT setval('test.materials_id_seq', 3, true)");
-                stmt.execute("SELECT setval('test.bills_of_materials_bom_id_seq', 2, true)");
+                stmt.execute("SELECT setval('test.carports_carport_id_seq', 1, true)");
+                stmt.execute("SELECT setval('test.drawings_drawing_id_seq', 1, true)");
+                stmt.execute("SELECT setval('test.orders_order_id_seq', 2, true)");
                 stmt.execute("SELECT setval('test.materials_lines_line_id_seq', 3, true)");
             }
         }
@@ -179,12 +237,12 @@ class MaterialsLinesMapperTest
     void createMaterialLine() throws DatabaseException
     {
         // Arrange
-        int bomId = 1;
+        int orderId = 1;
         Material material = new Material(2, "Skruer 4.5x60", "4,5 x 60 mm. skruer 200 stk.", 200, "pakke", 0, 0, 0, 120.00);
         MaterialsLine line = new MaterialsLine(0, 10, 1200.00, material);
 
         // Act
-        materialsLinesMapper.createMaterialLine(bomId, line);
+        materialsLinesMapper.createMaterialLine(orderId, line);
 
         // Assert
         assertTrue(line.getLineId() > 0, "LineId skal være sat efter oprettelse");
@@ -194,12 +252,12 @@ class MaterialsLinesMapperTest
     @Test
     void getMaterialLinesByBomId() throws DatabaseException
     {
-        BillOfMaterialsMapper billOfMaterialsMapper = new BillOfMaterialsMapper(connectionPool);
-        BillOfMaterials billOfMaterials = billOfMaterialsMapper.getBillOfMaterialsById(2);
+        OrderMapper orderMapper = new OrderMapper(connectionPool);
+        Order order = orderMapper.getOrderById(2);
 
-        assertNotNull(billOfMaterials);
+        assertNotNull(order);
 
-        List<MaterialsLine> materialsLineList = materialsLinesMapper.getMaterialLinesByBomId(billOfMaterials.getBomId());
+        List<MaterialsLine> materialsLineList = materialsLinesMapper.getMaterialLinesByOrderId(order.getOrderId());
         assertNotNull(materialsLineList);
     }
 
