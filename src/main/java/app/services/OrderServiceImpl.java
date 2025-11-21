@@ -87,14 +87,9 @@ public class OrderServiceImpl implements OrderService
                 .sorted(Comparator.comparing(Order::getOrderDate))
                 .collect(Collectors.toList());
     }
-    public List<OrderWithDetailsDTO> convertToDTO(List<Order> orders) throws DatabaseException
+    public List<OrderWithDetailsDTO> getOrdersByStatusDTO(String status) throws DatabaseException
     {
-        List<OrderWithDetailsDTO> dtos = new ArrayList<>();
-        for (Order order : orders)
-        {
-            dtos.add(getOrderwithDetails(order.getOrderId()));
-        }
-        return dtos;
+        return orderMapper.getAllOrdersByStatus(status);
     }
 }
 

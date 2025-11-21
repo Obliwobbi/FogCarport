@@ -28,23 +28,17 @@ public class OrderController
     {
         try
         {
-            List<Order> newOrders = orderService.getOrdersByStatus("NY ORDRE");
-            List<Order> pendingOrders = orderService.getOrdersByStatus("AFVENTER ACCEPT");
-            List<Order> paidOrders = orderService.getOrdersByStatus("BETALT");
-            List<Order> inTransitOrders = orderService.getOrdersByStatus("AFSENDT");
-            List<Order> doneOrders = orderService.getOrdersByStatus("AFSLUTTET");
+            List<OrderWithDetailsDTO> newOrders = orderService.getOrdersByStatusDTO("NY ORDRE");
+            List<OrderWithDetailsDTO> pendingOrders = orderService.getOrdersByStatusDTO("AFVENTER ACCEPT");
+            List<OrderWithDetailsDTO> paidOrders = orderService.getOrdersByStatusDTO("BETALT");
+            List<OrderWithDetailsDTO> inTransitOrders = orderService.getOrdersByStatusDTO("AFSENDT");
+            List<OrderWithDetailsDTO> doneOrders = orderService.getOrdersByStatusDTO("AFSLUTTET");
 
-            List<OrderWithDetailsDTO> newOrdersDTO = orderService.convertToDTO(newOrders);
-            List<OrderWithDetailsDTO> pendingOrdersDTO = orderService.convertToDTO(pendingOrders);
-            List<OrderWithDetailsDTO> paidOrdersDTO = orderService.convertToDTO(paidOrders);
-            List<OrderWithDetailsDTO> inTransitOrdersDTO = orderService.convertToDTO(inTransitOrders);
-            List<OrderWithDetailsDTO> doneOrdersDTO = orderService.convertToDTO(doneOrders);
-
-            ctx.attribute("newOrders", newOrdersDTO);
-            ctx.attribute("pendingOrders", pendingOrdersDTO);
-            ctx.attribute("paidOrders", paidOrdersDTO);
-            ctx.attribute("inTransitOrders", inTransitOrdersDTO);
-            ctx.attribute("doneOrders", doneOrdersDTO);
+            ctx.attribute("newOrders", newOrders);
+            ctx.attribute("pendingOrders", pendingOrders);
+            ctx.attribute("paidOrders", paidOrders);
+            ctx.attribute("inTransitOrders", inTransitOrders);
+            ctx.attribute("doneOrders", doneOrders);
 
             ctx.render("orders.html");
         }
@@ -54,6 +48,9 @@ public class OrderController
             ctx.attribute("paidOrders", new ArrayList<>());
             ctx.attribute("inTransitOrders", new ArrayList<>());
             ctx.attribute("doneOrders", new ArrayList<>());
+            ctx.attribute("newOrders", new ArrayList<>());
+            ctx.attribute("pendingOrders", new ArrayList<>());
+
             ctx.redirect("/orders");
         }
 

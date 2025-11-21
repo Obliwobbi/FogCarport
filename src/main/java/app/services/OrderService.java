@@ -25,6 +25,6 @@ public interface OrderService
 
     List<Order> getOrdersByStatus(String status) throws DatabaseException;
 
-    List<OrderWithDetailsDTO> convertToDTO(List<Order> orders) throws DatabaseException;
+    List<OrderWithDetailsDTO> getOrdersByStatusDTO(String status) throws DatabaseException;
 }
 
