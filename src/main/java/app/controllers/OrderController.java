@@ -1,5 +1,6 @@
 package app.controllers;
 
+import app.dto.OrderWithDetailsDTO;
 import app.entities.Order;
 import app.exceptions.DatabaseException;
 import app.services.OrderService;
@@ -33,11 +34,17 @@ public class OrderController
             List<Order> inTransitOrders = orderService.getOrdersByStatus("AFSENDT");
             List<Order> doneOrders = orderService.getOrdersByStatus("AFSLUTTET");
 
-            ctx.attribute("newOrders", newOrders);
-            ctx.attribute("pendingOrders", pendingOrders);
-            ctx.attribute("paidOrders", paidOrders);
-            ctx.attribute("inTransitOrders", inTransitOrders);
-            ctx.attribute("doneOrders", doneOrders);
+            List<OrderWithDetailsDTO> newOrdersDTO = orderService.convertToDTO(newOrders);
+            List<OrderWithDetailsDTO> pendingOrdersDTO = orderService.convertToDTO(pendingOrders);
+            List<OrderWithDetailsDTO> paidOrdersDTO = orderService.convertToDTO(paidOrders);
+            List<OrderWithDetailsDTO> inTransitOrdersDTO = orderService.convertToDTO(inTransitOrders);
+            List<OrderWithDetailsDTO> doneOrdersDTO = orderService.convertToDTO(doneOrders);
+
+            ctx.attribute("newOrders", newOrdersDTO);
+            ctx.attribute("pendingOrders", pendingOrdersDTO);
+            ctx.attribute("paidOrders", paidOrdersDTO);
+            ctx.attribute("inTransitOrders", inTransitOrdersDTO);
+            ctx.attribute("doneOrders", doneOrdersDTO);
 
             ctx.render("orders.html");
         }
