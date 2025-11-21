@@ -14,30 +14,31 @@
         <h1>Indtast din kontakt information</h1>
 
         <label for="firstname">Fornavn</label>
-        <input type="text" id="firstname">
+        <input type="text" id="firstname" name="firstname">
 
         <label for="lastname">Efternavn</label>
-        <input type="text" id="lastname">
+        <input type="text" id="lastname" name="lastname">
 
         <label for="email">Email</label>
-        <input type="text" id="email">
+        <input type="text" id="email" name="email">
 
         <label for="phonenumber">Tlf nummer</label>
-        <input type="text" id="phonenumber">
+        <input type="text" id="phonenumber" name="phonenumber">
 
         <label for="street">Gade</label>
-        <input type="text" id="street">
+        <input type="text" id="street" name="street">
 
         <label for="housenumber">Husnummer</label>
-        <input type="text" id="housenumber">
+        <input type="text" id="housenumber" name="housenumber">
 
         <label for="zipcode">Postnr</label>
-        <input type="text" id="zipcode">
+        <input type="text" id="zipcode" name="zipcode">
 
         <label for="city">By</label>
-        <input type="text" id="city">
+        <input type="text" id="city" name="city">
 
         <button type="submit">Send</button>
+        <p th:if="${errorMessage != null}" th:text="${errorMessage}"></p>
     </form>
 </main>
 

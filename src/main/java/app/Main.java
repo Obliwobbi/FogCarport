@@ -48,9 +48,13 @@ public class Main
         OrderService orderService = new OrderServiceImpl(orderMapper, carportMapper, drawingMapper, customerMapper);
         OrderController orderController = new OrderController(orderService);
 
+        CustomerService customerService = new CustomerServiceImpl(customerMapper);
+        ContactController contactController = new ContactController(customerService, orderService);
+
         // Routing
         homeController.addRoutes(app);
         carportController.addRoutes(app);
         orderController.addRoutes(app);
+        contactController.addRoutes(app);
     }
 }

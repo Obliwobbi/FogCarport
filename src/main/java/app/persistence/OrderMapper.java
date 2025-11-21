@@ -30,8 +30,15 @@ public class OrderMapper
         {
             ps.setTimestamp(1, Timestamp.valueOf(orderDate));
             ps.setString(2, status);
-            ps.setTimestamp(3, Timestamp.valueOf(deliveryDate));
-            ps.setInt(4, drawingId);
+            ps.setNull(3, Types.TIMESTAMP);
+            if(drawingId != null)
+            {
+                ps.setInt(4, drawingId);
+            }
+            else
+            {
+                ps.setNull(4, Types.INTEGER);
+            }
             ps.setInt(5, carportId);
             ps.setInt(6, customerId);
 

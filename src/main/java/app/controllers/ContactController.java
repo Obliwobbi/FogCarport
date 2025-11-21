@@ -14,9 +14,10 @@ public class ContactController {
     private CustomerService customerService;
     private OrderService orderService;
 
-    public ContactController(CustomerService customerService)
+    public ContactController(CustomerService customerService, OrderService orderService)
     {
         this.customerService = customerService;
+        this.orderService = orderService;
     }
 
     public void addRoutes(Javalin app)
@@ -49,8 +50,7 @@ public class ContactController {
 
             orderService.createOrder(carportId, customer.getCustomerId());
 
-            ctx.sessionAttribute("carportId", null);
-            ctx.sessionAttribute("carport", null);
+
 
             ctx.sessionAttribute("successMessage", "Kontakt info modtaget - du hører fra os snarest");
             ctx.redirect("/success");
@@ -62,7 +62,7 @@ public class ContactController {
             }
         catch (IllegalArgumentException e)
             {
-                ctx.attribute("errorMessage", e.getMessage());
+                ctx.attribute("errorMessage", e.getMessage() + "illegal");
                 ctx.render("contact.html");
             }
     }

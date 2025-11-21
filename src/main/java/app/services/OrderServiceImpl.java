@@ -60,7 +60,7 @@ public class OrderServiceImpl implements OrderService
     {
         LocalDateTime orderDate = LocalDateTime.now();
         String status = "NY ORDRE";
-        LocalDateTime deliveryDate = null;
+        LocalDateTime deliveryDate = LocalDateTime.now().plusYears(1);
         Integer drawingId = null;
 
         return orderMapper.createOrder(orderDate, status, deliveryDate, drawingId, carportId, customerId);

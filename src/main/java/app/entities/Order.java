@@ -14,7 +14,7 @@ public class Order
     private LocalDateTime orderDate;
     private String status; //AFVENTER ACCEPT, ACCEPTERET, BETALT
     private LocalDateTime deliveryDate;
-    private int drawingId;
+    private Integer drawingId;
     private int carportId;
     private List<MaterialsLine> materialLines;
     private int customerId;

@@ -58,7 +58,7 @@ public class CarportController
             //TODO WILL NEED TO REDIRECT TO drawing.html, FOR THE MOMENT IT JUST TAKES TO contact.html
             ctx.sessionAttribute("carportId", carport.getCarportId());
             ctx.sessionAttribute("carport", carport);
-            ctx.redirect("contact.html");
+            ctx.redirect("/contact");
         }
         catch (NullPointerException | NumberFormatException e)
         {
