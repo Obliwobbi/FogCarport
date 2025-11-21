@@ -26,9 +26,9 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public Customer findCustomerById(long id)
+    public Customer findCustomerById(int id) throws DatabaseException
     {
-        return null;
+        return customerMapper.getCustomerByID(id);
     }
 
     @Override

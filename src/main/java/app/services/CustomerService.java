@@ -9,7 +9,7 @@ public interface CustomerService {
 
     public Customer findCustomerByName(String name) throws DatabaseException;
 
-    public Customer findCustomerById(long id) throws DatabaseException;
+    public Customer findCustomerById(int id) throws DatabaseException;
 
     public Customer findCustomerByEmail(String email) throws DatabaseException;
 
