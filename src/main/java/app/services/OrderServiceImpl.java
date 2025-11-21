@@ -56,9 +56,9 @@ public class OrderServiceImpl implements OrderService
     }
 
     @Override
-    public void deleteOrder(int orderId) throws DatabaseException
+    public boolean deleteOrder(int orderId) throws DatabaseException
     {
-        orderMapper.deleteOrder(orderId);
+        return orderMapper.deleteOrder(orderId);
     }
 
     @Override

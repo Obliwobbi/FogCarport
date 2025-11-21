@@ -6,6 +6,7 @@ import app.exceptions.DatabaseException;
 import app.services.OrderService;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +23,7 @@ public class OrderController
     public void addRoutes(Javalin app)
     {
         app.get("/orders", this::showOrders);
+        app.post("/orders/delete/{id}", this::deleteOrder);
     }
 
     private void showOrders(Context ctx)
@@ -55,6 +57,37 @@ public class OrderController
         }
 
         ctx.render("orders.html");
+    }
+
+    private void deleteOrder(Context ctx) throws DatabaseException
+    {
+        String orderIdStr = ctx.pathParam("id");
+
+        try
+        {
+            int orderId = Integer.parseInt(orderIdStr);
+            if (orderService.deleteOrder(orderId))
+            {
+                ctx.redirect("/orders");
+                ctx.attribute("successMessage", "Du har slette ordren med id " + orderId);
+            }
+            else
+            {
+                ctx.attribute("errorMessage", "Kunne ikke slette ordren");
+                ctx.redirect("/orders");
+            }
+
+        }
+        catch (NumberFormatException e)
+        {
+            ctx.attribute("errorMessage", "Kunne ikke parse tallet");
+            ctx.redirect("/orders");
+        }
+        catch (DatabaseException e)
+        {
+            ctx.attribute("errorMessage", e.getMessage());
+            ctx.redirect("/orders");
+        }
     }
 }
 
