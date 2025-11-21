@@ -15,6 +15,8 @@ public interface OrderService
 
     Order createOrder(LocalDateTime orderDate, String status, LocalDateTime deliveryDate, Integer drawingId, int carportId, int customerId) throws DatabaseException;
 
+    Order createOrder(int carportId, int customerId) throws DatabaseException;
+
     void deleteOrder(int orderId) throws DatabaseException;
 
     void updateOrderStatus(int orderId, String status) throws DatabaseException;

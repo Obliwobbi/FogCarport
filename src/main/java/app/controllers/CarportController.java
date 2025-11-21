@@ -51,15 +51,14 @@ public class CarportController
                 carportservice.validateShedTotalSize(carportLength, carportWidth, shedLength, shedWidth);
             }
 
-            HashMap<String, Object> model = new HashMap<>();
             Carport carport = carportservice.createCarport(carportWidth, carportLength, carportHeight, withShed, shedWidth, shedLength, customerWishes);
-
-            model.put("carport", carport);
 
             ctx.sessionAttribute("carportErrorLabel", null);
 
             //TODO WILL NEED TO REDIRECT TO drawing.html, FOR THE MOMENT IT JUST TAKES TO contact.html
-            ctx.render("contact.html", model);
+            ctx.sessionAttribute("carportId", carport.getCarportId());
+            ctx.sessionAttribute("carport", carport);
+            ctx.redirect("contact.html");
         }
         catch (NullPointerException | NumberFormatException e)
         {
