@@ -1,13 +1,18 @@
 package app.controllers;
 
+import app.entities.Customer;
 import app.exceptions.DatabaseException;
 import app.services.CustomerService;
+import app.services.OrderService;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
+
+import java.time.LocalDateTime;
 
 public class ContactController {
 
     private CustomerService customerService;
+    private OrderService orderService;
 
     public ContactController(CustomerService customerService)
     {
@@ -25,7 +30,7 @@ public class ContactController {
     {
         try
         {
-            customerService.registerNewCustomer(
+            Customer customer = customerService.registerNewCustomer(
                     ctx.formParam("firstname"),
                     ctx.formParam("lastname"),
                     ctx.formParam("email"),
@@ -35,6 +40,18 @@ public class ContactController {
                     Integer.parseInt(ctx.formParam("zipcode")),
                     ctx.formParam("city")
             );
+
+            Integer carportId = ctx.sessionAttribute("carportId");
+            if(carportId == null)
+            {
+                throw new IllegalArgumentException("Ingen carport fundet - gå tilbage og indtast mål");
+            }
+
+            orderService.createOrder(carportId, customer.getCustomerId());
+
+            ctx.sessionAttribute("carportId", null);
+            ctx.sessionAttribute("carport", null);
+
             ctx.sessionAttribute("successMessage", "Kontakt info modtaget - du hører fra os snarest");
             ctx.redirect("/success");
         }

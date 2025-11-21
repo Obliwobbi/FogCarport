@@ -56,7 +56,18 @@ public class OrderServiceImpl implements OrderService
     }
 
     @Override
-    public boolean deleteOrder(int orderId) throws DatabaseException
+    public Order createOrder(int carportId, int customerId) throws DatabaseException
+    {
+        LocalDateTime orderDate = LocalDateTime.now();
+        String status = "NY ORDRE";
+        LocalDateTime deliveryDate = null;
+        Integer drawingId = null;
+
+        return orderMapper.createOrder(orderDate, status, deliveryDate, drawingId, carportId, customerId);
+    }
+
+    @Override
+    public void deleteOrder(int orderId) throws DatabaseException
     {
         return orderMapper.deleteOrder(orderId);
     }
