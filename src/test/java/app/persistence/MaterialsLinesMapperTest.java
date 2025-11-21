@@ -283,5 +283,19 @@ class MaterialsLinesMapperTest
     @Test
     void deleteMaterialLine() throws DatabaseException
     {
+        OrderMapper orderMapper = new OrderMapper(connectionPool);
+        Order order = orderMapper.getOrderById(2);
+        assertNotNull(order);
+
+        MaterialsLinesMapper materialsLinesMapper = new MaterialsLinesMapper(connectionPool);
+
+        List<MaterialsLine> materialsLinesList = materialsLinesMapper.getMaterialLinesByOrderId(order.getOrderId());
+        MaterialsLine materialsLine = materialsLinesList.get(0);
+
+        assertTrue(materialsLinesMapper.deleteMaterialLine(materialsLine));
+
+        materialsLinesList = materialsLinesMapper.getMaterialLinesByOrderId(order.getOrderId());
+
+        assertEquals(1, materialsLinesList.size());
     }
 }
