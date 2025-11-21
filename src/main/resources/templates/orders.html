@@ -31,6 +31,7 @@
                 </thead>
                 <tbody>
                 <tr th:each="order : ${newOrders}">
+                    <td th:text="${order.orderId}"></td>
                     <td th:text="${order.customer.firstName + ' ' + order.customer.lastName}"></td>
                     <td th:text="${order.customer.email}"></td>
                     <td th:text="${#temporals.format(order.orderDate, 'dd-MM-yyyy HH:mm')}"></td>
@@ -84,6 +85,7 @@
                 </thead>
                 <tbody>
                 <tr th:each="order : ${pendingOrders}">
+                    <td th:text="${order.orderId}"></td>
                     <td th:text="${order.customer.firstName + ' ' + order.customer.lastName}"></td>
                     <td th:text="${order.customer.email}"></td>
                     <td th:text="${#temporals.format(order.orderDate, 'dd-MM-yyyy HH:mm')}"></td>
@@ -137,6 +139,7 @@
                 </thead>
                 <tbody>
                 <tr th:each="order : ${paidOrders}">
+                    <td th:text="${order.orderId}"></td>
                     <td th:text="${order.customer.firstName + ' ' + order.customer.lastName}"></td>
                     <td th:text="${order.customer.email}"></td>
                     <td th:text="${#temporals.format(order.orderDate, 'dd-MM-yyyy HH:mm')}"></td>
@@ -190,6 +193,7 @@
                 </thead>
                 <tbody>
                 <tr th:each="order : ${inTransitOrders}">
+                    <td th:text="${order.orderId}"></td>
                     <td th:text="${order.customer.firstName + ' ' + order.customer.lastName}"></td>
                     <td th:text="${order.customer.email}"></td>
                     <td th:text="${#temporals.format(order.orderDate, 'dd-MM-yyyy HH:mm')}"></td>
@@ -243,6 +247,7 @@
                 </thead>
                 <tbody>
                 <tr th:each="order : ${doneOrders}">
+                    <td th:text="${order.orderId}"></td>
                     <td th:text="${order.customer.firstName + ' ' + order.customer.lastName}"></td>
                     <td th:text="${order.customer.email}"></td>
                     <td th:text="${#temporals.format(order.orderDate, 'dd-MM-yyyy HH:mm')}"></td>
