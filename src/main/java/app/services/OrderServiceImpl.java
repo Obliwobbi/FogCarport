@@ -14,15 +14,14 @@ public class OrderServiceImpl implements OrderService
 {
     private OrderMapper orderMapper;
     private CarportMapper carportMapper;
-    private BillOfMaterialsMapper billOfMaterialsMapper;
     private DrawingMapper drawingMapper;
     private CustomerMapper customerMapper;
+    private MaterialsLinesMapper materialsLinesMapper;
 
-    public OrderServiceImpl(OrderMapper orderMapper, CarportMapper carportMapper, BillOfMaterialsMapper billOfMaterialsMapper, DrawingMapper drawingMapper, CustomerMapper customerMapper)
+    public OrderServiceImpl(OrderMapper orderMapper, CarportMapper carportMapper, DrawingMapper drawingMapper, CustomerMapper customerMapper)
     {
         this.orderMapper = orderMapper;
         this.carportMapper = carportMapper;
-        this.billOfMaterialsMapper = billOfMaterialsMapper;
         this.drawingMapper = drawingMapper;
         this.customerMapper = customerMapper;
     }
@@ -33,7 +32,6 @@ public class OrderServiceImpl implements OrderService
         Order order = orderMapper.getOrderById(orderId);
         Drawing drawing = drawingMapper.getDrawingById(order.getDrawingId());
         Carport carport = carportMapper.getCarportById(order.getCarportId());
-        BillOfMaterials bOM = billOfMaterialsMapper.getBillOfMaterialsById(order.getBillOfMaterialsId());
         Customer customer = customerMapper.getCustomerByID(order.getCustomerId());
 
         return new OrderWithDetailsDTO(orderId,
@@ -41,8 +39,8 @@ public class OrderServiceImpl implements OrderService
                 order.getStatus(),
                 order.getDeliveryDate(),
                 drawing,
+                order.getMaterialLines(),
                 carport,
-                bOM,
                 customer);
     }
 
@@ -53,9 +51,9 @@ public class OrderServiceImpl implements OrderService
     }
 
     @Override
-    public Order createOrder(LocalDateTime orderDate, String status, LocalDateTime deliveryDate, Integer drawingId, int carportId, Integer billOfMaterialsId, int customerId) throws DatabaseException
+    public Order createOrder(LocalDateTime orderDate, String status, LocalDateTime deliveryDate, Integer drawingId, int carportId, int customerId) throws DatabaseException
     {
-        return orderMapper.createOrder(orderDate, status, deliveryDate, drawingId, carportId, billOfMaterialsId, customerId);
+        return orderMapper.createOrder(orderDate, status, deliveryDate, drawingId, carportId, customerId);
     }
 
     @Override
@@ -74,12 +72,6 @@ public class OrderServiceImpl implements OrderService
     public void updateOrderDeliveryDate(int orderId, LocalDateTime deliveryDate) throws DatabaseException
     {
         orderMapper.updateOrderDeliveryDate(orderId, deliveryDate);
-    }
-
-    @Override
-    public void updateOrderBillOfMaterials(int orderId, int billOfMaterialsId) throws DatabaseException
-    {
-        orderMapper.updateOrderBillOfMaterials(orderId, billOfMaterialsId);
     }
 
     @Override
