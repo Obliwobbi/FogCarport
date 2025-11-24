@@ -90,7 +90,7 @@ public class CustomerMapper
 
     public boolean deleteCustomer(int customerId) throws DatabaseException
     {
-        String sql = "SELECT * FROM customers WHERE customer_id = ?";
+        String sql = "DELETE FROM customers WHERE customer_id = ?";
 
         try (Connection connection = connectionPool.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql))
@@ -105,7 +105,7 @@ public class CustomerMapper
         }
         catch (SQLException e)
         {
-            throw new DatabaseException("Fejl ved sletning af Kunde fra Database" + e.getMessage());
+            throw new DatabaseException("Fejl ved sletning af Kunde fra Database " + e.getMessage());
         }
         return false;
     }

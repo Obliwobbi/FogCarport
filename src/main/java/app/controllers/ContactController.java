@@ -57,7 +57,7 @@ public class ContactController
             if (!orderSucces)
             {
                 customerService.deleteCustomer(customer.getCustomerId());
-                ctx.attribute("Ordre kunne ikke oprettes");
+                ctx.attribute("errorMessage","Ordre kunne ikke oprettes");
                 ctx.render("contact.html");
                 return;
             }
@@ -80,7 +80,7 @@ public class ContactController
             {
                 customerService.deleteCustomer(customer.getCustomerId());
             }
-            ctx.attribute("errorMessage", e.getMessage() + "illegal");
+            ctx.attribute("errorMessage", e.getMessage());
             ctx.render("contact.html");
         }
         catch (Exception e)
