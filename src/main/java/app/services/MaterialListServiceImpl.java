@@ -12,7 +12,7 @@ public class MaterialListServiceImpl implements MaterialListService
         if (carport.isWithShed())
         {
             result += 3; //door
-            
+
             if (carport.getShedWidth() > 270)
             {
                 result += 2;
@@ -22,19 +22,50 @@ public class MaterialListServiceImpl implements MaterialListService
                 result += 2;
             }
             //Calculation of remaining length between shed and corner post due to max length of Rafters(Rem træ).
-            double remainingLength = (carport.getLength()-100.0)-carport.getShedLength();
-            if(remainingLength > 310)
+            double remainingLength = (carport.getLength() - 100.0) - carport.getShedLength();
+            if (remainingLength > 310)
             {
                 result += 2;
             }
-        }
-        else
+        } else
         {
-            if(carport.getLength() > 510)
+            if (carport.getLength() > 510)
             {
                 result += 2;
             }
         }
+        return result;
+    }
+
+    public int calculateRafters(Carport carport)
+    {
+        int result = 0;
+
+        return result;
+    }
+
+    public int calculateRoofPlates(Carport carport)
+    {
+        int result = 0;
+        return result;
+    }
+
+    public int calculateBolts(int posts)
+    {
+        int result = 0;
+        return result;
+    }
+
+    public int calculateFittings(int rafters)
+    {
+        int result = 0;
+        return result;
+    }
+
+    public int calculateFittingsScrews(int fittings)
+    {
+        int result = 0;
+        //TODO: Calculate fittings x 9 and see how many packs you need
         return result;
     }
 }
