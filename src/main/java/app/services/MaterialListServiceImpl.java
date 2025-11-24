@@ -11,7 +11,7 @@ public class MaterialListServiceImpl implements MaterialListService
 
         if (carport.isWithShed())
         {
-            result += 1; //door
+            result += 3; //door
             
             if (carport.getShedWidth() > 270)
             {
@@ -21,7 +21,8 @@ public class MaterialListServiceImpl implements MaterialListService
             {
                 result += 2;
             }
-            double remainingLength = (carport.getLength()-1)-carport.getShedLength();
+            //Calculation of remaining length between shed and corner post due to max length of Rafters(Rem træ).
+            double remainingLength = (carport.getLength()-100.0)-carport.getShedLength();
             if(remainingLength > 310)
             {
                 result += 2;
@@ -29,11 +30,10 @@ public class MaterialListServiceImpl implements MaterialListService
         }
         else
         {
-            if(carport.getLength() > 600)
+            if(carport.getLength() > 510)
             {
                 result += 2;
             }
-
         }
         return result;
     }
