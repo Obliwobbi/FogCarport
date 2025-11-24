@@ -15,4 +15,5 @@ public interface CustomerService {
 
     public Customer findCustomerByPhone(String phone) throws DatabaseException;
 
+    void deleteCustomer(int customerId) throws DatabaseException;
 }
