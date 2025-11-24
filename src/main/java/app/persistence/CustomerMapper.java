@@ -84,7 +84,29 @@ public class CustomerMapper
         }
         catch (SQLException e)
         {
-            throw new DatabaseException("Database ved hentning af data for customer " + e);
+            throw new DatabaseException("Databasefejl ved hentning af data for customer " + e);
         }
+    }
+
+    public boolean deleteCustomer(int customerId) throws DatabaseException
+    {
+        String sql = "SELECT * FROM customers WHERE customer_id = ?";
+
+        try (Connection connection = connectionPool.getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql))
+        {
+            ps.setInt(1, customerId);
+            int rowsAffected = ps.executeUpdate();
+
+            if(rowsAffected == 1)
+            {
+                return true;
+            }
+        }
+        catch (SQLException e)
+        {
+            throw new DatabaseException("Fejl ved sletning af Kunde fra Database" + e.getMessage());
+        }
+        return false;
     }
 }
