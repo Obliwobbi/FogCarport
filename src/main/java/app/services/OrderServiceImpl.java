@@ -56,14 +56,15 @@ public class OrderServiceImpl implements OrderService
     }
 
     @Override
-    public Order createOrder(int carportId, int customerId) throws DatabaseException
+    public boolean createOrder(int carportId, int customerId) throws DatabaseException
     {
         LocalDateTime orderDate = LocalDateTime.now();
         String status = "NY ORDRE";
         LocalDateTime deliveryDate = LocalDateTime.now().plusYears(1);
         Integer drawingId = null;
 
-        return orderMapper.createOrder(orderDate, status, deliveryDate, drawingId, carportId, customerId);
+        orderMapper.createOrder(orderDate, status, deliveryDate, drawingId, carportId, customerId);
+        return true;
     }
 
     @Override
