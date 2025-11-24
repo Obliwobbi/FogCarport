@@ -141,4 +141,16 @@ class CustomerMapperTest
 
         assertEquals(customer,customerMapper.getCustomerByID(1));
     }
+
+    @Test
+    void testDeleteCustomer() throws DatabaseException
+    {
+        // Arrange
+        Customer customer = customerMapper.newCustomer("Jens", "Jensen", "test@mail.dk", "12345678",
+                "Gade","2", 2900, "Hellerup");
+
+        // Act
+        assertTrue(customerMapper.deleteCustomer(customer.getCustomerId()));
+        assertThrows(DatabaseException.class, () -> customerMapper.getCustomerByID(1));
+    }
 }

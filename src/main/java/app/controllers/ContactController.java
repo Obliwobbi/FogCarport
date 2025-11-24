@@ -9,7 +9,8 @@ import io.javalin.http.Context;
 
 import java.time.LocalDateTime;
 
-public class ContactController {
+public class ContactController
+{
 
     private CustomerService customerService;
     private OrderService orderService;
@@ -27,11 +28,12 @@ public class ContactController {
         app.post("/contact", ctx -> handleCreateCustomer(ctx));
     }
 
-    private void handleCreateCustomer(Context ctx)
+    private void handleCreateCustomer(Context ctx) throws DatabaseException
     {
+        Customer customer = null;
         try
         {
-            Customer customer = customerService.registerNewCustomer(
+            customer = customerService.registerNewCustomer(
                     ctx.formParam("firstname"),
                     ctx.formParam("lastname"),
                     ctx.formParam("email"),
@@ -43,31 +45,56 @@ public class ContactController {
             );
 
             Integer carportId = ctx.sessionAttribute("carportId");
-            if(carportId == null)
+            if (carportId == null)
             {
-                throw new IllegalArgumentException("Ingen carport fundet - gå tilbage og indtast mål");
+                ctx.attribute("errorMessage","Ingen carport fundet - gå tilbage og indtast mål");
+                customerService.deleteCustomer(customer.getCustomerId());
+                ctx.render("contact.html");
             }
 
-            orderService.createOrder(carportId, customer.getCustomerId());
+            boolean orderSucces = orderService.createOrder(carportId, customer.getCustomerId());
 
-
+            if (!orderSucces)
+            {
+                customerService.deleteCustomer(customer.getCustomerId());
+                ctx.attribute("errorMessage","Ordre kunne ikke oprettes");
+                ctx.render("contact.html");
+                return;
+            }
 
             ctx.sessionAttribute("successMessage", "Kontakt info modtaget - du hører fra os snarest");
             ctx.redirect("/success");
         }
         catch (DatabaseException e)
+        {
+            if (customer != null)
             {
-                ctx.attribute("errorMessage", e.getMessage() + "fejl ved indlæsning af kunde info");
-                ctx.render("contact.html");
+                customerService.deleteCustomer(customer.getCustomerId());
             }
+            ctx.attribute("errorMessage", e.getMessage() + "fejl ved indlæsning af kunde info");
+            ctx.render("contact.html");
+        }
         catch (IllegalArgumentException e)
+        {
+            if (customer != null)
             {
-                ctx.attribute("errorMessage", e.getMessage() + "illegal");
-                ctx.render("contact.html");
+                customerService.deleteCustomer(customer.getCustomerId());
             }
+            ctx.attribute("errorMessage", e.getMessage());
+            ctx.render("contact.html");
+        }
+        catch (Exception e)
+        {
+            if (customer != null)
+            {
+                customerService.deleteCustomer(customer.getCustomerId());
+            }
+            ctx.attribute("errorMessage", "Der opstod en uventet fejl");
+            ctx.render("contact.html");
+        }
     }
 
-    private void showContactPage (Context ctx)
+    private void showContactPage(Context ctx)
     {
         ctx.render("contact");
     }
