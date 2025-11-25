@@ -53,7 +53,6 @@ public class MaterialListServiceImpl implements MaterialListService
     {
         HashMap<Double, Integer> result = new HashMap<>();
 
-
         if (!carport.isWithShed())
         {
             if (carport.getLength() <= 480)
@@ -140,10 +139,25 @@ public class MaterialListServiceImpl implements MaterialListService
         return result;
     }
 
-    public int calculateBolts(int posts)
+    public int calculateRoofPlateScrews(Carport carport)
     {
-        int result = 0;
-        return result;
+        //Insert return in helper method to calculate packs
+        return (int) Math.ceil( ((carport.getWidth()* carport.getLength())/100) * 15);
+    }
+
+    public int calculateBolts(int posts, HashMap<Double, Integer> topPlates)
+    {
+        int result = posts * 2;
+
+        if (topPlates.containsKey(480.0) && topPlates.containsKey(600.0))
+        {
+            result += 4;
+        }
+        else if (topPlates.containsValue(4))
+        {
+            result += 4;
+        }
+            return result;
     }
 
     public int calculateFittings(int ceilingJoist)

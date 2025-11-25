@@ -16,7 +16,9 @@ public interface MaterialListService
 
     HashMap<Double, Integer> calculateRoofPlates(Carport carport);
 
-    int calculateBolts(int posts);
+    int calculateRoofPlateScrews(Carport carport);
+
+    int calculateBolts(int posts, HashMap<Double, Integer> topPlates);
 
     int calculateFittings(int rafters);
 
