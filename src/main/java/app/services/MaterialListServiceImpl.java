@@ -93,9 +93,50 @@ public class MaterialListServiceImpl implements MaterialListService
         return result;
     }
 
-    public int calculateRoofPlates(Carport carport)
+    public int calculateBlocking(Carport carport)
     {
         int result = 0;
+
+        return result;
+    }
+
+    public int calculateSidingBoard(Carport carport)
+    {
+        int result = 0;
+
+        return result;
+    }
+
+    public HashMap<Double, Integer> calculateRoofPlates(Carport carport)
+    {
+        //tagplader :
+        //Start med at lægge pladerne løst op, så de når ud til sternbrædderne i sider og front, bagerst skal
+        //pladerne række ca. 5.cm ud over sternbrættet, med henblik på afvanding.
+
+        HashMap<Double, Integer> result = new HashMap<>();
+        int count = (int) Math.ceil(carport.getWidth()/100);
+
+        if(carport.getLength() <= 355)
+        {
+            result.put(360.0,count);
+        }
+
+        if(carport.getLength() > 360 && carport.getLength() <=595)
+        {
+            result.put(600.0,count);
+        }
+
+        if(carport.getLength() > 600 && carport.getLength() <=695)
+        {
+            result.put(360.0,(count*2));
+        }
+
+        if(carport.getLength() > 700)
+        {
+            result.put(600.0,count);
+            result.put(360.0,count);
+        }
+
         return result;
     }
 
@@ -105,25 +146,27 @@ public class MaterialListServiceImpl implements MaterialListService
         return result;
     }
 
-    public int calculateFittings(int rafters)
+    public int calculateFittings(int ceilingJoist)
     {
         int result = 0;
+        //Uses ceiling joist count for getting x right and x left fittings.
         return result;
     }
 
-    public int calculateFittingsScrews(int fittings)
+    public int calculateFittingsScrewsNeeded(int fittings, int screws)
     {
-        int result = 0;
-        //TODO: Calculate fittings x 9 and see how many packs you need
-        return result;
+        return fittings * screws;
+    }
+
+    public int calculateScrewPacks(int packsize, int screws)
+    {
+        return (int) Math.ceil(screws/packsize);
     }
 }
 
 
 /*
 Materialer forbrug :
-max 310 mellem stolper, første stolpe fra forside 1 meter inde.
-
 hvis skur er mere end 270 bred skal der ekstra stolpe til montering af løsholte(tværstiver)
 
 Læg remmen i udskæringen på toppen af stolperne (fasthold evt. med skruetvinger under
@@ -132,21 +175,12 @@ monteringen) og bor hul til bræddebolte, 2 stk. pr. stolpe,
 Bemærk at remmen samles af 2 stykker, over den stolpe der er mellem skur og carport,
 Samlingen centreres over stolpen og der anvendes i alt 4 bolte til denne samling.
 
-Afstanden mellem spærene skal være ens max 60.cm
-
 Montér universalbeslagene med vinklen mod bagsiden af spær/ovenpå rem, og fladen på
 indvendigt side af rem.(se tegning) Alle beslag monteres med 3 beslags skruer pr. flade i
 beslaget. Vær opmærksom på at der er højre og venstre beslag. Ved det bagerste spær monteres
 beslaget på spærets forside af hensyn til stern eller beklædning.
 
-OBS. Rem max 600 (også dem der bruges til spær)
-Mindste i materialet udleveret er 480 cm
 
-hulbånd monteres med 2 beslagskruer
-
-tagplader :
-Start med at lægge pladerne løst op, så de når ud til sternbrædderne i sider og front, bagerst skal
-pladerne række ca. 5.cm ud over sternbrættet, med henblik på afvanding.
 
 minimum 200 mm overlap og altid midt over lægte.
 
