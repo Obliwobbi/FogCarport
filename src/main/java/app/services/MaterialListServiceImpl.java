@@ -2,6 +2,8 @@ package app.services;
 
 import app.entities.Carport;
 
+import java.util.HashMap;
+
 public class MaterialListServiceImpl implements MaterialListService
 {
 
@@ -21,7 +23,7 @@ public class MaterialListServiceImpl implements MaterialListService
             {
                 result += 2;
             }
-            //Calculation of remaining length between shed and corner post due to max length of Rafters(Rem træ).
+            //Calculation of remaining length between shed and corner post due to max length of Wall Plate(Rem træ).
             double remainingLength = (carport.getLength() - 100.0) - carport.getShedLength();
             if (remainingLength > 310)
             {
@@ -37,10 +39,57 @@ public class MaterialListServiceImpl implements MaterialListService
         return result;
     }
 
-    public int calculateRafters(Carport carport)
+    public int calculateCeilingJoist(Carport carport)
     {
-        int result = 0;
+        int result = 2; //one for each for the ends
+        double carportLength = carport.getLength();
 
+        result += (int) Math.ceil((carportLength - 9) / 60); //rounds up always to ensure there is no more than 60 cm between rafters
+
+        return result;
+    }
+
+    public HashMap<Double, Integer> calculateTopPlate(Carport carport)
+    {
+        HashMap<Double, Integer> result = new HashMap<>();
+
+
+        if (!carport.isWithShed())
+        {
+            if (carport.getLength() <= 480)
+            {
+                result.put(480.0, 2);
+            }
+            else if (carport.getLength() > 480 && carport.getLength() <= 600)
+            {
+                result.put(600.0, 2);
+            }
+            else
+            {
+                result.put(480.0, 4);
+            }
+        }
+        else
+        {
+            if (carport.getLength() > 600 && carport.getShedWidth() == (carport.getWidth() - 30))
+            {
+                result.put(600.0, 2);
+                result.put(480.0, 1);
+            }
+            else if (carport.getLength() > 480 && carport.getLength() <= 600)
+            {
+                result.put(600.0, 2);
+            }
+            else if (carport.getLength() <= 480 && carport.getShedWidth() <= (carport.getWidth() - 30))
+            {
+                result.put(480.0, 2);
+            }
+            else
+            {
+                result.put(600.0, 1);
+                result.put(480.0, 3);
+            }
+        }
         return result;
     }
 
@@ -80,7 +129,7 @@ hvis skur er mere end 270 bred skal der ekstra stolpe til montering af løsholte
 Læg remmen i udskæringen på toppen af stolperne (fasthold evt. med skruetvinger under
 monteringen) og bor hul til bræddebolte, 2 stk. pr. stolpe,
 
-Bemærk at remmen samles af 2 stykker, over den stole der er mellem skur og carport,
+Bemærk at remmen samles af 2 stykker, over den stolpe der er mellem skur og carport,
 Samlingen centreres over stolpen og der anvendes i alt 4 bolte til denne samling.
 
 Afstanden mellem spærene skal være ens max 60.cm
