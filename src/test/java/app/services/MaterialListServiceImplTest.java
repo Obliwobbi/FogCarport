@@ -5,6 +5,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.HashMap;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class MaterialListServiceImplTest
@@ -17,50 +19,52 @@ class MaterialListServiceImplTest
 
     }
 
+    // ************************ TESTING OF: POSTS ************************
+
     @DisplayName("Delivered Material: Carport size (6m x 7.8m) + shed (5.3m x 2.1m)")
     @Test
     void calculatePosts()
     {
-        Carport carport = new Carport(1, 600,780,225,true,530,210,"");
+        Carport carport = new Carport(1, 600, 780, 225, true, 530, 210, "");
 
         int actual = materialListService.calculatePosts(carport);
         int expected = 11; //From delivered material
-        assertEquals(expected,actual);
+        assertEquals(expected, actual);
     }
 
     @DisplayName("Max carport size (6m x 7.8m) + max shed (5.3m x 5.1m)")
     @Test
     void calculatePostsMaxCarportMaxShedSize()
     {
-        Carport carport = new Carport(1, 600,780,225,true,530,510,"");
+        Carport carport = new Carport(1, 600, 780, 225, true, 530, 510, "");
 
         int actual = materialListService.calculatePosts(carport);
         int expected = 11; //From delivered material
-        assertEquals(expected,actual);
+        assertEquals(expected, actual);
     }
 
     @DisplayName("Max size carport, no shed")
     @Test
     void calculatePostsMaxSize()
     {
-        Carport carport = new Carport(1, 600,780,225,false,"");
+        Carport carport = new Carport(1, 600, 780, 225, false, "");
 
         int actual = materialListService.calculatePosts(carport);
         int expected = 6;
 
-        assertEquals(expected,actual);
+        assertEquals(expected, actual);
     }
 
     @DisplayName("Carport over 510, no shed")
     @Test
     void calculatePostsOver510NoShed()
     {
-        Carport carport = new Carport(1, 600,520,225,false,"");
+        Carport carport = new Carport(1, 600, 520, 225, false, "");
 
         int actual = materialListService.calculatePosts(carport);
         int expected = 6;
 
-        assertEquals(expected,actual);
+        assertEquals(expected, actual);
     }
 
 
@@ -68,12 +72,12 @@ class MaterialListServiceImplTest
     @Test
     void calculatePostUnder510NoShed()
     {
-        Carport carport = new Carport(1, 600,500,225,false,"");
+        Carport carport = new Carport(1, 600, 500, 225, false, "");
 
         int actual = materialListService.calculatePosts(carport);
         int expected = 4;
 
-        assertEquals(expected,actual);
+        assertEquals(expected, actual);
     }
 
 
@@ -81,13 +85,174 @@ class MaterialListServiceImplTest
     @Test
     void calculatePostMaxSizeSmallShed()
     {
-        Carport carport = new Carport(1, 600,780,225,true,120,120,"");
+        Carport carport = new Carport(1, 600, 780, 225, true, 120, 120, "");
 
         int actual = materialListService.calculatePosts(carport);
         int expected = 9;
 
-        assertEquals(expected,actual);
+        assertEquals(expected, actual);
     }
 
+    // ************************ TESTING OF: CEILING JOISTS ************************
 
+    @DisplayName("Calculate ceiling Joist, Delivered Material: Carport size (6m x 7.8m) + shed (5.3m x 2.1m)")
+    @Test
+    void calculateCeilingJoist()
+    {
+        Carport carport = new Carport(1, 600, 780, 225, true, 530, 210, "");
+
+        int actual = materialListService.calculateCeilingJoist(carport);
+        int expected = 15;
+
+        assertEquals(expected, actual);
+    }
+
+    @DisplayName("Calculate ceiling Joist, where carport.length == 510, so before rounding up should be 8.35 + 2 joists needed")
+    @Test
+    void calculateCeilingJoistTwo()
+    {
+        Carport carport = new Carport(1, 600, 510, 225, true, 530, 210, "");
+
+        // 510 - 9 (to account for a joist in both ends. then 501/60(max length between joints) = 8.35. method rounds to 9 and add the 2 for the ends.
+
+        int actual = materialListService.calculateCeilingJoist(carport);
+        int expected = 11;
+
+        assertEquals(expected, actual);
+    }
+
+    // ************************ TESTING OF: TOP PLATES ************************
+
+    @DisplayName("Top plate: no shed, short carport")
+    @Test
+    public void calculateTopPlate_Short()
+    {
+        Carport carport = new Carport(1, 300, 480, 225, false, 0, 0, "");
+        HashMap<Double, Integer> result = materialListService.calculateTopPlate(carport);
+
+        assertEquals(2, result.get(480.0));
+        assertNull(result.get(600.0));
+    }
+
+    @DisplayName("Top plate: no shed, medium carport")
+    @Test
+    public void calculateTopPlate_Medium()
+    {
+        Carport carport = new Carport(1, 300, 600, 225, false, 0, 0, "");
+        HashMap<Double, Integer> result = materialListService.calculateTopPlate(carport);
+
+        assertEquals(2, result.get(600.0));
+        assertNull(result.get(480.0));
+    }
+
+    @DisplayName("Top plate: no shed, long carport")
+    @Test
+    public void calculateTopPlate_Long()
+    {
+        Carport carport = new Carport(1, 300, 780, 225, false, 0, 0, "");
+        HashMap<Double, Integer> result = materialListService.calculateTopPlate(carport);
+
+        assertEquals(4, result.get(480.0));
+        assertNull(result.get(600.0));
+    }
+
+    @DisplayName("Top plate: Delivered Material: Carport size (6m x 7.8m) + shed (5.3m x 2.1m)")
+    @Test
+    public void calculateTopPlate_LongFullWidth()
+    {
+        Carport carport = new Carport(1, 600, 780, 225, true, 570, 210, ""); // shedWidth = 600-30 = 570
+        HashMap<Double, Integer> result = materialListService.calculateTopPlate(carport);
+
+        assertEquals(2, result.get(600.0));
+        assertEquals(1, result.get(480.0));
+    }
+
+    @DisplayName("Top plate: full width shed, short carport")
+    @Test
+    public void calculateTopPlate_ShortFullWidth()
+    {
+        Carport carport = new Carport(1, 300, 480, 225, true, 270, 210, ""); // shedWidth = 300-30 = 270
+        HashMap<Double, Integer> result = materialListService.calculateTopPlate(carport);
+
+        assertEquals(2, result.get(480.0));
+        assertNull(result.get(600.0));
+    }
+
+    @DisplayName("Top plate: full width shed, medium carport")
+    @Test
+    public void calculateTopPlate_MediumFullWidth()
+    {
+        Carport carport = new Carport(1, 450, 580, 225, true, 420, 300, ""); // shedWidth = 450-30 = 420
+        HashMap<Double, Integer> result = materialListService.calculateTopPlate(carport);
+
+        assertEquals(2, result.get(600.0));
+        assertNull(result.get(480.0));
+    }
+
+    @DisplayName("Top plate: partial width shed, long carport")
+    @Test
+    public void calculateTopPlate_LongPartialWidth()
+    {
+        Carport carport = new Carport(1, 600, 780, 225, true, 210, 210, ""); // shedWidth = 210, much less than 570
+        HashMap<Double, Integer> result = materialListService.calculateTopPlate(carport);
+
+        assertEquals(1, result.get(600.0));
+        assertEquals(3, result.get(480.0));
+    }
+
+    @DisplayName("Top plate: partial width shed, medium carport")
+    @Test
+    public void calculateTopPlate_ShortPartialWidth()
+    {
+        Carport carport = new Carport(1, 600, 480, 225, true, 240, 210, ""); // shedWidth = 240, less than 570
+        HashMap<Double, Integer> result = materialListService.calculateTopPlate(carport);
+
+        assertEquals(2, result.get(480.0));
+        assertNull(result.get(600.0));
+    }
+
+    @DisplayName("Top plate: partial width shed, medium carport")
+    @Test
+    public void calculateTopPlate_MediumPartialWidth()
+    {
+        Carport carport = new Carport(1, 450, 540, 225, true, 180, 300, ""); // shedWidth = 180, less than 420
+        HashMap<Double, Integer> result = materialListService.calculateTopPlate(carport);
+
+        assertEquals(2, result.get(600.0));
+        assertNull(result.get(480.0));
+    }
+
+    // Edge cases
+    @DisplayName("Top plate: partial width shed, exactly 600cm carport")
+    @Test
+    public void calculateTopPlate_Exactly600_FullWidth()
+    {
+        Carport carport = new Carport(1, 240, 600, 225, true, 210, 300, ""); // shedWidth = 240-30 = 210
+        HashMap<Double, Integer> result = materialListService.calculateTopPlate(carport);
+
+        assertEquals(2, result.get(600.0));
+        assertNull(result.get(480.0));
+    }
+
+    @DisplayName("Top plate: full width shed, 630cm carport")
+    @Test
+    public void calculateTopPlate_Just601_FullWidth()
+    {
+        Carport carport = new Carport(1, 300, 630, 225, true, 270, 300, ""); // shedWidth = 300-30 = 270
+        HashMap<Double, Integer> result = materialListService.calculateTopPlate(carport);
+
+        assertEquals(2, result.get(600.0));
+        assertEquals(1, result.get(480.0));
+    }
+
+    @DisplayName("Top plate: partial width shed, 630cm carport")
+    @Test
+    public void calculateTopPlate_Just601_PartialWidth()
+    {
+        Carport carport = new Carport(1, 600, 630, 225, true, 210, 300, ""); // shedWidth = 210, much less than 570
+        HashMap<Double, Integer> result = materialListService.calculateTopPlate(carport);
+
+        assertEquals(1, result.get(600.0));
+        assertEquals(3, result.get(480.0));
+    }
 }
