@@ -236,7 +236,7 @@ class MaterialListServiceImplTest
 
     @DisplayName("Top plate: full width shed, 630cm carport")
     @Test
-    public void calculateTopPlate_Just601_FullWidth()
+    public void calculateTopPlate_FullWidth()
     {
         Carport carport = new Carport(1, 300, 630, 225, true, 270, 300, ""); // shedWidth = 300-30 = 270
         HashMap<Double, Integer> result = materialListService.calculateTopPlate(carport);
@@ -247,12 +247,58 @@ class MaterialListServiceImplTest
 
     @DisplayName("Top plate: partial width shed, 630cm carport")
     @Test
-    public void calculateTopPlate_Just601_PartialWidth()
+    public void calculateTopPlate_PartialWidth()
     {
         Carport carport = new Carport(1, 600, 630, 225, true, 210, 300, ""); // shedWidth = 210, much less than 570
         HashMap<Double, Integer> result = materialListService.calculateTopPlate(carport);
 
         assertEquals(1, result.get(600.0));
         assertEquals(3, result.get(480.0));
+    }
+
+    // ************************ TESTING OF: ROOF PLATES ************************
+
+    @DisplayName("Roof plate: Delivered material: Length: 780cm, Width: 600 carport")
+    @Test
+    public void calculateRoofPlatesFullSize()
+    {
+        Carport carport = new Carport(1, 600, 780, 225, false,"");
+        HashMap<Double, Integer> result = materialListService.calculateRoofPlates(carport);
+
+        assertEquals(6, result.get(600.0));
+        assertEquals(6, result.get(360.0));
+    }
+
+    @DisplayName("Roof plate: Length: 595cm, Width: 530 carport")
+    @Test
+    public void calculateRoofPlatesShorterWidth()
+    {
+        Carport carport = new Carport(1, 530, 595, 225, false,"");
+        HashMap<Double, Integer> result = materialListService.calculateRoofPlates(carport);
+
+        assertEquals(6, result.get(600.0));
+        assertNull(result.get(360.0));
+    }
+
+    @DisplayName("Roof plate: Length: 695 cm, Width: 410 carport")
+    @Test
+    public void calculateRoofPlatesOnlyShortPlates()
+    {
+        Carport carport = new Carport(1, 410, 695, 225, false,"");
+        HashMap<Double, Integer> result = materialListService.calculateRoofPlates(carport);
+
+        assertNull(result.get(600.0));
+        assertEquals(10, result.get(360.0));
+    }
+
+    @DisplayName("Roof plate: Length: 240cm, Width: 480 carport")
+    @Test
+    public void calculateRoofPlatesShortLength()
+    {
+        Carport carport = new Carport(1, 480, 240, 225, false,"");
+        HashMap<Double, Integer> result = materialListService.calculateRoofPlates(carport);
+
+        assertNull(result.get(600.0));
+        assertEquals(5, result.get(360.0));
     }
 }
