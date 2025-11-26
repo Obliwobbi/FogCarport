@@ -31,7 +31,7 @@ public class MaterialListServiceImpl implements MaterialListService
             }
         } else
         {
-            if (carport.getLength() > 510) // for no shed and corner posts starts 1 meter in from both ends. needs 1 in middle of each side
+            if (carport.getLength() > 510) // for no shed, corner posts  can start 1 meter in from both ends. needs 1 in middle of each side to account for no more than 310 between posts
             {
                 result += 2;
             }
@@ -41,7 +41,7 @@ public class MaterialListServiceImpl implements MaterialListService
 
     public int calculateCeilingJoist(Carport carport)
     {
-        int result = 2; //one for each for the ends
+        int result = 2; //one for each for the ends.
         double carportLength = carport.getLength();
 
         result += (int) Math.ceil((carportLength - 9) / 60); //rounds up always to ensure there is no more than 60 cm between rafters
