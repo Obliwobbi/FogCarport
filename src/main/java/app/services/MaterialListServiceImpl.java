@@ -15,7 +15,7 @@ public class MaterialListServiceImpl implements MaterialListService
         {
             result += 3; //door and corners of shed
 
-            if (carport.getShedWidth() > 270) //270 is max length between for Blockings
+            if (carport.getShedWidth() > 270) //270 is max length between for Blockings for Sideboards
             {
                 result += 2;
             }
