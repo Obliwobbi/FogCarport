@@ -9,13 +9,13 @@ public class MaterialListServiceImpl implements MaterialListService
 
     public int calculatePosts(Carport carport)
     {
-        int result = 4;
+        int result = 4; //Corner posts for carport
 
         if (carport.isWithShed())
         {
-            result += 3; //door
+            result += 3; //door and corners of shed
 
-            if (carport.getShedWidth() > 270)
+            if (carport.getShedWidth() > 270) //270 is max length between for Blockings
             {
                 result += 2;
             }
@@ -23,15 +23,15 @@ public class MaterialListServiceImpl implements MaterialListService
             {
                 result += 2;
             }
-            //Calculation of remaining length between shed and corner post due to max length of Wall Plate(Rem træ).
+            //Calculation of remaining length between shed and corner post due to max length of Top plate(Rem træ).
             double remainingLength = (carport.getLength() - 100.0) - carport.getShedLength();
-            if (remainingLength > 310)
+            if (remainingLength > 310) // 310 is max length between posts under Top Plate
             {
                 result += 2;
             }
         } else
         {
-            if (carport.getLength() > 510)
+            if (carport.getLength() > 510) // for no shed and corner posts starts 1 meter in from both ends. needs 1 in middle of each side
             {
                 result += 2;
             }
@@ -53,13 +53,15 @@ public class MaterialListServiceImpl implements MaterialListService
     {
         HashMap<Double, Integer> result = new HashMap<>();
 
+        //Only 2 lengths of Top Plates in database, 480 and 600.
+
         if (!carport.isWithShed())
         {
-            if (carport.getLength() <= 480)
+            if (carport.getLength() <= 480) // 480 is the shortest length Top Plate in database
             {
                 result.put(480.0, 2);
             }
-            else if (carport.getLength() > 480 && carport.getLength() <= 600)
+            else if (carport.getLength() > 480 && carport.getLength() <= 600) //600 is the length of the longest Top Plate in database
             {
                 result.put(600.0, 2);
             }
@@ -70,7 +72,7 @@ public class MaterialListServiceImpl implements MaterialListService
         }
         else
         {
-            if (carport.getLength() > 600 && carport.getShedWidth() == (carport.getWidth() - 30))
+            if (carport.getLength() > 600 && carport.getShedWidth() == (carport.getWidth() - 30)) //the -30 is to account for necessary overhang, from documentation provided by product owner
             {
                 result.put(600.0, 2);
                 result.put(480.0, 1);
@@ -83,7 +85,7 @@ public class MaterialListServiceImpl implements MaterialListService
             {
                 result.put(480.0, 2);
             }
-            else
+            else //account for asymmetrical carport posts, with a partial width shed on one side. Joins of Top Plates can be different places on each side
             {
                 result.put(600.0, 1);
                 result.put(480.0, 3);
@@ -108,14 +110,12 @@ public class MaterialListServiceImpl implements MaterialListService
 
     public HashMap<Double, Integer> calculateRoofPlates(Carport carport)
     {
-        //tagplader :
-        //Start med at lægge pladerne løst op, så de når ud til sternbrædderne i sider og front, bagerst skal
-        //pladerne række ca. 5.cm ud over sternbrættet, med henblik på afvanding.
+        //2 lengths of Roof Plates in database, 360 and 600.
 
         HashMap<Double, Integer> result = new HashMap<>();
-        int count = (int) Math.ceil(carport.getWidth()/100);
+        int count = (int) Math.ceil(carport.getWidth()/100); //each plate is 109, and need overlay, so accounting for waste rounds up
 
-        if(carport.getLength() <= 355)
+        if(carport.getLength() <= 355) //need 5 cm overhang on backside of carport for running of water, and Roof Plate length is 360.
         {
             result.put(360.0,count);
         }
@@ -127,7 +127,7 @@ public class MaterialListServiceImpl implements MaterialListService
 
         if(carport.getLength() > 600 && carport.getLength() <=695)
         {
-            result.put(360.0,(count*2));
+            result.put(360.0,(count*2)); //needs double amount because of 2 rows and overlay
         }
 
         if(carport.getLength() > 700)
@@ -142,18 +142,18 @@ public class MaterialListServiceImpl implements MaterialListService
     public int calculateRoofPlateScrews(Carport carport)
     {
         //Insert return in helper method to calculate packs
-        return (int) Math.ceil( ((carport.getWidth()* carport.getLength())/100) * 15);
+        return (int) Math.ceil( ((carport.getWidth()* carport.getLength())/100) * 15); //documentation says 15 screws pr squaremeter of roofplate
     }
 
     public int calculateBolts(int posts, HashMap<Double, Integer> topPlates)
     {
-        int result = posts * 2;
+        int result = posts * 2; //documentation says 2 bolts for each posts
 
-        if (topPlates.containsKey(480.0) && topPlates.containsKey(600.0))
+        if (topPlates.containsKey(480.0) && topPlates.containsKey(600.0)) // for joins need 2 additional bolt, if hastmap has both lengths there is a join
         {
             result += 4;
         }
-        else if (topPlates.containsValue(4))
+        else if (topPlates.containsValue(4)) //if 4 there is also a join somewhere, need 2 extra bolts
         {
             result += 4;
         }
@@ -193,8 +193,6 @@ Montér universalbeslagene med vinklen mod bagsiden af spær/ovenpå rem, og fla
 indvendigt side af rem.(se tegning) Alle beslag monteres med 3 beslags skruer pr. flade i
 beslaget. Vær opmærksom på at der er højre og venstre beslag. Ved det bagerste spær monteres
 beslaget på spærets forside af hensyn til stern eller beklædning.
-
-
 
 minimum 200 mm overlap og altid midt over lægte.
 
