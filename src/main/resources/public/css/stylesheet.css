@@ -14,8 +14,8 @@
     --font-h5: clamp(1.26rem, 1.1rem + 0.4vw, 1.44rem);
     --font-h4: clamp(1.512rem, 1.3rem + 0.5vw, 1.728rem);
     --font-h3: clamp(1.814rem, 1.6rem + 0.6vw, 2.074rem);
-    --font-h2: clamp(2.178rem, 1.9rem + 0.8vw, 2.488rem);
-    --font-h1: clamp(2.614rem, 2.2rem + 1vw, 2.986rem);
+    --font-h2: clamp(2.178rem, 1.8rem + 0.7vw, 2.488rem);
+    --font-h1: clamp(2.614rem, 2rem + 0.9vw, 2.986rem);
     --font-small: clamp(0.729rem, 0.7rem + 0.15vw, 0.833rem);
     --font-xsmall: clamp(0.607rem, 0.55rem + 0.1vw, 0.694rem);
     --fw-regular: 400;
@@ -23,12 +23,9 @@
     --fw-bold: 700;
 
     /* Colors */
-    --button-color: #926D4F; /* Button */
-    --button-hover: #B08B6D; /* Button effects */
-    --color-rose-light: #F8B5D2; /* Input & Dropdown fields */
-    --color-teal: #596667; /* Links */
     --bg-overlay-medium: rgb(from #231A12 r g b / 0.4); /* Background overlay */
 
+    --color-fogblue-light: #2899fa;
     --color-fogblue: #003D76;
     --color-fogblue-dark: #011c3d;
     --color-text-light: White;
@@ -125,6 +122,7 @@ body {
     background-attachment: fixed;
     color: var(--color-text-dark);
 }
+
 main {
     background: transparent;
     padding: clamp(1rem, 4vh, 4rem) 10vw clamp(1rem, 4vh, 4rem);
@@ -133,7 +131,7 @@ main {
     justify-content: center;
 }
 
-.body-style{
+.body-style {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -169,17 +167,17 @@ main {
     padding: .5rem;
 }
 
-.center-text{
+.center-text {
     text-align: center;
 }
 
-.align-items-center{
+.align-items-center {
     align-items: center;
 }
 
 /*INDEX CSS*/
 
-.index-logo{
+.index-logo {
     width: 250px;
     height: 250px;
 }
@@ -187,48 +185,109 @@ main {
 /*CARPORT*/
 
 .carport-form {
+    margin-top: 1rem;
     display: flex;
     flex-direction: column;
+    align-items: center;
     width: 45%
 }
 
-.shed-fields select{
-    width: 100%;
+.carport-form label {
+    width:75%
 }
 
+.carport-form select {
+    width: 75%;
+    appearance: none;
+    -webkit-appearance: none;
+    padding: .6rem 1.2rem .6rem 1rem;
+    border-radius: 5px;
+    background: /* pil (inline SVG) */ url("data:image/svg+xml;utf8,\
+    <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'>\
+      <path d='M7 10l5 5 5-5' fill='none' stroke='white' stroke-width='2' stroke-linecap='round'/>\
+    </svg>") no-repeat right .9rem center / 1rem white;
+    color: var(--color-text-dark);
+    font: inherit;
+    transition: border-color .15s ease, box-shadow .15s ease, background-color .15s ease;
+}
 
+.carport-form select:hover {
+    border-color: var(--color-fogblue-light);
+}
 
-.shed-length-tooltip, .shed-width-tooltip {
-    visibility: hidden;
-    background: #333;
-    color: #fff;
-    padding: 8px;
-    border-radius: 6px;
-    position: absolute;
-    width: 200px;
-    font-size: 16px;
-    z-index: 10;
+.carport-form select:focus {
+    outline: none;
+    border-color: var(--color-fogblue-light);
+    box-shadow: 0 0 0 .2rem color-mix(in srgb, var(--color-fogblue-dark) 25%, transparent);
+}
+
+.shed-fields-align{
+    margin: 1rem 0;
+    width: 75%;
+}
+
+#withShed {
+
 }
 
 .shed-fields {
     display: none;
+    flex-direction: column;
+    width: 100%;
+}
+
+.shed-fields select {
+    width: 100%;
+    appearance: none;
+    -webkit-appearance: none;
+    padding: .6rem 2rem .6rem 1rem;
+    border: 2px solid rgb(from #231A12 r g b / 0.4);
+    border-radius: 5px;
+    background: /* pil (inline SVG) */ url("data:image/svg+xml;utf8,\
+    <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'>\
+      <path d='M7 10l5 5 5-5' fill='none' stroke='white' stroke-width='2' stroke-linecap='round'/>\
+    </svg>") no-repeat right .9rem center / 1rem white;
+    color: var(--color-text-dark);
+    font: inherit;
+    transition: border-color .15s ease, box-shadow .15s ease, background-color .15s ease;
+}
+
+.shed-fields select:hover {
+    border-color: var(--color-fogblue-light);
+}
+
+.shed-fields select:focus {
+    outline: none;
+    border-color: var(--color-fogblue-light);
+    box-shadow: 0 0 0 .2rem color-mix(in srgb, var(--color-fogblue-dark) 25%, transparent);
 }
 
 #withShed:checked ~ .shed-fields {
-    display: block;
+    display: flex;
 }
 
-.shed-length:hover .shed-length-tooltip {
+.shed-selects:hover .shed-length-tooltip,
+.shed-selects:hover .shed-width-tooltip {
     visibility: visible;
 }
 
-.shed-width:hover .shed-width-tooltip {
-    visibility: visible;
+.shed-length-tooltip, .shed-width-tooltip {
+    visibility: hidden;
+    background: var(--color-fogblue-dark);
+    color: var(--color-text-light);
+    padding: 8px;
+    border-radius: 6px;
+    position: absolute;
+    width: 26%;
+    font-size: 16px;
+    z-index: 10;
 }
 
-.customer-wishes{
-    width: 100%;
+.customer-wishes {
+    width: 75%;
     height: 80px;
     resize: none;
+    margin-bottom: 0.5rem;
+    border-radius: 5px  ;
 }
 
