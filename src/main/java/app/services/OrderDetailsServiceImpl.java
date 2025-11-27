@@ -81,15 +81,10 @@ public class OrderDetailsServiceImpl implements OrderDetailsService
         int fittingScrewPacks = calculatorService.calculateScrewPacks(packSizeFittingScrew, universalScrews);
 
 
-
-
         //Get all materials in a list
         //Loop through
         //when match take calculator info
         //create MaterialLine with quantity and material object
-
-
-
 
 
         return materialList;
