@@ -28,8 +28,11 @@
     --color-fogblue-light: #2899fa;
     --color-fogblue: #003D76;
     --color-fogblue-dark: #011c3d;
-    --color-text-light: White;
+    --color-text-light: whitesmoke;
     --color-text-dark: Black;
+    --gradient-header: linear-gradient(to top, var(--color-fogblue) ,20%,var(--color-fogblue-dark));
+    --gradient-footer: linear-gradient(to bottom,var(--color-fogblue) ,20%,var(--color-fogblue-dark));
+
 }
 
 /* TYPOGRAPHY */
@@ -86,7 +89,7 @@ h6 {
 p {
     font-size: var(--font-base);
     line-height: 1.6;
-    margin-bottom: 0.8rem;
+    margin-bottom: 0.5rem;
 }
 
 a {
@@ -117,10 +120,31 @@ html, body {
 body {
     display: flex;
     flex-direction: column;
-    background: var(--color-fogblue-dark);
     background-blend-mode: overlay;
-    background-attachment: fixed;
+    background: whitesmoke fixed;
     color: var(--color-text-dark);
+}
+
+/* HEADER */
+
+header {
+    background: var(--gradient-header);
+
+    position: relative;
+    top: 0;
+    width: 100%;
+    height: 6vh;
+    min-height: 70px;
+    z-index: 1000;
+
+    display: flex;
+    justify-content: center;
+    color: var(--gradient-header);
+}
+
+header a img {
+    width: auto;
+    height: 100%;
 }
 
 main {
@@ -134,11 +158,14 @@ main {
 .body-style {
     display: flex;
     flex-direction: column;
-    justify-content: center;
     width: 100%;
     flex: 1;
-    background: silver;
+    background: whitesmoke;
     border-radius: 10px;
+}
+
+.index-body {
+    justify-content: center;
 }
 
 .buttons {
@@ -167,6 +194,10 @@ main {
     padding: .5rem;
 }
 
+.button:hover {
+    opacity: 0.8;
+}
+
 .center-text {
     text-align: center;
 }
@@ -193,7 +224,7 @@ main {
 }
 
 .carport-form label {
-    width:75%
+    width: 75%
 }
 
 .carport-form select {
@@ -221,7 +252,7 @@ main {
     box-shadow: 0 0 0 .2rem color-mix(in srgb, var(--color-fogblue-dark) 25%, transparent);
 }
 
-.shed-fields-align{
+.shed-fields-align {
     margin: 1rem 0;
     width: 75%;
 }
@@ -288,6 +319,31 @@ main {
     height: 80px;
     resize: none;
     margin-bottom: 0.5rem;
-    border-radius: 5px  ;
+    border-radius: 5px;
+}
+
+
+/* Footer adjustments */
+footer {
+    background: var(--gradient-footer);
+    color: var(--color-text-light);
+    flex-direction: column;
+    text-align: center;
+    gap: 1rem;
+    padding: 0.5rem 1rem;
+}
+
+footer nav {
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+    gap: 1rem;
+
+}
+
+footer img {
+    width: 50px;
+    height: 50px;
+    border-radius: 15px;
 }
 

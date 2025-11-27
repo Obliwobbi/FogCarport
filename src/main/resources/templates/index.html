@@ -8,8 +8,10 @@
 </head>
 <body>
 
+<div th:replace="~{fragments :: headerFragment}"></div>
+
 <main>
-    <section class="body-style">
+    <section class="body-style index-body">
         <div class="center-text">
             <img src="/images/fog-logo.svg" th:src="@{/images/fog-logo.svg}" alt="Fog Logo"
                  class="index-logo"/>
@@ -23,6 +25,7 @@
     </section>
 </main>
 
+<div th:replace="~{fragments :: footerFragment}"></div>
 
 </body>
 </html>
