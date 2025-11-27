@@ -4,7 +4,7 @@ import app.entities.Carport;
 
 import java.util.HashMap;
 
-public interface MaterialListService
+public interface CalculatorService
 {
     int calculatePosts(Carport carport);
 

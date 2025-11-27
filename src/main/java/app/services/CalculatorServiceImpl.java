@@ -4,9 +4,8 @@ import app.entities.Carport;
 
 import java.util.HashMap;
 
-public class MaterialListServiceImpl implements MaterialListService
+public class CalculatorServiceImpl implements CalculatorService
 {
-
 
     public int calculatePosts(Carport carport)
     {

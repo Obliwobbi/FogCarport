@@ -9,9 +9,9 @@ import java.util.HashMap;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class MaterialListServiceImplTest
+class CalculatorServiceImplTest
 {
-    MaterialListServiceImpl materialListService = new MaterialListServiceImpl();
+    CalculatorServiceImpl materialListService = new CalculatorServiceImpl();
 
     @BeforeEach
     void setUp()
