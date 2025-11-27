@@ -89,7 +89,7 @@ public class MaterialsLinesMapper
                             quantity,
                             linePrice,
                             material
-                    );
+                            );
 
                     lines.add(line);
                 }

@@ -20,9 +20,17 @@ public interface CalculatorService
 
     int calculateBolts(int posts, HashMap<Double, Integer> topPlates);
 
-    int calculateFittings(int rafters);
+    int calculateFittings(int material);
 
-    int calculateScrewsNeeded(int fittings, int screws);
+    int calculateScrewsNeeded(int material, int screws);
 
-    int calculateScrewPacks(int packsize, int screws);
+    int calculateScrewPacks(int packSize, int screws);
+
+    int calculateSidingBoard(Carport carport);
+
+    HashMap<Double, Integer> calculateFasciaBoardLength(Carport carport);
+
+    HashMap<Double, Integer> calculateFasciaBoardWidth(Carport carport);
+
+    int calculatePerforatedStrip(Carport carport);
 }

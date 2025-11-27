@@ -262,19 +262,19 @@ class CalculatorServiceImplTest
     @Test
     public void calculateShedBlockingDeliveredMaterial()
     {
-        Carport carport = new Carport(1, 600, 780, 225, true, 530,210,"");
-        HashMap<Double,Integer> result = materialListService.calculateBlocking(carport);
+        Carport carport = new Carport(1, 600, 780, 225, true, 530, 210, "");
+        HashMap<Double, Integer> result = materialListService.calculateBlocking(carport);
 
-        assertEquals(4,result.get(240.0));
-        assertEquals(12,result.get(270.0));
+        assertEquals(4, result.get(240.0));
+        assertEquals(12, result.get(270.0));
     }
 
     @DisplayName("Shed Blocking: Length: 780cm, Width: 600 carport, Length: 530cm, Width: 210cm shed.")
     @Test
     public void calculateShedBlockingShortShed()
     {
-        Carport carport = new Carport(1, 600, 780, 225, true, 210,210,"");
-        HashMap<Double,Integer> result = materialListService.calculateBlocking(carport);
+        Carport carport = new Carport(1, 600, 780, 225, true, 210, 210, "");
+        HashMap<Double, Integer> result = materialListService.calculateBlocking(carport);
 
         assertEquals(8, result.get(240.0));
         assertNull(result.get(270.0));
@@ -284,8 +284,8 @@ class CalculatorServiceImplTest
     @Test
     public void calculateShedBlockingLongShed()
     {
-        Carport carport = new Carport(1, 600, 780, 225, true, 780,780,"");
-        HashMap<Double,Integer> result = materialListService.calculateBlocking(carport);
+        Carport carport = new Carport(1, 600, 780, 225, true, 780, 780, "");
+        HashMap<Double, Integer> result = materialListService.calculateBlocking(carport);
 
         assertEquals(24, result.get(270.0));
         assertNull(result.get(240.0));
@@ -298,7 +298,7 @@ class CalculatorServiceImplTest
     @Test
     public void calculateShedSidingDeliverdMaterial()
     {
-        Carport carport = new Carport(1, 600, 780, 225, true, 530,210,"");
+        Carport carport = new Carport(1, 600, 780, 225, true, 530, 210, "");
         int shedSidingCount = materialListService.calculateSidingBoard(carport);
 
         assertEquals(200, shedSidingCount);
@@ -308,7 +308,7 @@ class CalculatorServiceImplTest
     @Test
     public void calculateShedSidingBigShed()
     {
-        Carport carport = new Carport(1, 600, 780, 225, true, 530,510,"");
+        Carport carport = new Carport(1, 600, 780, 225, true, 530, 510, "");
         int shedSidingCount = materialListService.calculateSidingBoard(carport);
 
         assertEquals(282, shedSidingCount);
@@ -320,7 +320,7 @@ class CalculatorServiceImplTest
     @Test
     public void calculateFasciaBoardsFullSizeLength()
     {
-        Carport carport = new Carport(1, 600, 780, 225, false,"");
+        Carport carport = new Carport(1, 600, 780, 225, false, "");
         HashMap<Double, Integer> result = materialListService.calculateFasciaBoardLength(carport);
 
         assertEquals(2, result.get(540.0));
@@ -331,7 +331,7 @@ class CalculatorServiceImplTest
     @Test
     public void calculateFasciaBoardsFullSizeWidth()
     {
-        Carport carport = new Carport(1, 600, 780, 225, false,"");
+        Carport carport = new Carport(1, 600, 780, 225, false, "");
         HashMap<Double, Integer> result = materialListService.calculateFasciaBoardWidth(carport);
 
         assertNull(result.get(540.0));
@@ -344,7 +344,7 @@ class CalculatorServiceImplTest
     @Test
     public void calculateRoofPlatesFullSize()
     {
-        Carport carport = new Carport(1, 600, 780, 225, false,"");
+        Carport carport = new Carport(1, 600, 780, 225, false, "");
         HashMap<Double, Integer> result = materialListService.calculateRoofPlates(carport);
 
         assertEquals(6, result.get(600.0));
@@ -355,7 +355,7 @@ class CalculatorServiceImplTest
     @Test
     public void calculateRoofPlatesShorterWidth()
     {
-        Carport carport = new Carport(1, 530, 595, 225, false,"");
+        Carport carport = new Carport(1, 530, 595, 225, false, "");
         HashMap<Double, Integer> result = materialListService.calculateRoofPlates(carport);
 
         assertEquals(6, result.get(600.0));
@@ -366,7 +366,7 @@ class CalculatorServiceImplTest
     @Test
     public void calculateRoofPlatesOnlyShortPlates()
     {
-        Carport carport = new Carport(1, 410, 695, 225, false,"");
+        Carport carport = new Carport(1, 410, 695, 225, false, "");
         HashMap<Double, Integer> result = materialListService.calculateRoofPlates(carport);
 
         assertNull(result.get(600.0));
@@ -377,10 +377,22 @@ class CalculatorServiceImplTest
     @Test
     public void calculateRoofPlatesShortLength()
     {
-        Carport carport = new Carport(1, 480, 240, 225, false,"");
+        Carport carport = new Carport(1, 480, 240, 225, false, "");
         HashMap<Double, Integer> result = materialListService.calculateRoofPlates(carport);
 
         assertNull(result.get(600.0));
         assertEquals(5, result.get(360.0));
+    }
+
+    // ************************ TESTING OF: PERFORATED STRIPS ************************
+
+    @DisplayName("Roof plate: Delivered material: Length: 780cm, Width: 600 carport")
+    @Test
+    public void calculatePerforatedStripsFullSize()
+    {
+        Carport carport = new Carport(1, 600, 780, 225, false, "");
+        int actual = materialListService.calculatePerforatedStrip(carport);
+
+        assertEquals(2, actual);
     }
 }

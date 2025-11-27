@@ -7,6 +7,7 @@ import java.util.HashMap;
 public class CalculatorServiceImpl implements CalculatorService
 {
 
+    @Override
     public int calculatePosts(Carport carport)
     {
         int result = 4; //Corner posts for carport
@@ -43,17 +44,7 @@ public class CalculatorServiceImpl implements CalculatorService
         return result;
     }
 
-    public int calculateCeilingJoist(Carport carport)
-    {
-        int result = 2; //one for each for the ends.
-        double ceilingJoistWidth = 4.5;
-        int maxLengthBetweenCeilingJoist = 60; // src: documentation provided by product owner
-
-        result += (int) Math.ceil((carport.getLength() - (ceilingJoistWidth * 2)) / maxLengthBetweenCeilingJoist); //rounds up always to ensure there is no more than 60 cm between rafters
-
-        return result;
-    }
-
+    @Override
     public HashMap<Double, Integer> calculateTopPlate(Carport carport)
     {
         HashMap<Double, Integer> result = new HashMap<>();
@@ -101,6 +92,19 @@ public class CalculatorServiceImpl implements CalculatorService
         return result;
     }
 
+    @Override
+    public int calculateCeilingJoist(Carport carport)
+    {
+        int result = 2; //one for each for the ends.
+        double ceilingJoistWidth = 4.5;
+        int maxLengthBetweenCeilingJoist = 60; // src: documentation provided by product owner
+
+        result += (int) Math.ceil((carport.getLength() - (ceilingJoistWidth * 2)) / maxLengthBetweenCeilingJoist); //rounds up always to ensure there is no more than 60 cm between rafters
+
+        return result;
+    }
+
+    @Override
     public HashMap<Double, Integer> calculateFasciaBoardLength(Carport carport)
     {
         HashMap<Double, Integer> result = new HashMap<>();
@@ -140,6 +144,7 @@ public class CalculatorServiceImpl implements CalculatorService
         return result;
     }
 
+    @Override
     public HashMap<Double, Integer> calculateFasciaBoardWidth(Carport carport)
     {
         HashMap<Double, Integer> result = new HashMap<>();
@@ -179,7 +184,7 @@ public class CalculatorServiceImpl implements CalculatorService
         return result;
     }
 
-
+    @Override
     public HashMap<Double, Integer> calculateBlocking(Carport carport)
     {
         HashMap<Double, Integer> result = new HashMap<>();
@@ -237,6 +242,7 @@ public class CalculatorServiceImpl implements CalculatorService
         return result;
     }
 
+    @Override
     public int calculateSidingBoard(Carport carport)
     {
         double shedTotalLength = (carport.getShedLength() * 2) + (carport.getShedWidth() * 2);
@@ -247,6 +253,7 @@ public class CalculatorServiceImpl implements CalculatorService
         return (int) Math.ceil(shedTotalLength / 7.4);
     }
 
+    @Override
     public HashMap<Double, Integer> calculateRoofPlates(Carport carport)
     {
         //2 lengths of Roof Plates in database, 360 and 600.
@@ -281,12 +288,14 @@ public class CalculatorServiceImpl implements CalculatorService
         return result;
     }
 
+    @Override
     public int calculateRoofPlateScrews(Carport carport)
     {
         //Insert return in helper method to calculate packs
         return (int) Math.ceil(((carport.getWidth() * carport.getLength()) / 100) * 12); //documentation says 12 screws pr squaremeter of roofplate
     }
 
+    @Override
     public int calculateBolts(int posts, HashMap<Double, Integer> topPlates)
     {
         int result = posts * 2; //documentation says 2 bolts for each posts
@@ -304,6 +313,7 @@ public class CalculatorServiceImpl implements CalculatorService
         return result;
     }
 
+    @Override
     public int calculateFittings(int ceilingJoist)
     {
         int result = 0;
@@ -311,11 +321,30 @@ public class CalculatorServiceImpl implements CalculatorService
         return result;
     }
 
+    @Override
+    public int calculatePerforatedStrip(Carport carport)
+    {
+        double a = carport.getLength()/100; //converts to M
+        double b = carport.getWidth()/100; //converts to M
+
+        double c = Math.hypot(a, b); //Pythagoras
+        if (c > 5)
+        {
+            return 2;
+        }
+        else
+        {
+            return 1;
+        }
+    }
+
+    @Override
     public int calculateScrewsNeeded(int material, int screws)
     {
         return material * screws;
     }
 
+    @Override
     public int calculateScrewPacks(int packsize, int screws)
     {
         return (int) Math.ceil(screws / packsize);
