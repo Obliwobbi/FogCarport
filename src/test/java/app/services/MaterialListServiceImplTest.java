@@ -256,6 +256,65 @@ class MaterialListServiceImplTest
         assertEquals(3, result.get(480.0));
     }
 
+    // ************************ TESTING OF: SHED BLOCKING ************************
+
+    @DisplayName("Shed Blocking: Delivered Material: Length: 780cm, Width: 600 carport, Length: 530cm, Width: 210cm shed.")
+    @Test
+    public void calculateShedBlockingDeliveredMaterial()
+    {
+        Carport carport = new Carport(1, 600, 780, 225, true, 530,210,"");
+        HashMap<Double,Integer> result = materialListService.calculateBlocking(carport);
+
+        assertEquals(4,result.get(240.0));
+        assertEquals(12,result.get(270.0));
+    }
+
+    @DisplayName("Shed Blocking: Length: 780cm, Width: 600 carport, Length: 530cm, Width: 210cm shed.")
+    @Test
+    public void calculateShedBlockingShortShed()
+    {
+        Carport carport = new Carport(1, 600, 780, 225, true, 210,210,"");
+        HashMap<Double,Integer> result = materialListService.calculateBlocking(carport);
+
+        assertEquals(8, result.get(240.0));
+        assertNull(result.get(270.0));
+    }
+
+    @DisplayName("Shed Blocking: Length: 780cm, Width: 600 carport, Length: 530cm, Width: 210cm shed.")
+    @Test
+    public void calculateShedBlockingLongShed()
+    {
+        Carport carport = new Carport(1, 600, 780, 225, true, 780,780,"");
+        HashMap<Double,Integer> result = materialListService.calculateBlocking(carport);
+
+        assertEquals(24, result.get(270.0));
+        assertNull(result.get(240.0));
+    }
+
+
+    // ************************ TESTING OF: SHED SIDING ************************
+
+    @DisplayName("Shed Siding: Deliverd Material: Length: 780cm, Width: 600 carport, Length: 530cm, Width: 210cm shed.")
+    @Test
+    public void calculateShedSidingDeliverdMaterial()
+    {
+        Carport carport = new Carport(1, 600, 780, 225, true, 530,210,"");
+        int shedSidingCount = materialListService.calculateSidingBoard(carport);
+
+        assertEquals(200, shedSidingCount);
+    }
+
+    @DisplayName("Shed Siding: Deliverd Material: Length: 780cm, Width: 600 carport, Length: 530cm, Width: 210cm shed.")
+    @Test
+    public void calculateShedSidingBigShed()
+    {
+        Carport carport = new Carport(1, 600, 780, 225, true, 530,510,"");
+        int shedSidingCount = materialListService.calculateSidingBoard(carport);
+
+        assertEquals(282, shedSidingCount);
+    }
+
+
     // ************************ TESTING OF: ROOF PLATES ************************
 
     @DisplayName("Roof plate: Delivered material: Length: 780cm, Width: 600 carport")
