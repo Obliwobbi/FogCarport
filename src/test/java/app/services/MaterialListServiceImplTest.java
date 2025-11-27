@@ -314,6 +314,29 @@ class MaterialListServiceImplTest
         assertEquals(282, shedSidingCount);
     }
 
+    // ************************ TESTING OF: FASCIA BOARDS ************************
+
+    @DisplayName("Fascia Board Length: Delivered material: Length: 780cm, Width: 600 carport")
+    @Test
+    public void calculateFasciaBoardsFullSizeLength()
+    {
+        Carport carport = new Carport(1, 600, 780, 225, false,"");
+        HashMap<Double, Integer> result = materialListService.calculateFasciaBoardLength(carport);
+
+        assertEquals(2, result.get(540.0));
+        assertEquals(2, result.get(360.0));
+    }
+
+    @DisplayName("Fascia Board Width: Delivered material: Length: 780cm, Width: 600 carport")
+    @Test
+    public void calculateFasciaBoardsFullSizeWidth()
+    {
+        Carport carport = new Carport(1, 600, 780, 225, false,"");
+        HashMap<Double, Integer> result = materialListService.calculateFasciaBoardWidth(carport);
+
+        assertNull(result.get(540.0));
+        assertEquals(4, result.get(360.0));
+    }
 
     // ************************ TESTING OF: ROOF PLATES ************************
 

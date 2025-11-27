@@ -7,6 +7,7 @@ import java.util.HashMap;
 public class MaterialListServiceImpl implements MaterialListService
 {
 
+
     public int calculatePosts(Carport carport)
     {
         int result = 4; //Corner posts for carport
@@ -58,55 +59,127 @@ public class MaterialListServiceImpl implements MaterialListService
     {
         HashMap<Double, Integer> result = new HashMap<>();
         //Only 2 lengths of Top Plates in database, 480 and 600.
-        double topPlateShort = 480.0; // 480 is the shortest Top Plate in database
-        double topPlateLong = 600.0; //600 is the of the longest Top Plate in database
+        double shortTopPlate = 480.0; // 480 is the shortest Top Plate in database
+        double longTopPlate = 600.0; //600 is the of the longest Top Plate in database
 
 
         if (!carport.isWithShed())
         {
-            if (carport.getLength() <= topPlateShort)
+            if (carport.getLength() <= shortTopPlate)
             {
-                result.put(topPlateShort, 2);
+                result.put(shortTopPlate, 2);
             }
-            else if (carport.getLength() > topPlateShort && carport.getLength() <= topPlateLong)
+            else if (carport.getLength() > shortTopPlate && carport.getLength() <= longTopPlate)
             {
-                result.put(topPlateLong, 2);
+                result.put(longTopPlate, 2);
             }
             else
             {
-                result.put(topPlateShort, 4);
+                result.put(shortTopPlate, 4);
             }
         }
         else
         {
-            if (carport.getLength() > topPlateLong && carport.getShedWidth() == (carport.getWidth() - 30)) //the -30 is to account for necessary overhang, from documentation provided by product owner
+            if (carport.getLength() > longTopPlate && carport.getShedWidth() == (carport.getWidth() - 30)) //the -30 is to account for necessary overhang, from documentation provided by product owner
             {
-                result.put(topPlateLong, 2);
-                result.put(topPlateShort, 1);
+                result.put(longTopPlate, 2);
+                result.put(shortTopPlate, 1);
             }
-            else if (carport.getLength() > topPlateShort && carport.getLength() <= topPlateLong)
+            else if (carport.getLength() > shortTopPlate && carport.getLength() <= longTopPlate)
             {
-                result.put(topPlateLong, 2);
+                result.put(longTopPlate, 2);
             }
-            else if (carport.getLength() <= topPlateShort && carport.getShedWidth() <= (carport.getWidth() - 30))
+            else if (carport.getLength() <= shortTopPlate && carport.getShedWidth() <= (carport.getWidth() - 30))
             {
-                result.put(topPlateShort, 2);
+                result.put(shortTopPlate, 2);
             }
             else //account for asymmetrical carport posts, with a partial width shed on one side. Joins of Top Plates can be different places on each side
             {
-                result.put(topPlateLong, 1);
-                result.put(topPlateShort, 3);
+                result.put(longTopPlate, 1);
+                result.put(shortTopPlate, 3);
             }
         }
         return result;
     }
 
-    public HashMap<Double, Integer> calculateFasciaBoard(Carport carport)
+    public HashMap<Double, Integer> calculateFasciaBoardLength(Carport carport)
     {
         HashMap<Double, Integer> result = new HashMap<>();
+        double shortFasciaBoard = 360.0; //shortest FasciaBoard in database
+        double longFasciaBoard = 540.0; //longest FasciaBoard in database
+
+        int shortFasciaCount = 0;
+        int longFasciaCount = 0;
+
+        if (carport.getLength() <= shortFasciaBoard)
+        {
+            shortFasciaCount += 2;
+        }
+        else if (carport.getLength() > shortFasciaBoard && carport.getLength() <= longFasciaBoard)
+        {
+            longFasciaCount += 2;
+        }
+        else if (carport.getLength() <= 690) // max length for carport to account of join
+        {
+            shortFasciaCount += 4;
+        }
+        else
+        {
+            longFasciaCount += 2;
+            shortFasciaCount += 2;
+        }
+
+        if (shortFasciaCount != 0)
+        {
+            result.put(shortFasciaBoard, shortFasciaCount);
+        }
+        if (longFasciaCount != 0)
+        {
+            result.put(longFasciaBoard, longFasciaCount);
+        }
 
         return result;
     }
+
+    public HashMap<Double, Integer> calculateFasciaBoardWidth(Carport carport)
+    {
+        HashMap<Double, Integer> result = new HashMap<>();
+        double shortFasciaBoard = 360.0; //shortest FasciaBoard in database
+        double longFasciaBoard = 540.0; //longest FasciaBoard in database
+
+        int shortFasciaCount = 0;
+        int longFasciaCount = 0;
+
+        if (carport.getWidth() <= shortFasciaBoard)
+        {
+            shortFasciaCount += 2;
+        }
+        else if (carport.getWidth() > shortFasciaBoard && carport.getWidth() <= longFasciaBoard)
+        {
+            longFasciaCount += 2;
+        }
+        else if (carport.getWidth() <= 690) // max length for carport to account of join
+        {
+            shortFasciaCount += 4;
+        }
+        else
+        {
+            longFasciaCount += 2;
+            shortFasciaCount += 2;
+        }
+
+        if (shortFasciaCount != 0)
+        {
+            result.put(shortFasciaBoard, shortFasciaCount);
+        }
+        if (longFasciaCount != 0)
+        {
+            result.put(longFasciaBoard, longFasciaCount);
+        }
+
+        return result;
+    }
+
 
     public HashMap<Double, Integer> calculateBlocking(Carport carport)
     {
@@ -153,7 +226,7 @@ public class MaterialListServiceImpl implements MaterialListService
             shortBlockingCount += 4;
         }
 
-        if(shortBlockingCount != 0)
+        if (shortBlockingCount != 0)
         {
             result.put(shortBlockingLength, shortBlockingCount);
         }
@@ -167,43 +240,43 @@ public class MaterialListServiceImpl implements MaterialListService
 
     public int calculateSidingBoard(Carport carport)
     {
-        double shedTotalLength = (carport.getShedLength()*2) + (carport.getShedWidth()*2);
+        double shedTotalLength = (carport.getShedLength() * 2) + (carport.getShedWidth() * 2);
 
         //Math is done by extrapolating from documentation provided by product owner:
         //our shed in delivered material is 530x210, and they deliver 200 pieces of lumber for siding.
         //so we take total length of shed / 200, and get a coverage pr board of 7.4cm.
-        return (int)Math.ceil(shedTotalLength/7.4);
+        return (int) Math.ceil(shedTotalLength / 7.4);
     }
 
     public HashMap<Double, Integer> calculateRoofPlates(Carport carport)
     {
         //2 lengths of Roof Plates in database, 360 and 600.
-        double roofPlateShort = 360.0; // 360 is the shortest roof Plate in database
-        double roofPlateLong = 600.0; // 600 is the longest Top Plate in database
+        double shortRoofPlate = 360.0; // 360 is the shortest roof Plate in database
+        double longRoofPlate = 600.0; // 600 is the longest Top Plate in database
         int overhang = 5; //5 cm overhang on backside of carport for running of water, src: documentation provided by product owner
 
         HashMap<Double, Integer> result = new HashMap<>();
         int count = (int) Math.ceil(carport.getWidth() / 100); //each plate is 109, and need overlay, so accounting for waste rounds up, src: documentation provided by product owner
 
-        if (carport.getLength() <= (roofPlateShort - overhang))
+        if (carport.getLength() <= (shortRoofPlate - overhang))
         {
-            result.put(roofPlateShort, count);
+            result.put(shortRoofPlate, count);
         }
 
-        if (carport.getLength() > roofPlateShort && carport.getLength() <= (roofPlateLong - overhang))
+        if (carport.getLength() > shortRoofPlate && carport.getLength() <= (longRoofPlate - overhang))
         {
-            result.put(roofPlateLong, count);
+            result.put(longRoofPlate, count);
         }
 
-        if (carport.getLength() > roofPlateLong && carport.getLength() <= 700 - overhang) // 700 is cut off for carport length, due to 20cm overlay from plates according to documentation provided by product owner
+        if (carport.getLength() > longRoofPlate && carport.getLength() <= 700 - overhang) // 700 is cut off for carport length, due to 20cm overlay from plates according to documentation provided by product owner
         {
-            result.put(roofPlateShort, (count * 2)); //needs double amount because of 2 rows and overlay
+            result.put(shortRoofPlate, (count * 2)); //needs double amount because of 2 rows and overlay
         }
 
         if (carport.getLength() > 700)
         {
-            result.put(roofPlateLong, count);
-            result.put(roofPlateShort, count);
+            result.put(longRoofPlate, count);
+            result.put(shortRoofPlate, count);
         }
 
         return result;
@@ -218,10 +291,10 @@ public class MaterialListServiceImpl implements MaterialListService
     public int calculateBolts(int posts, HashMap<Double, Integer> topPlates)
     {
         int result = posts * 2; //documentation says 2 bolts for each posts
-        double topPlateShort = 480.0; // 480 is the shortest Top Plate in database
-        double topPlateLong = 600.0; //600 is the of the longest Top Plate in database
+        double shortTopPlate = 480.0; // 480 is the shortest Top Plate in database
+        double longTopPlate = 600.0; //600 is the of the longest Top Plate in database
 
-        if (topPlates.containsKey(topPlateShort) && topPlates.containsKey(topPlateLong)) // for joins need 2 additional bolt, if hastmap has both lengths there is a join
+        if (topPlates.containsKey(shortTopPlate) && topPlates.containsKey(longTopPlate)) // for joins need 2 additional bolt, if hastmap has both lengths there is a join
         {
             result += 4;
         }
