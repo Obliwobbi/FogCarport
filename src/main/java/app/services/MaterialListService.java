@@ -12,7 +12,7 @@ public interface MaterialListService
 
     HashMap<Double, Integer> calculateTopPlate(Carport carport);
 
-    int calculateBlocking(Carport carport);
+    HashMap<Double, Integer> calculateBlocking(Carport carport);
 
     HashMap<Double, Integer> calculateRoofPlates(Carport carport);
 
@@ -22,7 +22,7 @@ public interface MaterialListService
 
     int calculateFittings(int rafters);
 
-    int calculateFittingsScrewsNeeded(int fittings, int screws);
+    int calculateScrewsNeeded(int fittings, int screws);
 
     int calculateScrewPacks(int packsize, int screws);
 }
