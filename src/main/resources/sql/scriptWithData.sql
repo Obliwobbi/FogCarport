@@ -80,7 +80,7 @@ CREATE TABLE orders
     order_id      SERIAL PRIMARY KEY,
     order_date    TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
     status        VARCHAR(50)              NOT NULL DEFAULT 'NY ORDRE',
-    delivery_date TIMESTAMP WITH TIME ZONE,
+    delivery_date TIMESTAMP WITH TIME ZONE DEFAULT (NOW() + INTERVAL '1 year'),
     drawing_id    INT,
     carport_id    INT                      NOT NULL,
     customer_id   INT                      NOT NULL,
