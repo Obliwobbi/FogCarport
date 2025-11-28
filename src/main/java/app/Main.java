@@ -51,10 +51,14 @@ public class Main
         CustomerService customerService = new CustomerServiceImpl(customerMapper);
         ContactController contactController = new ContactController(customerService, orderService);
 
+        DrawingController drawingController = new DrawingController();
+
         // Routing
         homeController.addRoutes(app);
         carportController.addRoutes(app);
+        drawingController.addRoutes(app);
         orderController.addRoutes(app);
         contactController.addRoutes(app);
+
     }
 }
