@@ -1,5 +1,7 @@
 package app.controllers;
 
+import app.entities.Carport;
+import app.services.CarportTopViewSvg;
 import app.services.SvgServiceImpl;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
@@ -18,15 +20,8 @@ public class DrawingController
     {
         Locale.setDefault(new Locale("US"));
 
-        SvgServiceImpl carportSvg = new SvgServiceImpl(0, 0, "0 0 855 690", "100%", "auto");
-
-        String style = "stroke-width:5px; stroke: black; fill: white;";
-        String dashedLine = "stroke-width:5px; stroke: black; stroke-dasharray:5 5;";
-        String arrow = "marker-start: url(#beginArrow); marker-end: url(#endArrow);";
-
-        carportSvg.addRectangle(0, 0, 600, 780, style);
-        carportSvg.addLine(50,50,500,700,dashedLine);
-        carportSvg.addArrow(20,20,600,700,style + arrow);
+        Carport carport = ctx.sessionAttribute("carport");
+        CarportTopViewSvg carportSvg = new CarportTopViewSvg(carport.getWidth(),carport.getLength());
 
         ctx.attribute("svg", carportSvg.toString());
         ctx.render("drawing.html");
