@@ -30,7 +30,7 @@ public class OrderMapper
         {
             ps.setTimestamp(1, Timestamp.valueOf(orderDate));
             ps.setString(2, status);
-            ps.setNull(3, Types.TIMESTAMP);
+            ps.setTimestamp(3, Timestamp.valueOf(deliveryDate));
             if(drawingId != null)
             {
                 ps.setInt(4, drawingId);
