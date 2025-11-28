@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="da" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>FogCarport</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link rel="stylesheet" href="/css/stylesheet.css" th:href="@{/css/stylesheet.css}"/>
+</head>
+<body>
+
+<h1>carport</h1>
+
+<svg viewBox="0 0 800 600">
+    <rect x="10" y="0" height="600" width="780"
+          style="stroke:black; fill:white"/>
+
+    <rect x="10" y="0" height="600" width="5"
+          style="stroke:black; fill:white"/>
+
+    <rect x="785" y="0" height="600" width="5"
+          style="stroke:black; fill:white"/>
+
+    <rect x="15" y="35" height="5" width="770"
+          style="stroke:black; fill:white"/>
+
+    <rect x="15" y="555" height="5" width="770"
+          style="stroke:black; fill:white"/>
+
+    <rect x="110" y="32.5" height="10" width="10"
+          style="stroke: black; fill: white"/>
+    <rect x="520" y="32.5" height="10" width="10"
+    style="stroke: black; fill: white"/>
+    <rect x="750" y="32.5" height="10" width="10"
+    style="stroke: black; fill: white"/>
+
+    <rect x="110" y="552.5" height="10" width="10"
+          style="stroke: black; fill: white"/>
+    <rect x="520" y="552.5" height="10" width="10"
+          style="stroke: black; fill: white"/>
+    <rect x="750" y="552.5" height="10" width="10"
+          style="stroke: black; fill: white"/>
+
+    <line x1="50" y1="35" x2="600" y2="561"
+          style="stroke: black; stroke-dasharray:5 5;" />
+    <line x1="50" y1="561" x2="600" y2="35"
+          style="stroke: black; stroke-dasharray:5 5;" />
+
+</svg>
+
+</body>
+</html>
