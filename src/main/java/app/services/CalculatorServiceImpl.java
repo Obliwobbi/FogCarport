@@ -51,6 +51,7 @@ public class CalculatorServiceImpl implements CalculatorService
         //Only 2 lengths of Top Plates in database, 480 and 600.
         double shortTopPlate = 480.0; // 480 is the shortest Top Plate in database
         double longTopPlate = 600.0; //600 is the of the longest Top Plate in database
+        int overhang = 30; //the 30cm is to account for necessary overhang on sides of the shed, from documentation provided by product owner
 
 
         if (!carport.isWithShed())
@@ -70,7 +71,7 @@ public class CalculatorServiceImpl implements CalculatorService
         }
         else
         {
-            if (carport.getLength() > longTopPlate && carport.getShedWidth() == (carport.getWidth() - 30)) //the -30 is to account for necessary overhang, from documentation provided by product owner
+            if (carport.getLength() > longTopPlate && carport.getShedWidth() == (carport.getWidth() - overhang))
             {
                 result.put(longTopPlate, 2);
                 result.put(shortTopPlate, 1);
@@ -79,7 +80,7 @@ public class CalculatorServiceImpl implements CalculatorService
             {
                 result.put(longTopPlate, 2);
             }
-            else if (carport.getLength() <= shortTopPlate && carport.getShedWidth() <= (carport.getWidth() - 30))
+            else if (carport.getLength() <= shortTopPlate && carport.getShedWidth() <= (carport.getWidth() - overhang))
             {
                 result.put(shortTopPlate, 2);
             }
@@ -188,7 +189,7 @@ public class CalculatorServiceImpl implements CalculatorService
     public HashMap<Double, Integer> calculateBlocking(Carport carport)
     {
         HashMap<Double, Integer> result = new HashMap<>();
-        int blockingMaxLength = 270;
+        int blockingMaxLength = 270; //Length between posts on shed cant be larger than 270, if so, a posts it put in the middle
 
         double shortBlockingLength = 240.0;
         double longBlockingLength = 270.0;
@@ -196,17 +197,16 @@ public class CalculatorServiceImpl implements CalculatorService
         int shortBlockingCount = 0;
         int longBlockingCount = 0;
 
-        //Length between posts on shed cant be larger than 270, if so, a posts it put in the middle
         if (carport.getShedWidth() > blockingMaxLength)
         {
             if (carport.getShedWidth() / 2 > shortBlockingLength)
             {
                 //If length between posts on shed width is larger than the short board, we use the long one
-                longBlockingCount += 12;
+                longBlockingCount += 12; //according to documentation provided, there needs to be 3 blockings between each post if over 240
             }
             else
             {
-                shortBlockingCount += 8;
+                shortBlockingCount += 8; //according to documentation provided there needs to be 2 blockings between each post, if under 240
             }
         }
         else
