@@ -191,65 +191,65 @@ VALUES ('SVG drawing data for standard carport 600x780...', TRUE),
 -- Insert test orders with all 5 status types
 INSERT INTO orders (order_date, status, delivery_date, drawing_id, carport_id, customer_id, total_price)
 VALUES
-    -- NY ORDRE: Brand new order, just created
-    ('2024-01-20 09:00:00', 'NY ORDRE', '2024-02-20 10:00:00', 4, 4, 4, 18000.00),
+    -- NY ORDRE (Order 1)
+    ('2024-01-20 09:00:00', 'NY ORDRE', '2024-02-20 10:00:00', 4, 4, 4, 4488.00),
 
-    -- AFVENTER ACCEPT: Waiting for customer approval
-    ('2024-01-15 10:30:00', 'AFVENTER ACCEPT', '2024-02-15 10:00:00', 1, 1, 1, 15000.00),
+    -- AFVENTER ACCEPT (Order 2)
+    ('2024-01-15 10:30:00', 'AFVENTER ACCEPT', '2024-02-15 10:00:00', 1, 1, 1, 4330.00),
 
-    -- BETALT: Customer has paid, ready for production
-    ('2024-01-10 14:20:00', 'BETALT', '2024-02-10 12:00:00', 2, 2, 2, 22000.00),
+    -- BETALT (Order 3)
+    ('2024-01-10 14:20:00', 'BETALT', '2024-02-10 12:00:00', 2, 2, 2, 7965.00),
 
-    -- AFSENDT: Order has been shipped
-    ('2024-01-05 09:15:00', 'AFSENDT', '2024-02-01 08:00:00', 3, 3, 3, 28000.00),
+    -- AFSENDT (Order 4)
+    ('2024-01-05 09:15:00', 'AFSENDT', '2024-02-01 08:00:00', 3, 3, 3, 6935.00),
 
-    -- AFSLUTTET: Order completed and delivered
-    ('2023-12-20 11:00:00', 'AFSLUTTET', '2024-01-20 14:00:00', 5, 5, 5, 32000.00);
+    -- AFSLUTTET (Order 5)
+    ('2023-12-20 11:00:00', 'AFSLUTTET', '2024-01-20 14:00:00', 5, 5, 5, 9493.00);
 
 -- Insert material lines directly for orders
 INSERT INTO materials_lines (order_id, material_id, material_name, unit_type, quantity, unit_price, line_price)
 VALUES
-    -- Order 2 (AFVENTER ACCEPT) - total: 15000.00
-    (2, 1, 'Brædt 25x200', 'stk', 10, 300.00, 3000.00),
-    (2, 4, 'Reglar 45x95', 'stk', 8, 250.00, 2000.00),
-    (2, 5, 'Stolpe 97x97', 'stk', 4, 400.00, 1600.00),
-    (2, 14, 'Tagplade', 'stk', 15, 450.00, 6750.00),
-    (2, 6, 'Bundskruer', 'pakke', 2, 150.00, 300.00),
-    (2, 10, 'Skruer 4.5x60', 'pakke', 3, 120.00, 360.00),
+    -- Order 2 (AFVENTER ACCEPT)
+    (2, 1, 'Brædt 25x200', 'stk', 10, 79.00, 790.00),
+    (2, 4, 'Reglar 45x95', 'stk', 8, 32.00, 256.00),
+    (2, 11, 'Stolpe 97x97', 'stk', 4, 129.00, 516.00),
+    (2, 15, 'Plastmo Ecolite 600', 'stk', 15, 159.00, 2385.00),
+    (2, 17, 'Bundskruer', 'pakke', 2, 129.00, 258.00),
+    (2, 25, 'Skruer 4.5x60', 'pakke', 3, 45.00, 135.00),
 
-    -- Order 3 (BETALT) - total: 22000.00
-    (3, 1, 'Brædt 25x200', 'stk', 12, 300.00, 3600.00),
-    (3, 2, 'Brædt 25x125', 'stk', 10, 200.00, 2000.00),
-    (3, 4, 'Reglar 45x95', 'stk', 12, 250.00, 3000.00),
-    (3, 5, 'Stolpe 97x97', 'stk', 6, 400.00, 2400.00),
-    (3, 14, 'Tagplade', 'stk', 20, 450.00, 9000.00),
-    (3, 6, 'Bundskruer', 'pakke', 3, 150.00, 450.00),
-    (3, 10, 'Skruer 4.5x60', 'pakke', 5, 120.00, 600.00),
+    -- Order 3 (BETALT)
+    (3, 1, 'Brædt 25x200', 'stk', 12, 79.00, 948.00),
+    (3, 3, 'Brædt 25x125', 'stk', 10, 48.00, 480.00),
+    (3, 4, 'Reglar 45x95', 'stk', 12, 32.00, 384.00),
+    (3, 11, 'Stolpe 97x97', 'stk', 6, 129.00, 774.00),
+    (3, 15, 'Plastmo Ecolite 600', 'stk', 20, 159.00, 3180.00),
+    (3, 17, 'Bundskruer', 'pakke', 3, 129.00, 387.00),
+    (3, 25, 'Skruer 4.5x60', 'pakke', 5, 45.00, 225.00),
 
-    -- Order 4 (AFSENDT) - total: 28000.00
-    (4, 1, 'Brædt 25x200', 'stk', 15, 300.00, 4500.00),
-    (4, 2, 'Brædt 25x125', 'stk', 12, 200.00, 2400.00),
-    (4, 4, 'Reglar 45x95', 'stk', 15, 250.00, 3750.00),
-    (4, 5, 'Stolpe 97x97', 'stk', 8, 400.00, 3200.00),
-    (4, 14, 'Tagplade', 'stk', 25, 450.00, 11250.00),
-    (4, 10, 'Skruer 4.5x60', 'pakke', 4, 120.00, 480.00),
-    (4, 6, 'Bundskruer', 'pakke', 4, 150.00, 600.00),
-    (4, 7, 'Hulbånd', 'rulle', 3, 75.00, 225.00),
+    -- Order 4 (AFSENDT)
+    (4, 1, 'Brædt 25x200', 'stk', 15, 79.00, 1185.00),
+    (4, 3, 'Brædt 25x125', 'stk', 12, 48.00, 576.00),
+    (4, 4, 'Reglar 45x95', 'stk', 15, 32.00, 480.00),
+    (4, 11, 'Stolpe 97x97', 'stk', 8, 129.00, 1032.00),
+    (4, 15, 'Plastmo Ecolite 600', 'stk', 25, 159.00, 3975.00),
+    (4, 25, 'Skruer 4.5x60', 'pakke', 4, 45.00, 180.00),
+    (4, 17, 'Bundskruer', 'pakke', 4, 129.00, 516.00),
+    (4, 18, 'Hulbånd 1x20 mm', 'rulle', 3, 49.00, 147.00),
 
-    -- Order 1 (NY ORDRE) - total: 18000.00
-    (1, 1, 'Brædt 25x200', 'stk', 11, 300.00, 3300.00),
-    (1, 4, 'Reglar 45x95', 'stk', 10, 250.00, 2500.00),
-    (1, 5, 'Stolpe 97x97', 'stk', 5, 400.00, 2000.00),
-    (1, 14, 'Tagplade', 'stk', 18, 450.00, 8100.00),
-    (1, 6, 'Bundskruer', 'pakke', 3, 150.00, 450.00),
-    (1, 10, 'Skruer 4.5x60', 'pakke', 5, 120.00, 600.00),
+    -- Order 1 (NY ORDRE)
+    (1, 1, 'Brædt 25x200', 'stk', 11, 79.00, 869.00),
+    (1, 4, 'Reglar 45x95', 'stk', 10, 32.00, 320.00),
+    (1, 11, 'Stolpe 97x97', 'stk', 5, 129.00, 645.00),
+    (1, 15, 'Plastmo Ecolite 600', 'stk', 18, 159.00, 2862.00),
+    (1, 17, 'Bundskruer', 'pakke', 3, 129.00, 387.00),
+    (1, 25, 'Skruer 4.5x60', 'pakke', 5, 45.00, 225.00),
 
-    -- Order 5 (AFSLUTTET) - total: 32000.00
-    (5, 1, 'Brædt 25x200', 'stk', 18, 300.00, 5400.00),
-    (5, 2, 'Brædt 25x125', 'stk', 15, 200.00, 3000.00),
-    (5, 3, 'Lægte 38x73', 'stk', 20, 150.00, 3000.00),
-    (5, 4, 'Reglar 45x95', 'stk', 18, 250.00, 4500.00),
-    (5, 5, 'Stolpe 97x97', 'stk', 10, 400.00, 4000.00),
-    (5, 14, 'Tagplade', 'stk', 30, 450.00, 13500.00),
-    (5, 6, 'Bundskruer', 'pakke', 5, 150.00, 750.00),
-    (5, 10, 'Skruer 4.5x60', 'pakke', 6, 120.00, 720.00);
+    -- Order 5 (AFSLUTTET)
+    (5, 1, 'Brædt 25x200', 'stk', 18, 79.00, 1422.00),
+    (5, 3, 'Brædt 25x125', 'stk', 15, 48.00, 720.00),
+    (5, 5, 'Lægte 38x73', 'stk', 20, 29.00, 580.00),
+    (5, 4, 'Reglar 45x95', 'stk', 18, 32.00, 576.00),
+    (5, 11, 'Stolpe 97x97', 'stk', 10, 129.00, 1290.00),
+    (5, 15, 'Plastmo Ecolite 600', 'stk', 30, 159.00, 4770.00),
+    (5, 17, 'Bundskruer', 'pakke', 5, 129.00, 645.00),
+    (5, 25, 'Skruer 4.5x60', 'pakke', 6, 45.00, 270.00);
