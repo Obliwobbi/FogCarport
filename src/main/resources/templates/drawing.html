@@ -5,96 +5,20 @@
     <title>FogCarport</title>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <link rel="stylesheet" href="/css/stylesheet.css" th:href="@{/css/stylesheet.css}"/>
+    <link rel="stylesheet" href="/css/drawing.css" th:href="@{/css/drawing.css}"/>
+
 </head>
 <body>
+<main>
 
-<h1>carport</h1>
+    <h1>Vejledende Tegning af din Carport</h1>
 
-<svg xmlns="http://www.w3.org/2000/svg"
-     height="100%" viewBox="0 0 855 690"
-     preserveAspectRatio="xMinYMin">
+    <div class="carport-svg-topview">
+        <div th:utext="${svg}"></div>
 
-    <svg xmlns="http://www.w3.org/2000/svg"
-         x="50"
-         y="10"
-         width="800"
-         height="600"
-         viewBox="0 0 780 600"
-         preserveAspectRatio="xMinYMin">
+    </div>
 
-        <rect x="10" y="0" height="600" width="780"
-              style="stroke:black; fill:white"/>
-
-        <rect x="10" y="0" height="600" width="5"
-              style="stroke:black; fill:white"/>
-
-        <rect x="785" y="0" height="600" width="5"
-              style="stroke:black; fill:white"/>
-
-        <rect x="15" y="35" height="5" width="770"
-              style="stroke:black; fill:white"/>
-
-        <rect x="15" y="555" height="5" width="770"
-              style="stroke:black; fill:white"/>
-
-        <rect x="110" y="32.5" height="10" width="10"
-              style="stroke: black; fill: white"/>
-        <rect x="520" y="32.5" height="10" width="10"
-              style="stroke: black; fill: white"/>
-        <rect x="750" y="32.5" height="10" width="10"
-              style="stroke: black; fill: white"/>
-
-        <rect x="110" y="552.5" height="10" width="10"
-              style="stroke: black; fill: white"/>
-        <rect x="520" y="552.5" height="10" width="10"
-              style="stroke: black; fill: white"/>
-        <rect x="750" y="552.5" height="10" width="10"
-              style="stroke: black; fill: white"/>
-
-        <line x1="50" y1="35" x2="600" y2="561"
-              style="stroke: black; stroke-dasharray:5 5;"/>
-        <line x1="50" y1="561" x2="600" y2="35"
-              style="stroke: black; stroke-dasharray:5 5;"/>
-
-    </svg>
-
-    <defs>
-        <marker
-                id="beginArrow"
-                markerWidth="12"
-                markerHeight="12"
-                refX="0"
-                refY="6"
-                orient="auto">
-            <path d="M0,6 L12,0 L12,12 L0,6" style="fill: #000000;"/>
-        </marker>
-        <marker
-                id="endArrow"
-                markerWidth="12"
-                markerHeight="12"
-                refX="12"
-                refY="6"
-                orient="auto">
-            <path d="M0,0 L12,6 L0,12 L0,0 " style="fill: #000000;"/>
-        </marker>
-    </defs>
-
-    <line x1="25" y1="10" x2="25" y2="610"
-          style="stroke: #006600;
-            marker-start: url(#beginArrow);
-            marker-end: url(#endArrow);"/>
-
-
-    <line x1="60" y1="640" x2="840" y2="640"
-          style="stroke: #006600;
-          marker-start: url(#beginArrow);
-          marker-end: url(#endArrow);"/>
-
-    <text style="text-anchor: middle" transform="translate(30,300) rotate(270)">600 cm</text>
-    <text style="text-anchor: middle" transform="translate(420,630)">780 cm</text>
-
-    ..... Tegning af afstandsmål og angivelse af mål i cm
-</svg>
+</main>
 
 </body>
 </html>
