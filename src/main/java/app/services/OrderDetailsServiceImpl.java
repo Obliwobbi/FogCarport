@@ -28,12 +28,17 @@ public class OrderDetailsServiceImpl implements OrderDetailsService
     {
         List<MaterialsLine> materialList = new ArrayList<>();
 
+        /* #######################################################
+                               POSTS
+         ####################################################### */
         int posts = calculatorService.calculatePosts(carport);
-        Material postMaterial = materialMapper.getMaterialById(11); //MaterialID '11' is taken from database to match with post material
-        MaterialsLine postMaterialsLine = new MaterialsLine(posts,postMaterial.getPrice()*posts,postMaterial);
-        materialList.add(postMaterialsLine);
+        materialList.add(insertPosts(posts));
 
+        /* #######################################################
+                             TOP PLATES
+         ####################################################### */
         HashMap<Double, Integer> topPlates = calculatorService.calculateTopPlate(carport);
+
         double shortTopPlate = 480.0; // 480 is the shortest Top Plate in database
         double longTopPlate = 600.0; //600 is the of the longest Top Plate in database
         //9 er 480, 8 er 600
@@ -51,6 +56,9 @@ public class OrderDetailsServiceImpl implements OrderDetailsService
             materialList.add(new MaterialsLine(topPlate.getValue(), topPlateMaterial.getPrice()*topPlate.getValue(),topPlateMaterial));
         }
 
+        /* #######################################################
+                               BOLTS
+         ####################################################### */
         int bolts = calculatorService.calculateBolts(posts,topPlates);
         //same amount of firkantskiver as bolts
 
@@ -112,4 +120,15 @@ public class OrderDetailsServiceImpl implements OrderDetailsService
         return materialList;
     }
 
+    private MaterialsLine insertPosts (int posts) throws DatabaseException
+    {
+        Material postMaterial = materialMapper.getMaterialById(11); //MaterialID '11' is taken from database to match with post material
+        return new MaterialsLine(posts,postMaterial.getPrice()*posts,postMaterial);
+    }
+
+    private ArrayList<MaterialsLine> insertTopPlates (HashMap<Double, Integer> topPlates, ArrayList<MaterialsLine> materialsList)
+    {
+
+        return null;
+    }
 }
