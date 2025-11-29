@@ -1,7 +1,9 @@
 package app.services;
 
 import app.entities.Carport;
+import app.entities.Material;
 import app.entities.MaterialsLine;
+import app.exceptions.DatabaseException;
 import app.persistence.*;
 
 import java.util.ArrayList;
@@ -22,12 +24,32 @@ public class OrderDetailsServiceImpl implements OrderDetailsService
     }
 
     @Override
-    public List<MaterialsLine> createMaterialList(Carport carport)
+    public List<MaterialsLine> createMaterialList(Carport carport) throws DatabaseException
     {
         List<MaterialsLine> materialList = new ArrayList<>();
 
         int posts = calculatorService.calculatePosts(carport);
+        Material postMaterial = materialMapper.getMaterialById(11); //MaterialID '11' is taken from database to match with post material
+        MaterialsLine postMaterialsLine = new MaterialsLine(posts,postMaterial.getPrice()*posts,postMaterial);
+        materialList.add(postMaterialsLine);
+
         HashMap<Double, Integer> topPlates = calculatorService.calculateTopPlate(carport);
+        double shortTopPlate = 480.0; // 480 is the shortest Top Plate in database
+        double longTopPlate = 600.0; //600 is the of the longest Top Plate in database
+        //9 er 480, 8 er 600
+        for(HashMap.Entry<Double, Integer> topPlate : topPlates.entrySet())
+        {
+            Material topPlateMaterial = new Material();
+            if(topPlate.getKey().equals(shortTopPlate))
+            {
+                topPlateMaterial =  materialMapper.getMaterialById(9); //MaterialId '9' is for short board (480)
+            }
+            else if (topPlate.getKey().equals(longTopPlate))
+            {
+                topPlateMaterial =  materialMapper.getMaterialById(8); //MaterialId '8' is for long board (600)
+            }
+            materialList.add(new MaterialsLine(topPlate.getValue(), topPlateMaterial.getPrice()*topPlate.getValue(),topPlateMaterial));
+        }
 
         int bolts = calculatorService.calculateBolts(posts,topPlates);
         //same amount of firkantskiver as bolts
