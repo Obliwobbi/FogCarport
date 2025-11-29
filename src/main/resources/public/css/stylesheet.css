@@ -192,10 +192,12 @@ main {
     border-radius: 4px;
     text-decoration: none;
     padding: .5rem;
+    margin-top: .5rem;
 }
 
 .button:hover {
     opacity: 0.8;
+    cursor: pointer;
 }
 
 .center-text {
@@ -318,8 +320,47 @@ main {
     width: 75%;
     height: 80px;
     resize: none;
-    margin-bottom: 0.5rem;
     border-radius: 5px;
+}
+
+
+/*CONTACT*/
+
+.contact-form {
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 45%
+}
+
+.contact-form label {
+    width: 75%
+}
+
+.contact-form input {
+    width: 75%;
+    appearance: none;
+    -webkit-appearance: none;
+    padding: .6rem 1.2rem .6rem 1rem;
+    border-radius: 5px;
+    background: /* pil (inline SVG) */ url("data:image/svg+xml;utf8,\
+    <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'>\
+      <path d='M7 10l5 5 5-5' fill='none' stroke='white' stroke-width='2' stroke-linecap='round'/>\
+    </svg>") no-repeat right .9rem center / 1rem white;
+    color: var(--color-text-dark);
+    font: inherit;
+    transition: border-color .15s ease, box-shadow .15s ease, background-color .15s ease;
+}
+
+.contact-form input:hover {
+    border-color: var(--color-fogblue-light);
+}
+
+.contact-form input:focus {
+    outline: none;
+    border-color: var(--color-fogblue-light);
+    box-shadow: 0 0 0 .2rem color-mix(in srgb, var(--color-fogblue-dark) 25%, transparent);
 }
 
 
