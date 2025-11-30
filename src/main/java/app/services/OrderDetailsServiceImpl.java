@@ -76,9 +76,42 @@ public class OrderDetailsServiceImpl implements OrderDetailsService
         int perforatedStrip = calculatorService.calculatePerforatedStrip(carport);
         materialList.add(insertMaterialLine(perforatedStrip, 18));
 
+        /* #######################################################
+                             FASCIA BOARDS
+         ####################################################### */
         HashMap<Double, Integer> fasciaBoardLength = calculatorService.calculateFasciaBoardLength(carport);
+        //Needs 2 mapper calls, one with wide board (back) and one with narrower board (front)
+        double shortFasciaBoard = 360.0;
+        double longFasciaBoard = 540.0;
+        for (HashMap.Entry<Double, Integer> fasciaBoard : fasciaBoardLength.entrySet())
+        {
+            if (fasciaBoard.getKey().equals(shortFasciaBoard))
+            {
+                materialList.add(insertMaterialLine(fasciaBoard.getValue(), 1)); //Sub-fascia board
+                materialList.add(insertMaterialLine(fasciaBoard.getValue(), 3));
+            }
+            else if (fasciaBoard.getKey().equals(longFasciaBoard))
+            {
+                materialList.add(insertMaterialLine(fasciaBoard.getValue(), 2)); //Sub-fascia board
+                materialList.add(insertMaterialLine(fasciaBoard.getValue(), 4));
+            }
+        }
+
+        //only need half for the value for mapper call for 1 of the 2 calls
         HashMap<Double, Integer> fasciaBoardWidth = calculatorService.calculateFasciaBoardWidth(carport);
-        //only need half for the value for mapper call for 1 of the 4 calls
+        for (HashMap.Entry<Double, Integer> fasciaBoard : fasciaBoardWidth.entrySet())
+        {
+            if (fasciaBoard.getKey().equals(shortFasciaBoard))
+            {
+                materialList.add(insertMaterialLine(fasciaBoard.getValue(), 1)); //Sub-fascia board
+                materialList.add(insertMaterialLine(fasciaBoard.getValue()/2, 3));
+            }
+            else if (fasciaBoard.getKey().equals(longFasciaBoard))
+            {
+                materialList.add(insertMaterialLine(fasciaBoard.getValue(), 2)); //Sub-fascia board
+                materialList.add(insertMaterialLine(fasciaBoard.getValue()/2, 4));
+            }
+        }
 
         //vandbrædt samme mængder og længder som fasciaboard metoderne til overside
 
