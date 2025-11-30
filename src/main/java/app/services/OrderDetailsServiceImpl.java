@@ -144,27 +144,46 @@ public class OrderDetailsServiceImpl implements OrderDetailsService
         if (carport.isWithShed())
         {
             HashMap<Double, Integer> blockings = calculatorService.calculateBlocking(carport);
+            double shortBlocking = 240.0;
+            double longBlocking = 270.0;
+            for (HashMap.Entry<Double, Integer> blocking : blockings.entrySet())
+            {
+                if (blocking.getKey().equals(shortBlocking))
+                {
+                    materialList.add(insertMaterialLine(blocking.getValue(), 7));
+                }
+                else if (blocking.getKey().equals(longBlocking))
+                {
+                    materialList.add(insertMaterialLine(blocking.getValue(), 6));
+                }
+            }
             int blockingFittingsCount = blockings.values()
                     .stream()
                     .mapToInt(Integer::intValue)
                     .sum();
-            int blockingFittings = calculatorService.calculateFittings(blockingFittingsCount);
-            int blockingFittingsScrews = calculatorService.calculateScrewsNeeded(blockingFittings, 4); //according to documentation
+            int blockingFittings = blockingFittingsCount * 2; //Need two pr blocking (according to delivered material, 16 blockings and 32 fittings)
+            materialList.add(insertMaterialLine(blockingFittings, 29));
 
-            universalScrews += blockingFittingsScrews;
+            int blockingFittingsScrews = calculatorService.calculateScrewsNeeded(blockingFittings, 4); //according to documentation
+            universalScrews += blockingFittingsScrews; //Added later to materialslines (same screws as to ceiling joists)
 
             int sideBoards = calculatorService.calculateSidingBoard(carport);
+            materialList.add(insertMaterialLine(sideBoards, 12));
 
             int screwsSideBoardsInnerLayer = calculatorService.calculateScrewsNeeded(sideBoards, 3); //according to documentation
-            int screwsSideBoardsOuterLayer = calculatorService.calculateScrewsNeeded(sideBoards, 6); //according to documentation
-
             int packSizeShortScrew = 300; //according to documentation
-            int packSizeLongScrew = 400; //according to documentation
-
             int sideBoardsInnerScrewPack = calculatorService.calculateScrewPacks(packSizeShortScrew, screwsSideBoardsInnerLayer);
-            int sideBoardsOuterScrewPack = calculatorService.calculateScrewPacks(packSizeLongScrew, screwsSideBoardsOuterLayer);
+            materialList.add(insertMaterialLine(sideBoardsInnerScrewPack, 24));
 
-            //tilføj beslag, greb, lægte til Z bag dør
+            int screwsSideBoardsOuterLayer = calculatorService.calculateScrewsNeeded(sideBoards, 6); //according to documentation
+            int packSizeLongScrew = 400; //according to documentation
+            int sideBoardsOuterScrewPack = calculatorService.calculateScrewPacks(packSizeLongScrew, screwsSideBoardsOuterLayer);
+            materialList.add(insertMaterialLine(sideBoardsOuterScrewPack, 26));
+
+            //These are always added if with shed, these are for the door, so no calculations needed.
+            materialList.add(insertMaterialLine(1, 5)); //Z strip to behind shed door
+            materialList.add(insertMaterialLine(1,27)); //Barndoor grip
+            materialList.add(insertMaterialLine(2,28)); //T-Hinge
         }
 
         /* #######################################################
