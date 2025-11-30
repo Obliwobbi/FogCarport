@@ -38,19 +38,7 @@ public class OrderDetailsServiceImpl implements OrderDetailsService
                              TOP PLATES
          ####################################################### */
         HashMap<Double, Integer> topPlates = calculatorService.calculateTopPlate(carport);
-        double shortTopPlate = 480.0; // 480 is the shortest Top Plate in database
-        double longTopPlate = 600.0; //600 is the of the longest Top Plate in database
-        for (HashMap.Entry<Double, Integer> topPlate : topPlates.entrySet())
-        {
-            if (topPlate.getKey().equals(shortTopPlate))
-            {
-                materialList.add(insertMaterialLine(topPlate.getValue(), 9)); //MaterialId '9' is for short board (480)
-            }
-            else if (topPlate.getKey().equals(longTopPlate))
-            {
-                materialList.add(insertMaterialLine(topPlate.getValue(), 8)); //MaterialId '8' is for long board (600)
-            }
-        }
+        materialList = forEachMaterial(topPlates,materialList,480.0,600.0,9,8);
 
         /* #######################################################
                           BOLTS & WASHERS
@@ -77,10 +65,11 @@ public class OrderDetailsServiceImpl implements OrderDetailsService
         materialList.add(insertMaterialLine(perforatedStrip, 18));
 
         /* #######################################################
-                             FASCIA BOARDS
+                      FASCIA BOARDS + WEATHERBOARD/SIDING
          ####################################################### */
         HashMap<Double, Integer> fasciaBoardLength = calculatorService.calculateFasciaBoardLength(carport);
         //Needs 2 mapper calls, one with wide board (back) and one with narrower board (front)
+        //Weatherboard, needs same quantity and lengths as fascia board
         double shortFasciaBoard = 360.0;
         double longFasciaBoard = 540.0;
         for (HashMap.Entry<Double, Integer> fasciaBoard : fasciaBoardLength.entrySet())
@@ -88,12 +77,14 @@ public class OrderDetailsServiceImpl implements OrderDetailsService
             if (fasciaBoard.getKey().equals(shortFasciaBoard))
             {
                 materialList.add(insertMaterialLine(fasciaBoard.getValue(), 1)); //Sub-fascia board
-                materialList.add(insertMaterialLine(fasciaBoard.getValue(), 3));
+                materialList.add(insertMaterialLine(fasciaBoard.getValue(), 3)); //Fascia
+                materialList.add(insertMaterialLine(fasciaBoard.getValue(), 14)); //Weatherboard
             }
             else if (fasciaBoard.getKey().equals(longFasciaBoard))
             {
                 materialList.add(insertMaterialLine(fasciaBoard.getValue(), 2)); //Sub-fascia board
-                materialList.add(insertMaterialLine(fasciaBoard.getValue(), 4));
+                materialList.add(insertMaterialLine(fasciaBoard.getValue(), 4)); //Fascia
+                materialList.add(insertMaterialLine(fasciaBoard.getValue(), 13)); //Weatherboard
             }
         }
 
@@ -104,34 +95,22 @@ public class OrderDetailsServiceImpl implements OrderDetailsService
             if (fasciaBoard.getKey().equals(shortFasciaBoard))
             {
                 materialList.add(insertMaterialLine(fasciaBoard.getValue(), 1)); //Sub-fascia board
-                materialList.add(insertMaterialLine(fasciaBoard.getValue() / 2, 3));
+                materialList.add(insertMaterialLine(fasciaBoard.getValue() / 2, 3)); //Fascia
+                materialList.add(insertMaterialLine(fasciaBoard.getValue() / 2, 14)); //Weatherboard
             }
             else if (fasciaBoard.getKey().equals(longFasciaBoard))
             {
                 materialList.add(insertMaterialLine(fasciaBoard.getValue(), 2)); //Sub-fascia board
-                materialList.add(insertMaterialLine(fasciaBoard.getValue() / 2, 4));
+                materialList.add(insertMaterialLine(fasciaBoard.getValue() / 2, 4)); //Fascia
+                materialList.add(insertMaterialLine(fasciaBoard.getValue() / 2, 13)); //Weatherboard
             }
         }
-
-        //vandbrædt samme mængder og længder som fasciaboard metoderne til overside
 
         /* #######################################################
                           ROOF PLATES & SCREWS
          ####################################################### */
         HashMap<Double, Integer> roofPlates = calculatorService.calculateRoofPlates(carport);
-        double shortRoofPlate = 360.0;
-        double longRoofPlate = 600.0;
-        for (HashMap.Entry<Double, Integer> roofPlate : roofPlates.entrySet())
-        {
-            if (roofPlate.getKey().equals(shortRoofPlate))
-            {
-                materialList.add(insertMaterialLine(roofPlate.getValue(), 16));
-            }
-            else if (roofPlate.getKey().equals(longRoofPlate))
-            {
-                materialList.add(insertMaterialLine(roofPlate.getValue(), 15));
-            }
-        }
+        materialList = forEachMaterial(roofPlates,materialList,360.0,600.0,16,15);
 
         int roofPlateScrews = calculatorService.calculateRoofPlateScrews(carport);
         int packSizeRoofPlateScrew = 200; //According to documentation
@@ -144,19 +123,8 @@ public class OrderDetailsServiceImpl implements OrderDetailsService
         if (carport.isWithShed())
         {
             HashMap<Double, Integer> blockings = calculatorService.calculateBlocking(carport);
-            double shortBlocking = 240.0;
-            double longBlocking = 270.0;
-            for (HashMap.Entry<Double, Integer> blocking : blockings.entrySet())
-            {
-                if (blocking.getKey().equals(shortBlocking))
-                {
-                    materialList.add(insertMaterialLine(blocking.getValue(), 7));
-                }
-                else if (blocking.getKey().equals(longBlocking))
-                {
-                    materialList.add(insertMaterialLine(blocking.getValue(), 6));
-                }
-            }
+            materialList = forEachMaterial(blockings,materialList,240.0,270.0,7,6);
+
             int blockingFittingsCount = blockings.values()
                     .stream()
                     .mapToInt(Integer::intValue)
@@ -208,9 +176,22 @@ public class OrderDetailsServiceImpl implements OrderDetailsService
         return new MaterialsLine(quantity, material.getPrice() * quantity, material);
     }
 
-    private ArrayList<MaterialsLine> insertTopPlates(HashMap<Double, Integer> topPlates, ArrayList<MaterialsLine> materialsList)
+    private List<MaterialsLine> forEachMaterial(HashMap<Double, Integer> boards, List<MaterialsLine> currentMaterialList, double shortBoard, double longBoard, int shortMaterialId, int longMaterialId) throws DatabaseException
     {
+        List<MaterialsLine> newMaterialList = currentMaterialList;
 
-        return null;
+        for (HashMap.Entry<Double, Integer> material : boards.entrySet())
+        {
+            if (material.getKey().equals(shortBoard))
+            {
+                newMaterialList.add(insertMaterialLine(material.getValue(), shortMaterialId));
+            }
+            else if (material.getKey().equals(longBoard))
+            {
+                newMaterialList.add(insertMaterialLine(material.getValue(), longMaterialId));
+            }
+        }
+
+        return newMaterialList;
     }
 }
