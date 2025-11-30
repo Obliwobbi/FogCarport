@@ -104,12 +104,12 @@ public class OrderDetailsServiceImpl implements OrderDetailsService
             if (fasciaBoard.getKey().equals(shortFasciaBoard))
             {
                 materialList.add(insertMaterialLine(fasciaBoard.getValue(), 1)); //Sub-fascia board
-                materialList.add(insertMaterialLine(fasciaBoard.getValue()/2, 3));
+                materialList.add(insertMaterialLine(fasciaBoard.getValue() / 2, 3));
             }
             else if (fasciaBoard.getKey().equals(longFasciaBoard))
             {
                 materialList.add(insertMaterialLine(fasciaBoard.getValue(), 2)); //Sub-fascia board
-                materialList.add(insertMaterialLine(fasciaBoard.getValue()/2, 4));
+                materialList.add(insertMaterialLine(fasciaBoard.getValue() / 2, 4));
             }
         }
 
