@@ -53,10 +53,11 @@ public class OrderDetailsServiceImpl implements OrderDetailsService
         }
 
         /* #######################################################
-                               BOLTS
+                          BOLTS & WASHERS
          ####################################################### */
-        int bolts = calculatorService.calculateBolts(posts,topPlates);
-        //same amount of firkantskiver as bolts
+        int bolts = calculatorService.calculateBolts(posts, topPlates);
+        materialList.add(insertMaterialLine(bolts, 21)); //MaterialId '21' is for bolts 10x120mm
+        materialList.add(insertMaterialLine(bolts, 23)); //same amount of washers as bolts
 
         int ceilingJoists = calculatorService.calculateCeilingJoist(carport);
         int ceilingJoistFittings = calculatorService.calculateFittings(ceilingJoists);
