@@ -45,7 +45,7 @@ public class OrderDetailsServiceImpl implements OrderDetailsService
          ####################################################### */
         int bolts = calculatorService.calculateBolts(posts, topPlates);
         materialList.add(insertMaterialLine(bolts, 21)); //MaterialId '21' is for bolts 10x120mm
-        materialList.add(insertMaterialLine(bolts, 23)); //same amount of washers as bolts
+        materialList.add(insertMaterialLine(bolts, 22)); //same amount of washers as bolts
 
         /* #######################################################
                   CEILING JOISTS & FITTINGS + SCREWS
