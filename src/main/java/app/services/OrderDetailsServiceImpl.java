@@ -115,13 +115,19 @@ public class OrderDetailsServiceImpl implements OrderDetailsService
 
         //vandbrædt samme mængder og længder som fasciaboard metoderne til overside
 
-        HashMap<Double,Integer> roofPlates = calculatorService.calculateRoofPlates(carport);
+        /* #######################################################
+                          ROOF PLATES & SCREWS
+         ####################################################### */
+        HashMap<Double, Integer> roofPlates = calculatorService.calculateRoofPlates(carport);
 
         int roofPlateScrews = calculatorService.calculateRoofPlateScrews(carport);
         int packSizeRoofPlateScrew = 200; //According to documentation
-        int roofPlateScrewPacks = calculatorService.calculateScrewPacks(packSizeRoofPlateScrew,roofPlateScrews);
+        int roofPlateScrewPacks = calculatorService.calculateScrewPacks(packSizeRoofPlateScrew, roofPlateScrews);
 
-        if(carport.isWithShed())
+        /* #######################################################
+                            IF IS WITH SHED
+         ####################################################### */
+        if (carport.isWithShed())
         {
             HashMap<Double, Integer> blockings = calculatorService.calculateBlocking(carport);
             int blockingFittingsCount = blockings.values()
@@ -135,18 +141,21 @@ public class OrderDetailsServiceImpl implements OrderDetailsService
 
             int sideBoards = calculatorService.calculateSidingBoard(carport);
 
-            int screwsSideBoardsInnerLayer = calculatorService.calculateScrewsNeeded(sideBoards,3); //according to documentation
-            int screwsSideBoardsOuterLayer = calculatorService.calculateScrewsNeeded(sideBoards,6); //according to documentation
+            int screwsSideBoardsInnerLayer = calculatorService.calculateScrewsNeeded(sideBoards, 3); //according to documentation
+            int screwsSideBoardsOuterLayer = calculatorService.calculateScrewsNeeded(sideBoards, 6); //according to documentation
 
             int packSizeShortScrew = 300; //according to documentation
             int packSizeLongScrew = 400; //according to documentation
 
-            int sideBoardsInnerScrewPack = calculatorService.calculateScrewPacks(packSizeShortScrew,screwsSideBoardsInnerLayer);
-            int sideBoardsOuterScrewPack = calculatorService.calculateScrewPacks(packSizeLongScrew,screwsSideBoardsOuterLayer);
+            int sideBoardsInnerScrewPack = calculatorService.calculateScrewPacks(packSizeShortScrew, screwsSideBoardsInnerLayer);
+            int sideBoardsOuterScrewPack = calculatorService.calculateScrewPacks(packSizeLongScrew, screwsSideBoardsOuterLayer);
 
             //tilføj beslag, greb, lægte til Z bag dør
         }
 
+        /* #######################################################
+              UNIVERSAL SCREWS (CEILING JOISTS AND BLOCKING)
+         ####################################################### */
         int packSizeFittingScrew = 250; //according to documentation
         int fittingScrewPacks = calculatorService.calculateScrewPacks(packSizeFittingScrew, universalScrews);
 
