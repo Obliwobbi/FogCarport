@@ -59,12 +59,22 @@ public class OrderDetailsServiceImpl implements OrderDetailsService
         materialList.add(insertMaterialLine(bolts, 21)); //MaterialId '21' is for bolts 10x120mm
         materialList.add(insertMaterialLine(bolts, 23)); //same amount of washers as bolts
 
+        /* #######################################################
+                  CEILING JOISTS & FITTINGS + SCREWS
+         ####################################################### */
         int ceilingJoists = calculatorService.calculateCeilingJoist(carport);
-        int ceilingJoistFittings = calculatorService.calculateFittings(ceilingJoists);
-        int universalScrews = calculatorService.calculateScrewsNeeded(ceilingJoistFittings, 9); //according to documentation
+        materialList.add(insertMaterialLine(ceilingJoists, 10)); //MaterialId '10' is for long ceiling joist (600)
+        int ceilingJoistFittings = ceilingJoists * 2; //Needs double amount, 1 right and 1 left fitting for each ceiling joist
+        materialList.add(insertMaterialLine(ceilingJoists, 19)); //MaterialId '19' is for right fitting
+        materialList.add(insertMaterialLine(ceilingJoists, 20)); //MaterialId '20' is for left fitting
 
-        //hulbånd calculation
+        int universalScrews = calculatorService.calculateScrewsNeeded(ceilingJoistFittings, 9); //according to documentation, will add to packs needed later
+
+        /* #######################################################
+                            PERFORATED STRIP
+         ####################################################### */
         int perforatedStrip = calculatorService.calculatePerforatedStrip(carport);
+        materialList.add(insertMaterialLine(perforatedStrip, 18));
 
         HashMap<Double, Integer> fasciaBoardLength = calculatorService.calculateFasciaBoardLength(carport);
         HashMap<Double, Integer> fasciaBoardWidth = calculatorService.calculateFasciaBoardWidth(carport);
