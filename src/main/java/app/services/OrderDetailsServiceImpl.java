@@ -119,10 +119,24 @@ public class OrderDetailsServiceImpl implements OrderDetailsService
                           ROOF PLATES & SCREWS
          ####################################################### */
         HashMap<Double, Integer> roofPlates = calculatorService.calculateRoofPlates(carport);
+        double  shortRoofPlate = 360.0;
+        double longRoofPlate = 600.0;
+        for (HashMap.Entry<Double,Integer> roofPlate : roofPlates.entrySet())
+        {
+            if (roofPlate.getKey().equals(shortRoofPlate))
+            {
+                materialList.add(insertMaterialLine(roofPlate.getValue(), 16));
+            }
+            else if (roofPlate.getKey().equals(longRoofPlate))
+            {
+                materialList.add(insertMaterialLine(roofPlate.getValue(), 15));
+            }
+        }
 
         int roofPlateScrews = calculatorService.calculateRoofPlateScrews(carport);
         int packSizeRoofPlateScrew = 200; //According to documentation
         int roofPlateScrewPacks = calculatorService.calculateScrewPacks(packSizeRoofPlateScrew, roofPlateScrews);
+        materialList.add(insertMaterialLine(roofPlateScrewPacks,17));
 
         /* #######################################################
                             IF IS WITH SHED
