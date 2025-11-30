@@ -191,7 +191,7 @@ public class OrderDetailsServiceImpl implements OrderDetailsService
          ####################################################### */
         int packSizeFittingScrew = 250; //according to documentation
         int fittingScrewPacks = calculatorService.calculateScrewPacks(packSizeFittingScrew, universalScrews);
-
+        materialList.add(insertMaterialLine(fittingScrewPacks, 23));
 
         //Get all materials in a list
         //Loop through
