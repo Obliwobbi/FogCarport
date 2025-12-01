@@ -21,7 +21,9 @@ public class DrawingController
         Locale.setDefault(new Locale("US"));
 
         Carport carport = ctx.sessionAttribute("carport");
-        CarportTopViewSvg carportSvg = new CarportTopViewSvg(carport.getWidth(),carport.getLength());
+
+        //TODO error Handling of potention nulls
+        CarportTopViewSvg carportSvg = new CarportTopViewSvg(carport);
 
         ctx.attribute("svg", carportSvg.toString());
         ctx.render("drawing.html");
