@@ -16,7 +16,7 @@ public class CarportTopViewSvg
 
 
     double TOP_PLATE_WIDTH = 4.5;
-    int POST_WIDTH = 10;
+    double POST_WIDTH = 10;
 
 
     public CarportTopViewSvg(Carport carport, CalculatorService calculatorService, SvgService svgService)
@@ -26,9 +26,9 @@ public class CarportTopViewSvg
         this.svgService = svgService;
 
         addFasciaBoard();
+        addPosts();
         addTopPlate();
         addCeilingJoist();
-        addPosts();
 
     }
 
@@ -58,11 +58,11 @@ public class CarportTopViewSvg
     private void addCeilingJoist()
     {
         int joists = calculatorService.calculateCeilingJoist(carport);
-        double spaceBetween = (carport.getLength() / (joists-1));
+        double spaceBetween = (carport.getLength() / (joists - 1)); //joist-1 is amount of gaps needed for equal spacing
         for (double i = 0; i < joists; i++)
         {
             double x = i * spaceBetween;
-            svgService.addRectangle(x,0 , carport.getWidth(), TOP_PLATE_WIDTH, STYLE);
+            svgService.addRectangle(x, 0, carport.getWidth(), TOP_PLATE_WIDTH, STYLE);
         }
     }
 
@@ -70,15 +70,35 @@ public class CarportTopViewSvg
     {
         double CARPORT_WIDTH = carport.getWidth();
         double CARPORT_LENGTH = carport.getLength();
-        double spaceBetween = (CARPORT_LENGTH - 200) / 2;
-        int posts = calculatorService.calculatePosts(carport);
+        double posts = (double) calculatorService.calculatePosts(carport) /2;
 
-        for(double i = 100; i < (double) posts /2; i++)
+        // Calculate spacing: posts - 1 gives number of gaps
+        double spaceBetween = (CARPORT_LENGTH - 200) / (posts - 1);
+
+
+        if(carport.getLength() <= 390)
         {
-            double x = i + spaceBetween;
-            svgService.addRectangle(x, 15, POST_WIDTH, POST_WIDTH, STYLE);
-            svgService.addRectangle(x, (int) CARPORT_WIDTH - 15, POST_WIDTH, POST_WIDTH, STYLE);
+            svgService.addRectangle(40, 12.5, POST_WIDTH, POST_WIDTH, STYLE);
+            svgService.addRectangle(40, CARPORT_WIDTH - 17.5, POST_WIDTH, POST_WIDTH, STYLE);
+            svgService.addRectangle(carport.getLength()-40, 12.5, POST_WIDTH, POST_WIDTH, STYLE);
+            svgService.addRectangle(carport.getLength()-40, CARPORT_WIDTH - 17.5, POST_WIDTH, POST_WIDTH, STYLE);
         }
+        if(carport.getLength() > 390)
+        for (int i = 0; i < posts; i++)
+        {
+            double x = 100 + (i * spaceBetween); // Start at 100cm offset
+            svgService.addRectangle(x, 12.5, POST_WIDTH, POST_WIDTH, STYLE);
+            svgService.addRectangle(x, CARPORT_WIDTH - 17.5, POST_WIDTH, POST_WIDTH, STYLE);
+        }
+
+    }
+
+    private void addPerforatedStrips()
+    {
+        int joists = calculatorService.calculateCeilingJoist(carport);
+        double spaceBetween = (carport.getLength() / (joists - 1)); //joist-1 is amount of gaps needed for equal spacing
+
+        svgService.addLine();
     }
 
     @Override
