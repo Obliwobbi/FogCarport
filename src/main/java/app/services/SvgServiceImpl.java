@@ -10,9 +10,9 @@ public class SvgServiceImpl implements SvgService
 
     private static final String SVG_RECT_TEMPLATE = "<rect x=\"%f\" y=\"%f\" height=\"%f\" width=\"%f\" style=\"%s\"/>";
 
-    private static final String SVG_LINE_TEMPLATE = "<line x1=\"%d\" y1=\"%d\" x2=\"%d\" y2=\"%d\" style=\"%s\"/>";
+    private static final String SVG_LINE_TEMPLATE = "<line x1=\"%f\" y1=\"%f\" x2=\"%f\" y2=\"%f\" style=\"%s\"/>";
 
-    private static final String SVG_ARROW_TEMPLATE = "<line x1=\"%d\" y1=\"%d\" x2=\"%d\" y2=\"%d\" style=\"%s\"/>";
+    private static final String SVG_ARROW_TEMPLATE = "<line x1=\"%f\" y1=\"%f\" x2=\"%f\" y2=\"%f\" style=\"%s\"/>";
 
     private static final String SVG_TEXT_TEMPLATE = "<text style=\"text-anchor: middle\" transform=\"translate(%d,%d) rotate(%d)\">%s</text>";
 
@@ -52,13 +52,13 @@ public class SvgServiceImpl implements SvgService
     }
 
     @Override
-    public void addLine(int x1, int y1, int x2, int y2, String style)
+    public void addLine(double x1, double y1, double x2, double y2, String style)
     {
         svg.append(String.format(SVG_LINE_TEMPLATE, x1, y1, x2, y2, style));
     }
 
     @Override
-    public void addArrow(int x1, int y1, int x2, int y2, String style)
+    public void addArrow(double x1, double y1, double x2, double y2, String style)
     {
         svg.append(String.format(SVG_ARROW_TEMPLATE, x1, y1, x2, y2, style));
     }
