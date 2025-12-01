@@ -3,6 +3,7 @@ package app.services;
 import app.entities.Carport;
 import app.entities.Material;
 import app.entities.MaterialsLine;
+import app.entities.Order;
 import app.exceptions.DatabaseException;
 import app.persistence.*;
 
@@ -84,6 +85,25 @@ public class OrderDetailsServiceImpl implements OrderDetailsService
         this.calculatorService = calculatorService;
         this.materialsLinesMapper = materialsLinesMapper;
         this.materialMapper = materialMapper;
+    }
+
+    @Override
+    public boolean addMaterialListToOrder (Order order, Carport carport) throws DatabaseException
+    {
+        List<MaterialsLine> materialsLineList = createMaterialList(carport);
+        for (MaterialsLine materialsLine : materialsLineList)
+        {
+            try
+            {
+                materialsLinesMapper.createMaterialLine(order.getOrderId(), materialsLine);
+            }
+            catch (DatabaseException e)
+                {
+                    throw new DatabaseException("Kunne ikke oprette MaterialLine på ordrer id " + order.getOrderId() +": " + e.getMessage());
+                }
+
+        }
+        return false;
     }
 
     @Override
