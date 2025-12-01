@@ -2,7 +2,7 @@ package app.services;
 
 public interface SvgService
 {
-    void addRectangle(int x, int y, double height, double width, String style);
+    void addRectangle(double x, double y, double height, double width, String style);
 
     void addLine(int x1, int y1, int x2, int y2, String style);
 

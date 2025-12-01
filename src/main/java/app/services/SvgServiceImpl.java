@@ -8,7 +8,7 @@ public class SvgServiceImpl implements SvgService
                     "         viewBox=\"%s\" width=\"%s\" height=\"%s\"\n" +
                     "         preserveAspectRatio=\"xMinYMin\">";
 
-    private static final String SVG_RECT_TEMPLATE = "<rect x=\"%d\" y=\"%d\" height=\"%f\" width=\"%f\" style=\"%s\"/>";
+    private static final String SVG_RECT_TEMPLATE = "<rect x=\"%f\" y=\"%f\" height=\"%f\" width=\"%f\" style=\"%s\"/>";
 
     private static final String SVG_LINE_TEMPLATE = "<line x1=\"%d\" y1=\"%d\" x2=\"%d\" y2=\"%d\" style=\"%s\"/>";
 
@@ -46,7 +46,7 @@ public class SvgServiceImpl implements SvgService
     }
 
     @Override
-    public void addRectangle(int x, int y, double height, double width, String style)
+    public void addRectangle(double x, double y, double height, double width, String style)
     {
         svg.append(String.format(SVG_RECT_TEMPLATE, x, y, height, width, style));
     }

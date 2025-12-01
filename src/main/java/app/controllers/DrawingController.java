@@ -35,7 +35,7 @@ public class DrawingController
         SvgService svgService = new SvgServiceImpl(0, 0, viewBox, "100%", "auto");
 
 
-        //TODO error Handling of potention nulls
+        //TODO error Handling of potential nulls
         CarportTopViewSvg carportSvg = new CarportTopViewSvg(carport, calculatorService, svgService);
 
         ctx.attribute("svg", carportSvg.toString());
