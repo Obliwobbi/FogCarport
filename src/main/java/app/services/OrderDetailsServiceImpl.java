@@ -26,7 +26,9 @@ public class OrderDetailsServiceImpl implements OrderDetailsService
     int boltMaterialId = 22; //MaterialId '22' is for bolts 10x120mm
     int washerMaterialId = 23;
 
-    int ceilingJoistMaterialId = 10; //MaterialId '10' is for long ceiling joist (600)
+    double shortCeilingJoist = 480.0;
+    int shortCeilingJoistMaterialId = 10; //MaterialId '10' is for long ceiling joist (600)
+    double longCeilingJoist = 600.0;
     int longCeilingJoistMaterialId = 11; //MaterialId '10' is for long ceiling joist (600)
     int rightCeilingJoistFittingMaterialId = 20; //MaterialId '19' is for right fitting
     int leftCeilingJoistFittingMaterialId = 21; //MaterialId '20' is for left fitting
@@ -110,11 +112,15 @@ public class OrderDetailsServiceImpl implements OrderDetailsService
         /* #######################################################
                   CEILING JOISTS & FITTINGS + SCREWS
          ####################################################### */
-        int ceilingJoists = calculatorService.calculateCeilingJoist(carport);
-        materialList.add(insertMaterialLine(ceilingJoists, ceilingJoistMaterialId));
-        int ceilingJoistFittings = ceilingJoists * 2; //Needs double amount, 1 right and 1 left fitting for each ceiling joist
-        materialList.add(insertMaterialLine(ceilingJoists, rightCeilingJoistFittingMaterialId));
-        materialList.add(insertMaterialLine(ceilingJoists, leftCeilingJoistFittingMaterialId));
+        HashMap<Double,Integer> ceilingJoists = calculatorService.calculateCeilingJoist(carport);
+        materialList = forEachMaterial(ceilingJoists,materialList,shortCeilingJoist,longCeilingJoist, shortCeilingJoistMaterialId, longCeilingJoistMaterialId);
+
+        int ceilingJoistFittings = ceilingJoists.values()
+                .stream()
+                .mapToInt(Integer::intValue)
+                .sum(); //Needs double amount, 1 right and 1 left fitting for each ceiling joist
+        materialList.add(insertMaterialLine(ceilingJoistFittings, rightCeilingJoistFittingMaterialId));
+        materialList.add(insertMaterialLine(ceilingJoistFittings, leftCeilingJoistFittingMaterialId));
 
         int universalScrews = calculatorService.calculateScrewsNeeded(ceilingJoistFittings, screwsPerCeilingJoistFitting);
 
