@@ -15,11 +15,12 @@ public class CarportTopViewSvg
     private final String ARROW = "marker-start: url(#beginArrow); marker-end: url(#endArrow);";
 
 
-    public CarportTopViewSvg(Carport carport)
+
+    public CarportTopViewSvg(Carport carport, CalculatorService calculatorService, SvgService svgService )
     {
         this.carport = carport;
-        this.calculatorService = new CalculatorServiceImpl();
-        this.svgService = new SvgServiceImpl(0, 0, "0 0 855 690", "100%", "auto");
+        this.calculatorService = calculatorService;
+        this.svgService = svgService;
 
         addFasciaBoard();
         addTopPlate();
