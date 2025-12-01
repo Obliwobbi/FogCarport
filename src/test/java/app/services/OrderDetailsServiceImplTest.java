@@ -61,25 +61,26 @@ class OrderDetailsServiceImplTest
                     "(8, '45x195 mm Spærtræ ubh.', 'Remme i sider', 1, 'stk', 600, 195, 45, 115.00)," +
                     "(9, '45x195 mm Spærtræ ubh.', 'Remme i sider – skur del', 1, 'stk', 480, 195, 45, 96.00)," +
                     "(10, '45x195 mm Spærtræ ubh.', 'Spær', 1, 'stk', 600, 195, 45, 115.00)," +
-                    "(11, '97x97 mm trykimpr. Stolpe', 'Stolper', 1, 'stk', 300, 97, 97, 129.00)," +
-                    "(12, '19x100 mm trykimpr. Brædt', 'Beklædning', 1, 'stk', 210, 100, 19, 18.00)," +
-                    "(13, '19x100 mm trykimpr. Brædt', 'Vandbrædt', 1, 'stk', 540, 100, 19, 54.00)," +
-                    "(14, '19x100 mm trykimpr. Brædt', 'Vandbrædt', 1, 'stk', 360, 100, 19, 36.00)," +
-                    "(15, 'Plastmo Ecolite blåtonet', 'Tagplader', 1, 'stk', 600, NULL, NULL, 159.00)," +
-                    "(16, 'Plastmo Ecolite blåtonet', 'Tagplader', 1, 'stk', 360, NULL, NULL, 109.00)," +
-                    "(17, 'Plastmo bundskruer', 'Skruer til tagplader', 200, 'pakke', NULL, NULL, NULL, 129.00)," +
-                    "(18, 'Hulbånd 1x20 mm', 'Vindkryds', 1, 'rulle', NULL, NULL, NULL, 49.00)," +
-                    "(19, 'Universal beslag højre 190 mm', 'Beslag', 1, 'stk', NULL, NULL, NULL, 12.00)," +
-                    "(20, 'Universal beslag venstre 190 mm', 'Beslag', 1, 'stk', NULL, NULL, NULL, 12.00)," +
-                    "(21, 'Bræddebolt 10x120 mm', 'Bolte', 1, 'stk', NULL, NULL, NULL, 4.50)," +
-                    "(22, 'Firkantskiver 40x40x11 mm', 'Skiver', 1, 'stk', NULL, NULL, NULL, 1.50)," +
-                    "(23, 'Beslagskruer 4.0x50 mm', 'Skruer', 250, 'pakke', NULL, NULL, NULL, 39.00)," +
-                    "(24, 'Skruer 4.5x50 mm', 'Skruer', 300, 'pakke', NULL, NULL, NULL, 49.00)," +
-                    "(25, 'Skruer 4.5x60 mm', 'Skruer', 200, 'pakke', NULL, NULL, NULL, 45.00)," +
-                    "(26, 'Skruer 4.5x70 mm', 'Skruer', 400, 'pakke', NULL, NULL, NULL, 59.00)," +
-                    "(27, 'Stalddørsgreb 50x75 mm', 'Lås', 1, 'sæt', NULL, NULL, NULL, 89.00)," +
-                    "(28, 'T-hængsel 390 mm', 'Hængsel', 1, 'stk', NULL, NULL, NULL, 35.00)," +
-                    "(29, 'Vinkelbeslag 3 mm', 'Beslag', 1, 'stk', NULL, NULL, NULL, 5.00) " +
+                    "(11, '45x195 mm Spærtræ ubh.', 'Spær', 1, 'stk', 480, 195, 45, 96.00)," +
+                    "(12, '97x97 mm trykimpr. Stolpe', 'Stolper', 1, 'stk', 300, 97, 97, 129.00)," +
+                    "(13, '19x100 mm trykimpr. Brædt', 'Beklædning', 1, 'stk', 210, 100, 19, 18.00)," +
+                    "(14, '19x100 mm trykimpr. Brædt', 'Vandbrædt', 1, 'stk', 540, 100, 19, 54.00)," +
+                    "(15, '19x100 mm trykimpr. Brædt', 'Vandbrædt', 1, 'stk', 360, 100, 19, 36.00)," +
+                    "(16, 'Plastmo Ecolite blåtonet', 'Tagplader', 1, 'stk', 600, NULL, NULL, 159.00)," +
+                    "(17, 'Plastmo Ecolite blåtonet', 'Tagplader', 1, 'stk', 360, NULL, NULL, 109.00)," +
+                    "(18, 'Plastmo bundskruer', 'Skruer til tagplader', 200, 'pakke', NULL, NULL, NULL, 129.00)," +
+                    "(19, 'Hulbånd 1x20 mm', 'Vindkryds', 1, 'rulle', NULL, NULL, NULL, 49.00)," +
+                    "(20, 'Universal beslag højre 190 mm', 'Beslag', 1, 'stk', NULL, NULL, NULL, 12.00)," +
+                    "(21, 'Universal beslag venstre 190 mm', 'Beslag', 1, 'stk', NULL, NULL, NULL, 12.00)," +
+                    "(22, 'Bræddebolt 10x120 mm', 'Bolte', 1, 'stk', NULL, NULL, NULL, 4.50)," +
+                    "(23, 'Firkantskiver 40x40x11 mm', 'Skiver', 1, 'stk', NULL, NULL, NULL, 1.50)," +
+                    "(24, 'Beslagskruer 4.0x50 mm', 'Skruer', 250, 'pakke', NULL, NULL, NULL, 39.00)," +
+                    "(25, 'Skruer 4.5x50 mm', 'Skruer', 300, 'pakke', NULL, NULL, NULL, 49.00)," +
+                    "(26, 'Skruer 4.5x60 mm', 'Skruer', 200, 'pakke', NULL, NULL, NULL, 45.00)," +
+                    "(27, 'Skruer 4.5x70 mm', 'Skruer', 400, 'pakke', NULL, NULL, NULL, 59.00)," +
+                    "(28, 'Stalddørsgreb 50x75 mm', 'Lås', 1, 'sæt', NULL, NULL, NULL, 89.00)," +
+                    "(29, 'T-hængsel 390 mm', 'Hængsel', 1, 'stk', NULL, NULL, NULL, 35.00)," +
+                    "(30, 'Vinkelbeslag 3 mm', 'Beslag', 1, 'stk', NULL, NULL, NULL, 5.00) " +
                     "ON CONFLICT (id) DO NOTHING");
         }
     }
