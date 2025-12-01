@@ -40,6 +40,8 @@ public class Main
         CustomerMapper customerMapper = new CustomerMapper(connectionPool);
         MaterialsLinesMapper materialsLinesMapper = new MaterialsLinesMapper(connectionPool);
 
+        CalculatorService calculatorService = new CalculatorServiceImpl();
+
         HomeController homeController = new HomeController();
 
         CarportService carportService = new CarportServiceImpl(carportMapper);
@@ -51,7 +53,8 @@ public class Main
         CustomerService customerService = new CustomerServiceImpl(customerMapper);
         ContactController contactController = new ContactController(customerService, orderService);
 
-        DrawingController drawingController = new DrawingController();
+        DrawingService drawingService = new DrawingServiceImpl();
+        DrawingController drawingController = new DrawingController(drawingService, calculatorService);
 
         // Routing
         homeController.addRoutes(app);
