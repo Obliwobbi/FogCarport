@@ -16,64 +16,65 @@ public class OrderDetailsServiceImpl implements OrderDetailsService
     private final MaterialsLinesMapper materialsLinesMapper;
     private final MaterialMapper materialMapper;
 
-    int postMaterialId = 11; //MaterialID '11' is taken from database to match with post material
+    int postMaterialId = 12; //MaterialID '11' is taken from database to match with post material
 
     double shortTopPlateBoard = 480.0;
     int shortTopPlateBoardMaterialId = 9;
     double longTopPlateBoard = 600.0;
     int longTopPlateBoardMaterialId = 8;
 
-    int boltMaterialId = 21; //MaterialId '21' is for bolts 10x120mm
-    int washerMaterialId = 22;
+    int boltMaterialId = 22; //MaterialId '22' is for bolts 10x120mm
+    int washerMaterialId = 23;
 
     int ceilingJoistMaterialId = 10; //MaterialId '10' is for long ceiling joist (600)
-    int rightCeilingJoistFittingMaterialId = 19; //MaterialId '19' is for right fitting
-    int leftCeilingJoistFittingMaterialId = 20; //MaterialId '20' is for left fitting
+    int longCeilingJoistMaterialId = 11; //MaterialId '10' is for long ceiling joist (600)
+    int rightCeilingJoistFittingMaterialId = 20; //MaterialId '19' is for right fitting
+    int leftCeilingJoistFittingMaterialId = 21; //MaterialId '20' is for left fitting
     int screwsPerCeilingJoistFitting = 9;  //according to documentation, 9 screws per ceiling joist fitting
 
-    int perforatedStripMaterialId = 18;
+    int perforatedStripMaterialId = 19;
 
     double shortFasciaBoard = 360.0;
     int shortFasciaBoardMaterialId = 3;
     int shortSubFasciaBoardMaterialId = 1;
-    int shortWeatherBoardMaterialId = 14;
+    int shortWeatherBoardMaterialId = 15;
 
     double longFasciaBoard = 540.0;
     int longFasciaBoardMaterialId = 4;
     int longSubFasciaBoardMaterialId = 2;
-    int longWeatherBoardMaterialId = 13;
+    int longWeatherBoardMaterialId = 14;
 
     double shortRoofPlate = 360.0;
-    int shortRoofPlateMaterialId = 16;
+    int shortRoofPlateMaterialId = 17;
     double longRoofPlate = 600.0;
-    int longRoofPlateMaterialId = 15;
+    int longRoofPlateMaterialId = 16;
 
-    int roofPlateScrewMaterialId = 17;
+    int roofPlateScrewMaterialId = 18;
 
     double shortBlocking = 240.0;
     int shortBlockingMaterialId = 7;
     double longBlocking = 270.0;
     int longBlockingMaterialId = 6;
 
-    int blockingFittingMaterialId = 29;
+    int blockingFittingMaterialId = 30;
     int screwsPerBlockingFitting = 4;  //according to documentation
 
-    int sideBoardMaterialId = 12;
+    int sideBoardMaterialId = 13;
 
     int packSizeShortScrew = 300; //according to documentation
     int shortScrewsNeededPerBoard = 3; //according to documentation
-    int shortScrewMaterialId = 24;
+    int shortScrewMaterialId = 25;
 
     int packSizeLongScrew = 400; //according to documentation
     int longScrewsNeededPerBoard = 6; //according to documentation
-    int longScrewMaterialId = 26;
+    int longScrewMaterialId = 27;
 
     int shedDoorStripMaterialId = 5;
-    int shedDoorGripMaterialId = 27;
-    int shedDoorTHingeMaterialId = 28;
+    int shedDoorGripMaterialId = 28;
+    int shedDoorTHingeMaterialId = 29;
 
     int packSizeFittingScrew = 250; //according to documentation
-    int universalScrewsMaterialId = 23;
+    int universalScrewsMaterialId = 24;
 
     public OrderDetailsServiceImpl(CalculatorService calculatorService, MaterialsLinesMapper materialsLinesMapper, MaterialMapper materialMapper)
     {
