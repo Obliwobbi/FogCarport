@@ -97,10 +97,10 @@ class OrderDetailsServiceImplTest
 
         List<MaterialsLine> materialList = orderDetailsService.createMaterialList(carport);
 
-        for(MaterialsLine material : materialList)
-        {
-            System.out.println(material.getMaterial().getName() + " | " + material.getQuantity() + " " + material.getMaterial().getUnitType() + " | " + material.getLinePrice());
-        }
+//        for(MaterialsLine material : materialList)
+//        {
+//            System.out.println(material.getMaterial().getName() + " | " + material.getQuantity() + " " + material.getMaterial().getUnitType() + " | " + material.getLinePrice());
+//        }
         assertNotNull(materialList);
         assertFalse(materialList.isEmpty());
     }
@@ -113,10 +113,10 @@ class OrderDetailsServiceImplTest
 
         List<MaterialsLine> materialList = orderDetailsService.createMaterialList(carport);
 
-        for(MaterialsLine material : materialList)
-        {
-            System.out.println(material.getMaterial().getName() + " | " + material.getQuantity() + " | " + material.getLinePrice());
-        }
+//        for(MaterialsLine material : materialList)
+//        {
+//            System.out.println(material.getMaterial().getName() + " | " + material.getQuantity() + " " + material.getMaterial().getUnitType() + " | " + material.getLinePrice());
+//        }
         assertNotNull(materialList);
         assertFalse(materialList.isEmpty());
     }
