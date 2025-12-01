@@ -51,6 +51,7 @@ public class OrderDetailsServiceImpl implements OrderDetailsService
     double longRoofPlate = 600.0;
     int longRoofPlateMaterialId = 16;
 
+    int packSizeRoofPlateScrew = 200; //According to documentation
     int roofPlateScrewMaterialId = 18;
 
     double shortBlocking = 240.0;
@@ -100,7 +101,7 @@ public class OrderDetailsServiceImpl implements OrderDetailsService
                              TOP PLATES
          ####################################################### */
         HashMap<Double, Integer> topPlates = calculatorService.calculateTopPlate(carport);
-        materialList = forEachMaterial(topPlates, materialList, shortTopPlateBoard, longTopPlateBoard, shortTopPlateBoardMaterialId, longTopPlateBoardMaterialId);
+        forEachMaterial(topPlates, materialList, shortTopPlateBoard, longTopPlateBoard, shortTopPlateBoardMaterialId, longTopPlateBoardMaterialId);
 
         /* #######################################################
                           BOLTS & WASHERS
@@ -112,13 +113,10 @@ public class OrderDetailsServiceImpl implements OrderDetailsService
         /* #######################################################
                   CEILING JOISTS & FITTINGS + SCREWS
          ####################################################### */
-        HashMap<Double,Integer> ceilingJoists = calculatorService.calculateCeilingJoist(carport);
-        materialList = forEachMaterial(ceilingJoists,materialList,shortCeilingJoist,longCeilingJoist, shortCeilingJoistMaterialId, longCeilingJoistMaterialId);
+        HashMap<Double, Integer> ceilingJoists = calculatorService.calculateCeilingJoist(carport);
+        forEachMaterial(ceilingJoists, materialList, shortCeilingJoist, longCeilingJoist, shortCeilingJoistMaterialId, longCeilingJoistMaterialId);
 
-        int ceilingJoistFittings = ceilingJoists.values()
-                .stream()
-                .mapToInt(Integer::intValue)
-                .sum(); //Needs double amount, 1 right and 1 left fitting for each ceiling joist
+        int ceilingJoistFittings = sumHashMapValues(ceilingJoists); //Needs double amount, 1 right and 1 left fitting for each ceiling joist
         materialList.add(insertMaterialLine(ceilingJoistFittings, rightCeilingJoistFittingMaterialId));
         materialList.add(insertMaterialLine(ceilingJoistFittings, leftCeilingJoistFittingMaterialId));
 
@@ -136,49 +134,19 @@ public class OrderDetailsServiceImpl implements OrderDetailsService
         HashMap<Double, Integer> fasciaBoardLength = calculatorService.calculateFasciaBoardLength(carport);
         //Needs 2 mapper calls, one with wide board (back) and one with narrower board (front)
         //Weatherboard, needs same quantity and lengths as fascia board
-
-        for (HashMap.Entry<Double, Integer> fasciaBoard : fasciaBoardLength.entrySet())
-        {
-            if (fasciaBoard.getKey().equals(shortFasciaBoard))
-            {
-                materialList.add(insertMaterialLine(fasciaBoard.getValue(), shortSubFasciaBoardMaterialId));
-                materialList.add(insertMaterialLine(fasciaBoard.getValue(), shortFasciaBoardMaterialId));
-                materialList.add(insertMaterialLine(fasciaBoard.getValue(), shortWeatherBoardMaterialId));
-            }
-            else if (fasciaBoard.getKey().equals(longFasciaBoard))
-            {
-                materialList.add(insertMaterialLine(fasciaBoard.getValue(), longSubFasciaBoardMaterialId));
-                materialList.add(insertMaterialLine(fasciaBoard.getValue(), longFasciaBoardMaterialId));
-                materialList.add(insertMaterialLine(fasciaBoard.getValue(), longWeatherBoardMaterialId));
-            }
-        }
+        addFasciaMaterials(fasciaBoardLength, materialList, false);
 
         //only need half for the value for mapper call for 1 of the 2 calls
         HashMap<Double, Integer> fasciaBoardWidth = calculatorService.calculateFasciaBoardWidth(carport);
-        for (HashMap.Entry<Double, Integer> fasciaBoard : fasciaBoardWidth.entrySet())
-        {
-            if (fasciaBoard.getKey().equals(shortFasciaBoard))
-            {
-                materialList.add(insertMaterialLine(fasciaBoard.getValue(), shortSubFasciaBoardMaterialId));
-                materialList.add(insertMaterialLine(fasciaBoard.getValue() / 2, shortFasciaBoardMaterialId));
-                materialList.add(insertMaterialLine(fasciaBoard.getValue() / 2, shortFasciaBoardMaterialId));
-            }
-            else if (fasciaBoard.getKey().equals(longFasciaBoard))
-            {
-                materialList.add(insertMaterialLine(fasciaBoard.getValue(), longSubFasciaBoardMaterialId));
-                materialList.add(insertMaterialLine(fasciaBoard.getValue() / 2, longFasciaBoardMaterialId));
-                materialList.add(insertMaterialLine(fasciaBoard.getValue() / 2, longWeatherBoardMaterialId));
-            }
-        }
+        addFasciaMaterials(fasciaBoardWidth, materialList, true);
 
         /* #######################################################
                           ROOF PLATES & SCREWS
          ####################################################### */
         HashMap<Double, Integer> roofPlates = calculatorService.calculateRoofPlates(carport);
-        materialList = forEachMaterial(roofPlates, materialList, shortRoofPlate, longRoofPlate, shortRoofPlateMaterialId, longRoofPlateMaterialId);
+        forEachMaterial(roofPlates, materialList, shortRoofPlate, longRoofPlate, shortRoofPlateMaterialId, longRoofPlateMaterialId);
 
         int roofPlateScrews = calculatorService.calculateRoofPlateScrews(carport);
-        int packSizeRoofPlateScrew = 200; //According to documentation
         int roofPlateScrewPacks = calculatorService.calculateScrewPacks(packSizeRoofPlateScrew, roofPlateScrews);
         materialList.add(insertMaterialLine(roofPlateScrewPacks, roofPlateScrewMaterialId));
 
@@ -188,13 +156,9 @@ public class OrderDetailsServiceImpl implements OrderDetailsService
         if (carport.isWithShed())
         {
             HashMap<Double, Integer> blockings = calculatorService.calculateBlocking(carport);
-            materialList = forEachMaterial(blockings, materialList, shortBlocking, longBlocking, shortBlockingMaterialId, longBlockingMaterialId);
+            forEachMaterial(blockings, materialList, shortBlocking, longBlocking, shortBlockingMaterialId, longBlockingMaterialId);
 
-            int blockingFittingsCount = blockings.values()
-                    .stream()
-                    .mapToInt(Integer::intValue)
-                    .sum();
-            int blockingFittings = blockingFittingsCount * 2; //Need two pr blocking (according to delivered material, 16 blockings and 32 fittings)
+            int blockingFittings = sumHashMapValues(blockings) * 2; //Need two pr blocking (according to delivered material, 16 blockings and 32 fittings)
             materialList.add(insertMaterialLine(blockingFittings, blockingFittingMaterialId));
 
             int blockingFittingsScrews = calculatorService.calculateScrewsNeeded(blockingFittings, screwsPerBlockingFitting);
@@ -232,22 +196,46 @@ public class OrderDetailsServiceImpl implements OrderDetailsService
         return new MaterialsLine(quantity, material.getPrice() * quantity, material);
     }
 
-    private List<MaterialsLine> forEachMaterial(HashMap<Double, Integer> boards, List<MaterialsLine> currentMaterialList, double shortBoard, double longBoard, int shortMaterialId, int longMaterialId) throws DatabaseException
+    private void forEachMaterial(HashMap<Double, Integer> boards, List<MaterialsLine> currentMaterialList, double shortBoard, double longBoard, int shortMaterialId, int longMaterialId) throws DatabaseException
     {
-        List<MaterialsLine> newMaterialList = currentMaterialList;
-
         for (HashMap.Entry<Double, Integer> material : boards.entrySet())
         {
             if (material.getKey().equals(shortBoard))
             {
-                newMaterialList.add(insertMaterialLine(material.getValue(), shortMaterialId));
+                currentMaterialList.add(insertMaterialLine(material.getValue(), shortMaterialId));
             }
             else if (material.getKey().equals(longBoard))
             {
-                newMaterialList.add(insertMaterialLine(material.getValue(), longMaterialId));
+                currentMaterialList.add(insertMaterialLine(material.getValue(), longMaterialId));
             }
         }
-
-        return newMaterialList;
     }
+
+    private void addFasciaMaterials(HashMap<Double, Integer> fasciaBoards, List<MaterialsLine> materialList, boolean isWidth) throws DatabaseException
+    {
+        for (HashMap.Entry<Double, Integer> fasciaBoard : fasciaBoards.entrySet())
+        {
+            if (fasciaBoard.getKey().equals(shortFasciaBoard))
+            {
+                materialList.add(insertMaterialLine(fasciaBoard.getValue(), shortSubFasciaBoardMaterialId));
+                int quantity = isWidth ? fasciaBoard.getValue() / 2 : fasciaBoard.getValue();
+                materialList.add(insertMaterialLine(quantity, shortFasciaBoardMaterialId));
+                materialList.add(insertMaterialLine(quantity, shortWeatherBoardMaterialId));
+            }
+            else if (fasciaBoard.getKey().equals(longFasciaBoard))
+            {
+                materialList.add(insertMaterialLine(fasciaBoard.getValue(), longSubFasciaBoardMaterialId));
+                int quantity = isWidth ? fasciaBoard.getValue() / 2 : fasciaBoard.getValue();
+                materialList.add(insertMaterialLine(quantity, longFasciaBoardMaterialId));
+                materialList.add(insertMaterialLine(quantity, longWeatherBoardMaterialId));
+            }
+        }
+    }
+
+    private int sumHashMapValues(HashMap<?, Integer> map)
+    {
+        return map.values().stream().mapToInt(Integer::intValue).sum();
+    }
+
+
 }
