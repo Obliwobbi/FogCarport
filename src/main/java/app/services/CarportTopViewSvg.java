@@ -17,7 +17,13 @@ public class CarportTopViewSvg
 
     double TOP_PLATE_WIDTH = 4.5;
     double POST_WIDTH = 10;
-
+    double TOP_PLATE_OFFSET = 50;
+    double POST_OFFSET_Y_TOP = TOP_PLATE_OFFSET-2.5;
+    double POST_OFFSET_Y_BOTTOM = TOP_PLATE_OFFSET + 2.5;
+    double POST_OFFSET_X_SMALL = 40;
+    double POST_OFFSET_X_LARGE = 100;
+    double POST_OFFSET_EDGE_BUFFER = 200;
+    int MAX_LENGTH_CARPORT_FOR_POST_SPACING = 390;
 
     public CarportTopViewSvg(Carport carport, CalculatorService calculatorService, SvgService svgService)
     {
@@ -40,20 +46,21 @@ public class CarportTopViewSvg
 
     private void addTopPlate()
     {
-        double CARPORT_WIDTH = carport.getWidth();
-        double CARPORT_LENGTH = carport.getLength();
+        double width = carport.getWidth();
+        double length = carport.getLength();
 
+        //TODO if shed, need to align plates with shed width if over certain size
         if (carport.isWithShed() && carport.getShedWidth() < carport.getWidth() / 2)
         {
-            int firstTopPlate = (int) (CARPORT_WIDTH - carport.getShedWidth()) / 2;
-            int secondTopPlate = (int) (CARPORT_WIDTH + firstTopPlate);
+            double firstTopPlate = (width - carport.getShedWidth()) / 2;
+            double secondTopPlate = (width + firstTopPlate);
 
-            svgService.addRectangle(0, 25, TOP_PLATE_WIDTH, CARPORT_LENGTH, STYLE);
-            svgService.addRectangle(0, secondTopPlate, TOP_PLATE_WIDTH, CARPORT_LENGTH, STYLE);
+            svgService.addRectangle(0, 25, TOP_PLATE_WIDTH, length, STYLE);
+            svgService.addRectangle(0, secondTopPlate, TOP_PLATE_WIDTH, length, STYLE);
         }
 
-        svgService.addRectangle(0, 15, TOP_PLATE_WIDTH, CARPORT_LENGTH, STYLE);
-        svgService.addRectangle(0, (int) CARPORT_WIDTH - 15, TOP_PLATE_WIDTH, CARPORT_LENGTH, STYLE);
+        svgService.addRectangle(0, TOP_PLATE_OFFSET, TOP_PLATE_WIDTH, length, STYLE);
+        svgService.addRectangle(0, width - TOP_PLATE_OFFSET, TOP_PLATE_WIDTH, length, STYLE);
     }
 
     private void addCeilingJoist()
@@ -69,27 +76,27 @@ public class CarportTopViewSvg
 
     private void addPosts()
     {
-        double CARPORT_WIDTH = carport.getWidth();
-        double CARPORT_LENGTH = carport.getLength();
+        double width = carport.getWidth();
+        double length = carport.getLength();
         double posts = (double) calculatorService.calculatePosts(carport) / 2;
 
         // Calculate spacing: posts - 1 gives number of gaps
-        double spaceBetween = (CARPORT_LENGTH - 200) / (posts - 1);
+        double spaceBetween = (length - POST_OFFSET_EDGE_BUFFER) / (posts - 1);
 
 
-        if (carport.getLength() <= 390)
+        if (carport.getLength() <= MAX_LENGTH_CARPORT_FOR_POST_SPACING)
         {
-            svgService.addRectangle(40, 12.5, POST_WIDTH, POST_WIDTH, STYLE);
-            svgService.addRectangle(40, CARPORT_WIDTH - 17.5, POST_WIDTH, POST_WIDTH, STYLE);
-            svgService.addRectangle(carport.getLength() - 40, 12.5, POST_WIDTH, POST_WIDTH, STYLE);
-            svgService.addRectangle(carport.getLength() - 40, CARPORT_WIDTH - 17.5, POST_WIDTH, POST_WIDTH, STYLE);
+            svgService.addRectangle(POST_OFFSET_X_SMALL, POST_OFFSET_Y_TOP, POST_WIDTH, POST_WIDTH, STYLE);
+            svgService.addRectangle(POST_OFFSET_X_SMALL, width - POST_OFFSET_Y_BOTTOM, POST_WIDTH, POST_WIDTH, STYLE);
+            svgService.addRectangle(length - POST_OFFSET_X_SMALL, POST_OFFSET_Y_TOP, POST_WIDTH, POST_WIDTH, STYLE);
+            svgService.addRectangle(length - POST_OFFSET_X_SMALL, width - POST_OFFSET_Y_BOTTOM, POST_WIDTH, POST_WIDTH, STYLE);
         }
-        if (carport.getLength() > 390)
+        if (carport.getLength() > MAX_LENGTH_CARPORT_FOR_POST_SPACING)
             for (int i = 0; i < posts; i++)
             {
-                double x = 100 + (i * spaceBetween); // Start at 100cm offset
-                svgService.addRectangle(x, 12.5, POST_WIDTH, POST_WIDTH, STYLE);
-                svgService.addRectangle(x, CARPORT_WIDTH - 17.5, POST_WIDTH, POST_WIDTH, STYLE);
+                double x = POST_OFFSET_X_LARGE + (i * spaceBetween);
+                svgService.addRectangle(x, POST_OFFSET_Y_TOP, POST_WIDTH, POST_WIDTH, STYLE);
+                svgService.addRectangle(x, width - POST_OFFSET_Y_BOTTOM, POST_WIDTH, POST_WIDTH, STYLE);
             }
 
     }
@@ -102,8 +109,8 @@ public class CarportTopViewSvg
 
         double endX = endJoist * startX;
 
-        svgService.addLine(startX, 15, endX, carport.getWidth() - 15, DASHED_LINE);
-        svgService.addLine(startX, carport.getWidth() - 15, endX, 15, DASHED_LINE);
+        svgService.addLine(startX, TOP_PLATE_OFFSET, endX, carport.getWidth() - TOP_PLATE_OFFSET, DASHED_LINE); //uses TOP-PLATE variable due to needing to be connected to the ceilingjoist atop that;
+        svgService.addLine(startX, carport.getWidth() - TOP_PLATE_OFFSET, endX, TOP_PLATE_OFFSET, DASHED_LINE);
     }
 
     @Override
