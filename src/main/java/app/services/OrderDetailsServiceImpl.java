@@ -99,9 +99,8 @@ public class OrderDetailsServiceImpl implements OrderDetailsService
             }
             catch (DatabaseException e)
                 {
-                    throw new DatabaseException("Kunne ikke oprette MaterialLine på ordrer id " + order.getOrderId() +": " + e.getMessage());
+                    throw new DatabaseException("Kunne ikke oprette MaterialLine med id og navn: "+ materialsLine.getMaterial().getId() + ", " + materialsLine.getMaterial().getName() + " på ordre id " + order.getOrderId() +": " + e.getMessage());
                 }
-
         }
         return false;
     }
