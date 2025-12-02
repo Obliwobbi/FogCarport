@@ -308,7 +308,7 @@ public class CalculatorServiceImpl implements CalculatorService
     public int calculateRoofPlateScrews(Carport carport)
     {
         //Insert return in helper method to calculate packs
-        return (int) Math.ceil(((carport.getWidth() * carport.getLength()) / 100) * 12); //documentation says 12 screws pr squaremeter of roofplate
+        return (int) Math.ceil((((carport.getWidth() / 100) * (carport.getLength() / 100)) * 12)); //documentation says 12 screws pr squaremeter of roofplate
     }
 
     @Override

@@ -411,6 +411,16 @@ class CalculatorServiceImplTest
         assertEquals(5, result.get(360.0));
     }
 
+    @DisplayName("Roof plate screws: Length: 240cm, Width: 480 carport")
+    @Test
+    public void calculateRoofPlateScrews()
+    {
+        Carport carport = new Carport(1, 480, 240, 225, false, "");
+        int screws = materialListService.calculateRoofPlateScrews(carport);
+
+        assertEquals(139,screws);
+    }
+
     // ************************ TESTING OF: PERFORATED STRIPS ************************
 
     @DisplayName("Roof plate: Delivered material: Length: 780cm, Width: 600 carport")
