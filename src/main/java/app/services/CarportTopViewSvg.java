@@ -63,7 +63,12 @@ public class CarportTopViewSvg
 
     private void addCeilingJoist()
     {
-        int joists = calculatorService.calculateCeilingJoist(carport);
+        int joists = calculatorService.calculateCeilingJoist(carport)
+                .values()
+                .stream()
+                .mapToInt(Integer::intValue)
+                .sum();
+
         double spaceBetween = (carport.getLength() / (joists - 1)); //joist-1 is amount of gaps needed for equal spacing
         for (double i = 0; i < joists; i++)
         {
@@ -101,7 +106,12 @@ public class CarportTopViewSvg
 
     private void addPerforatedStrips()
     {
-        int joists = calculatorService.calculateCeilingJoist(carport);
+        int joists = calculatorService.calculateCeilingJoist(carport)
+                .values()
+                .stream()
+                .mapToInt(Integer::intValue)
+                .sum();
+
         double startX = (carport.getLength() / (joists - 1)); //joist-1 is amount of gaps needed for equal spacing
         double endJoist = Math.min(10, joists - 2);
 

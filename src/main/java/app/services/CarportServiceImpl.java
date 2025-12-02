@@ -49,6 +49,8 @@ public class CarportServiceImpl implements CarportService
         double remainingCarportLength = carportLength - shedLength;
         double remainingCarportWidth = carportWidth - shedWidth;
 
+
+        //TODO better validation, needs to account if length is actually long enought that width wont be an issue
         if(remainingCarportLength < 240 || remainingCarportWidth < 240)
         {
             throw new IllegalArgumentException("Der er ikke plads til bilen, med nuværende skur mål, Minimum 240x240 til carport");
