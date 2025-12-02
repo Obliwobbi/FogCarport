@@ -363,7 +363,8 @@ public class CalculatorServiceImpl implements CalculatorService
     @Override
     public int calculateScrewPacks(int packsize, int screws)
     {
-        return (int) Math.ceil(screws / packsize);
+        double result = Math.ceil((double) screws / packsize);
+        return (int) result;
     }
 
     @Override
