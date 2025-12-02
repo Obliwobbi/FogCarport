@@ -4,8 +4,6 @@ import app.entities.Carport;
 
 public class CarportTopViewSvg
 {
-    private double width;
-    private double height;
     private Carport carport;
     private SvgService svgService;
     private final CalculatorService calculatorService;
@@ -109,7 +107,7 @@ public class CarportTopViewSvg
 
         double endX = endJoist * startX;
 
-        svgService.addLine(startX, TOP_PLATE_OFFSET, endX, carport.getWidth() - TOP_PLATE_OFFSET, DASHED_LINE); //uses TOP-PLATE variable due to needing to be connected to the ceilingjoist atop that;
+        svgService.addLine(startX, TOP_PLATE_OFFSET, endX, carport.getWidth() - TOP_PLATE_OFFSET, DASHED_LINE); //uses TOP-PLATE_OFFSET due to needing to be connected to the ceilingjoist atop that;
         svgService.addLine(startX, carport.getWidth() - TOP_PLATE_OFFSET, endX, TOP_PLATE_OFFSET, DASHED_LINE);
     }
 
@@ -119,8 +117,3 @@ public class CarportTopViewSvg
         return svgService.toString();
     }
 }
-
-
-//        carportSvg.addRectangle(0, 0, 600, 780, style);
-//        carportSvg.addLine(50,50,500,700,dashedLine);
-//        carportSvg.addArrow(20,20,600,700,style + arrow);
