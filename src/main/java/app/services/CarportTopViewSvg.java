@@ -107,15 +107,8 @@ public class CarportTopViewSvg
 
             if (shedWidth > MAX_LENGTH_BLOCKING)
             {
-                double middlePostOfShed;
-                if (isFullWidth)
-                {
-                    middlePostOfShed = (POST_OFFSET_Y_TOP + (carportWidth - POST_OFFSET_Y_BOTTOM)) / 2;
-                }
-                else
-                {
-                    middlePostOfShed = (POST_OFFSET_Y_TOP + shedWidth + POST_OFFSET_Y_BOTTOM) / 2;
-                }
+                double middlePostOfShed = (isFullWidth) ? (POST_OFFSET_Y_TOP + (carportWidth - POST_OFFSET_Y_BOTTOM)) / 2 : (POST_OFFSET_Y_TOP + shedWidth + POST_OFFSET_Y_BOTTOM) / 2;
+
                 svgService.addRectangle(shedOuterCornerPostXPosition, middlePostOfShed, POST_WIDTH, POST_WIDTH, STYLE);
                 svgService.addRectangle(shedInnerCornerPostXPosition, middlePostOfShed, POST_WIDTH, POST_WIDTH, STYLE);
             }
