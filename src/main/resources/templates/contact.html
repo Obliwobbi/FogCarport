@@ -2,45 +2,50 @@
 <html lang="da" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8"/>
-    <title>FogCarport - Kontakt info</title>
+    <title>FogCarport</title>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <link rel="stylesheet" href="/css/stylesheet.css" th:href="@{/css/stylesheet.css}"/>
-    <link rel="stylesheet" href="/css/contact.css" th:href="@{/css/contact.css}"/>
 </head>
 <body>
 
-<main class="contact-body">
-    <form th:action="@{/contact}" method="post" class="contact-form">
-        <h1>Indtast din kontakt information</h1>
+<div th:replace="~{fragments :: headerFragment}"></div>
 
-        <label for="firstname">Fornavn</label>
-        <input type="text" id="firstname" name="firstname">
+<main>
+    <section class="body-style align-items-center">
+        <h1 class="center-text">Indtast din kontakt information</h1>
+        <form class="contact-form" th:action="@{/contact}" method="post">
 
-        <label for="lastname">Efternavn</label>
-        <input type="text" id="lastname" name="lastname">
+            <label for="firstname">Fornavn</label>
+            <input type="text" id="firstname" name="firstname">
 
-        <label for="email">Email</label>
-        <input type="text" id="email" name="email">
+            <label for="lastname">Efternavn</label>
+            <input type="text" id="lastname" name="lastname">
 
-        <label for="phonenumber">Tlf nummer</label>
-        <input type="text" id="phonenumber" name="phonenumber">
+            <label for="email">Email</label>
+            <input type="text" id="email" name="email">
 
-        <label for="street">Gade</label>
-        <input type="text" id="street" name="street">
+            <label for="phonenumber">Tlf nummer</label>
+            <input type="text" id="phonenumber" name="phonenumber">
 
-        <label for="housenumber">Husnummer</label>
-        <input type="text" id="housenumber" name="housenumber">
+            <label for="street">Gade</label>
+            <input type="text" id="street" name="street">
 
-        <label for="zipcode">Postnr</label>
-        <input type="text" id="zipcode" name="zipcode">
+            <label for="housenumber">Husnummer</label>
+            <input type="text" id="housenumber" name="housenumber">
 
-        <label for="city">By</label>
-        <input type="text" id="city" name="city">
+            <label for="zipcode">Postnr</label>
+            <input type="text" id="zipcode" name="zipcode">
 
-        <button type="submit">Send</button>
-        <p th:if="${errorMessage != null}" th:text="${errorMessage}"></p>
-    </form>
+            <label for="city">By</label>
+            <input type="text" id="city" name="city">
+
+            <p th:if="${errorMessage != null}" th:text="${errorMessage}"></p>
+            <button class="button" type="submit">Send</button>
+        </form>
+    </section>
 </main>
+
+<div th:replace="~{fragments :: footerFragment}"></div>
 
 </body>
 </html>

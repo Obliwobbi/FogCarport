@@ -5,14 +5,15 @@
     <title>FogCarport</title>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <link rel="stylesheet" href="/css/stylesheet.css" th:href="@{/css/stylesheet.css}"/>
-    <link rel="stylesheet" href="/css/carport.css" th:href="@{/css/carport.css}"/>
 </head>
 <body>
 
+<div th:replace="~{fragments :: headerFragment}"></div>
+
 <main>
-    <section class="body">
-        <h1>Indtast mål til din carport</h1>
-        <form th:action="@{/carport/create-carport}" method="post" class="carport-form">
+    <section class="body-style align-items-center" >
+        <h1 class="center-text">Indtast mål til din carport</h1>
+        <form class="carport-form" th:action="@{/carport/create-carport}" method="post">
 
             <label for="carportWidth">Vælg bredde:</label>
 
@@ -64,15 +65,14 @@
                 <option value="225">225 cm</option>
             </select>
 
-            <div>
-                <input type="checkbox" name="withShed" id="withShed">
+            <div class="shed-fields-align">
+                <input class="shedCheckbox" type="checkbox" name="withShed" id="withShed">
                 <label for="withShed">Redskabskur</label>
-
 
                 <div class="shed-fields">
                     <p>Bemærk! Der skal beregnes 15 cm tagudhæng på hver side af redskabsrummet</p>
                     <label for="shedWidth">Skur bredde:</label>
-                    <div class="shed-width">
+                    <div class="shed-selects">
                         <select name="shedWidth" id="shedWidth">
                             <option selected=""></option>
                             <option value="120">120 cm</option>
@@ -94,14 +94,14 @@
                         </select>
 
                         <div class="shed-width-tooltip">
-                            Bemærk! skur bredde må ikke være bredere end carporten, <br>
-                            isåfald sættes bredde til det samme på tegningen <br>
-                            vi beregner som standard minimum 240x240 til carport
+                            Bemærk! Skur bredde må ikke være bredere end carporten, <br>
+                            ellers sættes bredde til det samme. <br>
+                            Vi beregner som standard minimum 240x240 til carport
                         </div>
                     </div>
 
                     <label for="shedlength">Skur længde:</label>
-                    <div class="shed-length">
+                    <div class="shed-selects">
                         <select name="shedLength" id="shedlength">
                             <option selected=""></option>
                             <option value="120">120 cm</option>
@@ -129,24 +129,25 @@
                         </select>
 
                         <div class="shed-length-tooltip">
-                            Bemærk, skur længde må ikke være længere end carporten, <br>
-                            isåfald sættes længden til det samme <br>
-                            vi beregner som standard minimum 240x240 til carport<br>
+                            Bemærk! Skur længde må ikke være længere end carporten, <br>
+                            ellers sættes længden til det samme. <br>
+                            Vi beregner som standard minimum 240x240 til carport<br>
                         </div>
                     </div>
                 </div>
             </div>
 
             <label for="customerWishes">Særlige ønsker eller evt. bemærkninger</label>
-            <textarea name="customerWishes" id="customerWishes"></textarea>
+            <textarea class="customer-wishes" name="customerWishes" id="customerWishes"></textarea>
 
             <p th:if="${session.carportErrorLabel != null}" th:text="${session.carportErrorLabel}"></p>
-            <button type="submit">Se Tegning</button>
+            <button class=button type="submit">Se Tegning</button>
 
         </form>
     </section>
 </main>
 
+<div th:replace="~{fragments :: footerFragment}"></div>
 
 </body>
 </html>

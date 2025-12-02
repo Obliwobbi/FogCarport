@@ -1,0 +1,28 @@
+<!-- Header Fragment -->
+<div th:fragment="headerFragment">
+    <header>
+        <a href="index.html" th:href="@{/}">
+            <img src="/images/fog-logo.svg" th:src="@{/images/fog-logo_transparent.svg}" alt="Fog Logo">
+        </a>
+    </header>
+</div>
+
+<!-- Footer Fragment -->
+<div th:fragment="footerFragment">
+    <footer>
+        <p>Project by</p>
+        <nav>
+            <a href="https://github.com/Obliwobbi" th:href="@{https://github.com/Obliwobbi}" target="_blank">
+                <img src="/public/images/github_logo.png"
+                     alt="Toby's Github"
+                     th:src="@{/images/toby_github_icon.png}"/>
+            </a>
+            <a href="https://github.com/JesperTAndersen" th:href="@{https://github.com/JesperTAndersen}"
+               target="_blank">
+                <img id="rightimg" src="/public/images/github_logo.png"
+                     alt="Jesper's Github"
+                     th:src="@{/images/jesper_github_icon.png}"/>
+            </a>
+        </nav>
+    </footer>
+</div>
