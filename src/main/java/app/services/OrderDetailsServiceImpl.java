@@ -88,21 +88,21 @@ public class OrderDetailsServiceImpl implements OrderDetailsService
     }
 
     @Override
-    public boolean addMaterialListToOrder (Order order, Carport carport) throws DatabaseException
+    public boolean addMaterialListToOrder (int orderId, Carport carport) throws DatabaseException
     {
         List<MaterialsLine> materialsLineList = createMaterialList(carport);
         for (MaterialsLine materialsLine : materialsLineList)
         {
             try
             {
-                materialsLinesMapper.createMaterialLine(order.getOrderId(), materialsLine);
+                materialsLinesMapper.createMaterialLine(orderId, materialsLine);
             }
             catch (DatabaseException e)
                 {
-                    throw new DatabaseException("Kunne ikke oprette MaterialLine med id og navn: "+ materialsLine.getMaterial().getId() + ", " + materialsLine.getMaterial().getName() + " på ordre id " + order.getOrderId() +": " + e.getMessage());
+                    throw new DatabaseException("Kunne ikke oprette MaterialLine med id og navn: "+ materialsLine.getMaterial().getId() + ", " + materialsLine.getMaterial().getName() + " på ordre id " + orderId +": " + e.getMessage());
                 }
         }
-        return false;
+        return true;
     }
 
     @Override
