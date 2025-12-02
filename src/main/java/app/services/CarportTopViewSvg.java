@@ -91,14 +91,16 @@ public class CarportTopViewSvg
 
             //Front posts
             svgService.addRectangle(POST_OFFSET_X_LARGE, POST_OFFSET_Y_TOP, POST_WIDTH, POST_WIDTH, STYLE);
-            svgService.addRectangle(POST_OFFSET_X_LARGE, width - POST_OFFSET_Y_BOTTOM, POST_WIDTH, POST_WIDTH, STYLE);
 
             //Always build a shed from upper right corner
             svgService.addRectangle(shedInnerCornerPostXPosition, POST_OFFSET_Y_TOP, POST_WIDTH, POST_WIDTH, STYLE);
             svgService.addRectangle(shedOuterCornerPostXPosition, POST_OFFSET_Y_TOP, POST_WIDTH, POST_WIDTH, STYLE);
 
             if (isFullWidth)
-            {   //lower inner shedCornerPost
+            {
+                svgService.addRectangle(POST_OFFSET_X_LARGE, width - POST_OFFSET_Y_BOTTOM, POST_WIDTH, POST_WIDTH, STYLE);
+
+                //lower inner shedCornerPost
                 svgService.addRectangle(shedInnerCornerPostXPosition, width - POST_OFFSET_Y_BOTTOM, POST_WIDTH, POST_WIDTH, STYLE);
                 svgService.addRectangle(shedOuterCornerPostXPosition, width - POST_OFFSET_Y_BOTTOM, POST_WIDTH, POST_WIDTH, STYLE);
             }
@@ -152,6 +154,7 @@ public class CarportTopViewSvg
                     svgService.addRectangle(middlePostUnderTopPlatesX, width - POST_OFFSET_Y_BOTTOM, POST_WIDTH, POST_WIDTH, STYLE);
                 }
             }
+
         }
         else
         {
