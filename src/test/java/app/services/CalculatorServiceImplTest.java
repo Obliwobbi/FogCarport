@@ -93,6 +93,19 @@ class CalculatorServiceImplTest
         assertEquals(expected, actual);
     }
 
+    @DisplayName("Max size carport with over Half Length Shed and Full Width")
+    @Test
+    void calculatePostMaxSizeBigShed()
+    {
+        Carport carport = new Carport(1, 600, 780, 225, true, 540, 330, "");
+
+        int actual = materialListService.calculatePosts(carport);
+        int expected = 13;
+
+        assertEquals(expected, actual);
+    }
+
+
     // ************************ TESTING OF: CEILING JOISTS ************************
 
     @DisplayName("Calculate ceiling Joist, Delivered Material: Carport size (6m x 7.8m) + shed (5.3m x 2.1m)")
@@ -255,6 +268,20 @@ class CalculatorServiceImplTest
         assertEquals(1, result.get(600.0));
         assertEquals(3, result.get(480.0));
     }
+
+    @DisplayName("Top plate: Full width shed, 340 length, 630cm carport")
+    @Test
+    public void calculateTopPlate_FullWidth_OverHalfLength()
+    {
+        Carport carport = new Carport(1, 600, 780, 225, true, 570, 330, "");
+        HashMap<Double, Integer> result = materialListService.calculateTopPlate(carport);
+
+        assertEquals(2, result.get(600.0));
+        assertEquals(1, result.get(480.0));
+    }
+
+
+
 
     // ************************ TESTING OF: SHED BLOCKING ************************
 
