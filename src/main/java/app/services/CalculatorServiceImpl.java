@@ -365,6 +365,12 @@ public class CalculatorServiceImpl implements CalculatorService
     {
         return (int) Math.ceil(screws / packsize);
     }
+
+    @Override
+    public int sumHashMapValues(HashMap<?, Integer> map)
+    {
+        return map.values().stream().mapToInt(Integer::intValue).sum();
+    }
 }
 
 
