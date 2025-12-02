@@ -94,13 +94,27 @@ public class CalculatorServiceImpl implements CalculatorService
     }
 
     @Override
-    public int calculateCeilingJoist(Carport carport)
+    public HashMap<Double,Integer> calculateCeilingJoist(Carport carport)
     {
-        int result = 2; //one for each for the ends.
-        double ceilingJoistWidth = 4.5;
-        int maxLengthBetweenCeilingJoist = 60; // src: documentation provided by product owner
+        HashMap<Double,Integer> result = new HashMap<>();
 
-        result += (int) Math.ceil((carport.getLength() - (ceilingJoistWidth * 2)) / maxLengthBetweenCeilingJoist); //rounds up always to ensure there is no more than 60 cm between rafters
+        double ceilingJoistWidth = 4.5;
+        double shortCeilingJoist = 480.0;
+        double longCeilingJoist = 600.0;
+
+        int maxLengthBetweenCeilingJoist = 60; // src: documentation provided by product owner
+        int count = 2; //one for each for the ends.
+        double ceilingJoistLength = 0;
+        if (carport.getWidth() <= shortCeilingJoist)
+        {
+            ceilingJoistLength = shortCeilingJoist;
+        }
+        else if (carport.getWidth() > shortCeilingJoist)
+        {
+            ceilingJoistLength = longCeilingJoist;
+        }
+        count += (int) Math.ceil((carport.getLength() - (ceilingJoistWidth * 2)) / maxLengthBetweenCeilingJoist); //rounds up always to ensure there is no more than 60 cm between rafters
+        result.put(ceilingJoistLength, count);
 
         return result;
     }

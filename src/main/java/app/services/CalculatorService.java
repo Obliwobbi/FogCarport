@@ -8,7 +8,7 @@ public interface CalculatorService
 {
     int calculatePosts(Carport carport);
 
-    int calculateCeilingJoist(Carport carport);
+    HashMap<Double, Integer> calculateCeilingJoist(Carport carport);
 
     HashMap<Double, Integer> calculateTopPlate(Carport carport);
 

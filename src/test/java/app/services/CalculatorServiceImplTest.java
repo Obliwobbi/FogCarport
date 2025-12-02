@@ -101,7 +101,7 @@ class CalculatorServiceImplTest
     {
         Carport carport = new Carport(1, 600, 780, 225, true, 530, 210, "");
 
-        int actual = materialListService.calculateCeilingJoist(carport);
+        int actual = materialListService.calculateCeilingJoist(carport).values().stream().mapToInt(Integer::intValue).sum();
         int expected = 15;
 
         assertEquals(expected, actual);
@@ -115,7 +115,7 @@ class CalculatorServiceImplTest
 
         // 510 - 9 (to account for a joist in both ends. then 501/60(max length between joints) = 8.35. method rounds to 9 and add the 2 for the ends.
 
-        int actual = materialListService.calculateCeilingJoist(carport);
+        int actual = materialListService.calculateCeilingJoist(carport).values().stream().mapToInt(Integer::intValue).sum();
         int expected = 11;
 
         assertEquals(expected, actual);
