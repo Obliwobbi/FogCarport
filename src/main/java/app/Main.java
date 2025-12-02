@@ -55,6 +55,7 @@ public class Main
         OrderMapper orderMapper = new OrderMapper(connectionPool);
         DrawingMapper drawingMapper = new DrawingMapper(connectionPool);
         CustomerMapper customerMapper = new CustomerMapper(connectionPool);
+        MaterialMapper materialMapper = new MaterialMapper(connectionPool);
         MaterialsLinesMapper materialsLinesMapper = new MaterialsLinesMapper(connectionPool);
 
         HomeController homeController = new HomeController();
@@ -62,8 +63,11 @@ public class Main
         CarportService carportService = new CarportServiceImpl(carportMapper);
         CarportController carportController = new CarportController(carportService);
 
+        CalculatorService calculatorService = new CalculatorServiceImpl();
+
+        OrderDetailsService orderDetailsService = new OrderDetailsServiceImpl(calculatorService,materialsLinesMapper,materialMapper);
         OrderService orderService = new OrderServiceImpl(orderMapper, carportMapper, drawingMapper, customerMapper);
-        OrderController orderController = new OrderController(orderService);
+        OrderController orderController = new OrderController(orderService,orderDetailsService);
 
         CustomerService customerService = new CustomerServiceImpl(customerMapper);
         ContactController contactController = new ContactController(customerService, orderService);

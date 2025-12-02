@@ -363,6 +363,162 @@ main {
     box-shadow: 0 0 0 .2rem color-mix(in srgb, var(--color-fogblue-dark) 25%, transparent);
 }
 
+/* ORDER DETAILS */
+/* ORDER DETAILS SPECIFIC STYLES */
+
+.details-header {
+    padding: 2rem 1rem 1rem;
+}
+
+.details-header h1 {
+    margin-bottom: 0.5rem;
+}
+
+.details-header p {
+    color: var(--color-fogblue);
+    font-size: var(--font-h5);
+    margin-bottom: 0;
+}
+
+.details-section {
+    margin: 1.5rem 2rem;
+    padding: 1.5rem;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.details-section h2 {
+    color: var(--color-fogblue);
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--color-fogblue-light);
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 0.5rem;
+}
+
+.info-item strong {
+    color: var(--color-fogblue-dark);
+    font-size: var(--font-small);
+}
+
+.info-item span {
+    color: var(--color-text-dark);
+}
+
+.info-item.full-width {
+    grid-column: 1 / -1;
+}
+
+/* Materials Table */
+.materials-table {
+    overflow-x: auto;
+    margin-top: 1rem;
+}
+
+.materials-table table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.materials-table thead {
+    background: var(--color-fogblue);
+    color: var(--color-text-light);
+}
+
+.materials-table th,
+.materials-table td {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.materials-table th {
+    font-weight: var(--fw-semibold);
+}
+
+.materials-table tbody tr:hover {
+    background: rgba(40, 153, 250, 0.1);
+}
+
+.materials-table tfoot {
+    background: var(--color-fogblue-dark);
+    color: var(--color-text-light);
+}
+
+.materials-table tfoot td {
+    font-size: var(--font-h6);
+    padding: 1rem 0.75rem;
+}
+
+.total-row {
+    border-top: 2px solid var(--color-fogblue-light);
+}
+
+/* No Materials Section */
+.no-materials {
+    text-align: center;
+    padding: 2rem;
+    background: rgba(40, 153, 250, 0.05);
+    border-radius: 8px;
+    margin-top: 1rem;
+}
+
+.no-materials p {
+    margin-bottom: 1rem;
+    color: var(--color-text-dark);
+}
+
+/* Messages */
+.message {
+    margin: 1.5rem 2rem;
+    padding: 1rem;
+    border-radius: 8px;
+}
+
+.error-message {
+    background: rgba(220, 53, 69, 0.1);
+    color: #721c24;
+    border: 1px solid rgba(220, 53, 69, 0.3);
+}
+
+.success-message {
+    background: rgba(40, 167, 69, 0.1);
+    color: #155724;
+    border: 1px solid rgba(40, 167, 69, 0.3);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .details-section {
+        margin: 1rem;
+        padding: 1rem;
+    }
+
+    .materials-table th,
+    .materials-table td {
+        padding: 0.5rem;
+        font-size: var(--font-small);
+    }
+}
+
+
 
 /* Footer adjustments */
 footer {
