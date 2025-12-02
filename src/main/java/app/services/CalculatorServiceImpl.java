@@ -51,8 +51,7 @@ public class CalculatorServiceImpl implements CalculatorService
         //Only 2 lengths of Top Plates in database, 480 and 600.
         double shortTopPlate = 480.0; // 480 is the shortest Top Plate in database
         double longTopPlate = 600.0; //600 is the of the longest Top Plate in database
-        int overhang = 30; //the 30cm is to account for necessary overhang on sides of the shed, from documentation provided by product owner
-
+        int minOverhang = 30; //the 30cm is to account for necessary overhang on sides of the shed, from documentation provided by product owner
 
         if (!carport.isWithShed())
         {
@@ -71,21 +70,24 @@ public class CalculatorServiceImpl implements CalculatorService
         }
         else
         {
-            if (carport.getLength() > longTopPlate && carport.getShedWidth() == (carport.getWidth() - overhang))
+            boolean isFullWidth = carport.getShedWidth() >= (carport.getWidth() - minOverhang);
+
+            if (carport.getLength() <= shortTopPlate)
+            {
+                result.put(shortTopPlate, 2);
+            }
+            else if (carport.getLength() <= longTopPlate)
+            {
+                result.put(longTopPlate, 2);
+            }
+            else if (isFullWidth)
             {
                 result.put(longTopPlate, 2);
                 result.put(shortTopPlate, 1);
             }
-            else if (carport.getLength() > shortTopPlate && carport.getLength() <= longTopPlate)
+            else
             {
-                result.put(longTopPlate, 2);
-            }
-            else if (carport.getLength() <= shortTopPlate && carport.getShedWidth() <= (carport.getWidth() - overhang))
-            {
-                result.put(shortTopPlate, 2);
-            }
-            else //account for asymmetrical carport posts, with a partial width shed on one side. Joins of Top Plates can be different places on each side
-            {
+                // Partial-width shed: asymmetrical placement
                 result.put(longTopPlate, 1);
                 result.put(shortTopPlate, 3);
             }
@@ -94,9 +96,9 @@ public class CalculatorServiceImpl implements CalculatorService
     }
 
     @Override
-    public HashMap<Double,Integer> calculateCeilingJoist(Carport carport)
+    public HashMap<Double, Integer> calculateCeilingJoist(Carport carport)
     {
-        HashMap<Double,Integer> result = new HashMap<>();
+        HashMap<Double, Integer> result = new HashMap<>();
 
         double ceilingJoistWidth = 4.5;
         double shortCeilingJoist = 480.0;
@@ -338,8 +340,8 @@ public class CalculatorServiceImpl implements CalculatorService
     @Override
     public int calculatePerforatedStrip(Carport carport)
     {
-        double a = carport.getLength()/100; //converts to M
-        double b = carport.getWidth()/100; //converts to M
+        double a = carport.getLength() / 100; //converts to M
+        double b = carport.getWidth() / 100; //converts to M
 
         double c = Math.hypot(a, b); //Pythagoras
         if (c > 5)

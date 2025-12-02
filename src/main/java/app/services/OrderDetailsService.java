@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface OrderDetailsService
 {
-    boolean addMaterialListToOrder (Order order, Carport carport) throws DatabaseException;
+    boolean addMaterialListToOrder (int orderId, Carport carport) throws DatabaseException;
 
     List<MaterialsLine> createMaterialList(Carport carport) throws DatabaseException;
 }
