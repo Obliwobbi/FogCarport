@@ -26,7 +26,7 @@ public class OrderWithDetailsDTO {
             return 0.0;
         }
         return materialsLines.stream()
-                .mapToDouble(line -> line.getQuantity() * line.getLinePrice())
+                .mapToDouble(MaterialsLine::getLinePrice)
                 .sum();
     }
 }
