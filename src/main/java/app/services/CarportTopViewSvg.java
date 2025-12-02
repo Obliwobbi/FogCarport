@@ -80,9 +80,6 @@ public class CarportTopViewSvg
         double maxOverhang = 120; //your able to move top plate further in if you have slightly larger overhang
         boolean isFullWidth = shedWidth >= (carportWidth - maxOverhang);
 
-        double partialShedLowerCornerPostY = shedWidth + POST_OFFSET_Y_TOP;
-
-
         if (carport.isWithShed())
         {
             double shedOuterCornerPostXPosition = carportLength - POST_OFFSET_X_WITH_SHED;
