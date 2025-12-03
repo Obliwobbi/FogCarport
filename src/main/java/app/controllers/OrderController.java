@@ -1,8 +1,11 @@
 package app.controllers;
 
 import app.dto.OrderWithDetailsDTO;
+import app.entities.Carport;
+import app.entities.MaterialsLine;
 import app.entities.Order;
 import app.exceptions.DatabaseException;
+import app.services.OrderDetailsService;
 import app.services.OrderService;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
@@ -14,16 +17,94 @@ import java.util.List;
 public class OrderController
 {
     private final OrderService orderService;
+    private final OrderDetailsService orderDetailsService;
 
-    public OrderController(OrderService orderService)
+    public OrderController(OrderService orderService, OrderDetailsService orderDetailsService)
     {
         this.orderService = orderService;
+        this.orderDetailsService = orderDetailsService;
     }
 
     public void addRoutes(Javalin app)
     {
         app.get("/orders", this::showOrders);
         app.post("/orders/delete/{id}", this::deleteOrder);
+        app.get("/orders/details/{id}", this::showOrderDetails);
+        app.post("/orders/details/{id}/stykliste", this::generateMaterialList);
+    }
+
+    private void showOrderDetails(Context ctx)
+    {
+        String orderIdString = ctx.pathParam("id");
+        try
+        {
+            int orderId = Integer.parseInt(orderIdString);
+            OrderWithDetailsDTO order = orderService.getOrderwithDetails(orderId);
+            if (order == null)
+            {
+                ctx.attribute("errorMessage", "Ordre ikke fundet");
+                ctx.redirect("/orders");
+                return;
+            }
+            List<MaterialsLine> materialsLines = order.getMaterialsLines();
+
+            ctx.attribute("order", order);
+            ctx.attribute("materialsLines", materialsLines);
+            ctx.attribute("hasMaterialsList", materialsLines != null && !materialsLines.isEmpty());
+
+            ctx.render("order-details.html");
+        }
+        catch (NumberFormatException e)
+        {
+            ctx.attribute("errorMessage", "Ugyldigt ordre ID");
+            ctx.redirect("/orders");
+        }
+        catch (NullPointerException e)
+        {
+            ctx.attribute("errorMessage", "Ordre har ikke materiale liste");
+            ctx.redirect("/orders");
+        }
+        catch (DatabaseException e)
+        {
+            ctx.attribute("errorMessage", e.getMessage());
+            ctx.redirect("/orders");
+        }
+    }
+
+    private void generateMaterialList(Context ctx)
+    {
+        String orderIdStr = ctx.pathParam("id");
+
+        try
+        {
+            OrderWithDetailsDTO order = new OrderWithDetailsDTO();
+            int orderId = Integer.parseInt(orderIdStr);
+            try
+            {
+                order = orderService.getOrderwithDetails(orderId);
+            }
+            catch (DatabaseException e)
+            {
+                ctx.attribute("errorMessage", "Ugyldigt ordre ID: " + orderId);
+            }
+            List<MaterialsLine> existingMaterialsLines = order.getMaterialsLines();
+            if (existingMaterialsLines != null && !existingMaterialsLines.isEmpty())
+            {
+                ctx.attribute("errorMessage", "Materialer er allerede generet for denne ordre");
+                ctx.redirect("/orders/details/"+orderId);
+                return;
+            }
+            Carport carport = order.getCarport();
+            orderDetailsService.addMaterialListToOrder(orderId,carport);
+
+            ctx.attribute("successMessage", "Materiale liste blev genereret");
+            ctx.redirect("/orders/details/"+ orderId);
+        }
+        catch (DatabaseException e)
+        {
+            ctx.attribute("errorMessage", "Kunne ikke oprette materiale liste: " + e.getMessage());
+        }
+
     }
 
     private void showOrders(Context ctx)
