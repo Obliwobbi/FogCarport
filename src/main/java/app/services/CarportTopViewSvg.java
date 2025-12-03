@@ -80,12 +80,11 @@ public class CarportTopViewSvg
         boolean isFullLength = shedLength >= (carportLength - maxOverHangLength);
 
         double postAlignedWithLowerYTopPlate = carportWidth - POST_OFFSET_Y_BOTTOM;
+        double shedOuterCornerPostXPosition = carportLength - POST_OFFSET_X_WITH_SHED;
+        double shedInnerCornerPostXPosition = carportLength - POST_OFFSET_X_WITH_SHED - shedLength;
 
         if (carport.isWithShed())
         {
-            double shedOuterCornerPostXPosition = carportLength - POST_OFFSET_X_WITH_SHED;
-            double shedInnerCornerPostXPosition = carportLength - POST_OFFSET_X_WITH_SHED - shedLength;
-
             if (!isFullLength)
             {
                 svgService.addRectangle(POST_OFFSET_X_LARGE, POST_OFFSET_Y_TOP, POST_WIDTH, POST_WIDTH, STYLE); // FRONT UPPER LEFT
@@ -141,10 +140,13 @@ public class CarportTopViewSvg
                 }
             }
 
+
+//            double postX = (carportLength <= MAX_LENGTH_CARPORT_FOR_POST_SPACING)? POST_OFFSET_X_SMALL + (i * spaceBetweenPosts) : POST_OFFSET_X_LARGE + (i * spaceBetweenPosts);
+
             if (!isFullWidth)
             {
                 int numberOfSegments = (int) Math.ceil(carportLength / MAX_LENGTH_BETWEEN_POST);
-                double spaceBetweenPosts = (carportLength - POST_OFFSET_EDGE_BUFFER) / (2);
+                double spaceBetweenPosts = (carportLength - POST_OFFSET_EDGE_BUFFER) / (2); //2
 
                 for (int i = 0; i < numberOfSegments; i++)
                 {
