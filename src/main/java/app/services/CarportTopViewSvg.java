@@ -12,7 +12,8 @@ public class CarportTopViewSvg
     private final String STYLE = "stroke-width:1px; stroke: black; fill: transparent;";
     private final String DASHED_LINE = "stroke-width:1px; stroke: black; stroke-dasharray:5 5;";
     private final String ARROW = "marker-start: url(#beginArrow); marker-end: url(#endArrow);";
-
+    private final String SHED_STYLE_ONE = "stroke-width:2px; stroke: black; stroke-dasharray:10 10;";
+    private final String SHED_STYLE_TWO = "stroke-width:2px; stroke: black; stroke-dasharray:10 10; stroke-dashoffset:10;"
 
     private double TOP_PLATE_WIDTH = 4.5;
     private double POST_WIDTH = 10;
@@ -26,6 +27,7 @@ public class CarportTopViewSvg
     private int MAX_LENGTH_CARPORT_FOR_POST_SPACING = 390;
     private double MAX_LENGTH_BLOCKING = 270;
     private double MAX_LENGTH_BETWEEN_POST = 310;
+    double MAX_OVERHANG = 120;  //your able to move top plate further in if you have slightly larger overhang
 
     public CarportTopViewSvg(Carport carport, CalculatorService calculatorService, SvgService svgService)
     {
@@ -38,6 +40,7 @@ public class CarportTopViewSvg
         addCeilingJoist();
         addPosts();
         addPerforatedStrips();
+        addShedOutline();
 
     }
 
@@ -74,9 +77,8 @@ public class CarportTopViewSvg
         double shedWidth = carport.getShedWidth();
         double shedLength = carport.getShedLength();
 
-        double maxOverhang = 120; //your able to move top plate further in if you have slightly larger overhang
         double maxOverHangLength = 150; //able to most post supporting TopPlate to align with shed Corner
-        boolean isFullWidth = shedWidth >= (carportWidth - maxOverhang);
+        boolean isFullWidth = shedWidth >= (carportWidth - MAX_OVERHANG);
         boolean isFullLength = shedLength >= (carportLength - maxOverHangLength);
 
         double postAlignedWithLowerYTopPlate = carportWidth - POST_OFFSET_Y_BOTTOM;
@@ -212,6 +214,45 @@ public class CarportTopViewSvg
 
         svgService.addLine(startX, TOP_PLATE_OFFSET, endX, carport.getWidth() - TOP_PLATE_OFFSET, DASHED_LINE); //uses TOP-PLATE_OFFSET due to needing to be connected to the ceilingjoist atop that;
         svgService.addLine(startX, carport.getWidth() - TOP_PLATE_OFFSET, endX, TOP_PLATE_OFFSET, DASHED_LINE);
+    }
+
+    private void addShedOutline()
+    {
+        if (!carport.isWithShed())
+        {
+            return;
+        }
+
+        double carportWidth = carport.getWidth();
+        double carportLength = carport.getLength();
+        double shedWidth = carport.getShedWidth();
+        double shedLength = carport.getShedLength();
+
+        boolean isFullWidth = shedWidth >= (carportWidth - MAX_OVERHANG);
+
+        // Position lines on OUTER edge of posts
+        double shedOuterCornerPostX = carportLength - POST_OFFSET_X_WITH_SHED + POST_WIDTH;
+        double shedInnerCornerPostX = carportLength - POST_OFFSET_X_WITH_SHED - shedLength;
+        double upperY = POST_OFFSET_Y_TOP;
+        double lowerY = (isFullWidth) ? (carportWidth - POST_OFFSET_Y_BOTTOM + POST_WIDTH) : (shedWidth + POST_OFFSET_Y_TOP + POST_WIDTH);
+
+        double lineOffset = 2; // Distance between the two dashed lines
+
+        // Top line (double-dashed)
+        svgService.addLine(shedInnerCornerPostX, upperY, shedOuterCornerPostX, upperY, SHED_STYLE_ONE);
+        svgService.addLine(shedInnerCornerPostX, upperY - lineOffset, shedOuterCornerPostX, upperY - lineOffset, SHED_STYLE_TWO);
+
+        // Bottom line (double-dashed)
+        svgService.addLine(shedInnerCornerPostX, lowerY, shedOuterCornerPostX, lowerY, SHED_STYLE_ONE);
+        svgService.addLine(shedInnerCornerPostX, lowerY + lineOffset, shedOuterCornerPostX, lowerY + lineOffset, SHED_STYLE_TWO);
+
+        // Left line (double-dashed)
+        svgService.addLine(shedInnerCornerPostX, upperY, shedInnerCornerPostX, lowerY, SHED_STYLE_ONE);
+        svgService.addLine(shedInnerCornerPostX - lineOffset, upperY, shedInnerCornerPostX - lineOffset, lowerY, SHED_STYLE_TWO);
+
+        // Right line (double-dashed)
+        svgService.addLine(shedOuterCornerPostX, upperY, shedOuterCornerPostX, lowerY, SHED_STYLE_ONE);
+        svgService.addLine(shedOuterCornerPostX + lineOffset, upperY, shedOuterCornerPostX + lineOffset, lowerY, SHED_STYLE_TWO);
     }
 
     @Override
