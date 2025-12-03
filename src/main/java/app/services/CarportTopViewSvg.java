@@ -78,6 +78,8 @@ public class CarportTopViewSvg
         boolean isFullWidth = shedWidth >= (carportWidth - maxOverhang);
         boolean isFullLength = shedLength >= (carportLength - maxOverHangLength);
 
+        double postAlignedWithLowerYTopPlate = carportWidth - POST_OFFSET_Y_BOTTOM;
+
         if (carport.isWithShed())
         {
             double shedOuterCornerPostXPosition = carportLength - POST_OFFSET_X_WITH_SHED;
@@ -90,21 +92,21 @@ public class CarportTopViewSvg
 
             if (isFullWidth)
             {
-                svgService.addRectangle(POST_OFFSET_X_LARGE, carportWidth - POST_OFFSET_Y_BOTTOM, POST_WIDTH, POST_WIDTH, STYLE); //FRONT LOWER LEFT
+                svgService.addRectangle(POST_OFFSET_X_LARGE, postAlignedWithLowerYTopPlate, POST_WIDTH, POST_WIDTH, STYLE); //FRONT LOWER LEFT
             }
 
             //Always build a shed from upper right corner
             svgService.addRectangle(shedInnerCornerPostXPosition, POST_OFFSET_Y_TOP, POST_WIDTH, POST_WIDTH, STYLE); // UPPER SHED LEFT CORNER
             svgService.addRectangle(shedOuterCornerPostXPosition, POST_OFFSET_Y_TOP, POST_WIDTH, POST_WIDTH, STYLE); // UPPER SHED RIGHT CORNER
 
-            double loverYPosition = (isFullWidth) ? carportWidth - POST_OFFSET_Y_BOTTOM : shedWidth + POST_OFFSET_Y_TOP;
+            double lowerYPosition = (isFullWidth) ? postAlignedWithLowerYTopPlate : shedWidth + POST_OFFSET_Y_TOP;
 
-            svgService.addRectangle(shedInnerCornerPostXPosition, loverYPosition, POST_WIDTH, POST_WIDTH, STYLE); // LOWER SHED LEFT CORNER
-            svgService.addRectangle(shedOuterCornerPostXPosition, loverYPosition, POST_WIDTH, POST_WIDTH, STYLE); // LOWER SHED RIGHT CORNER
+            svgService.addRectangle(shedInnerCornerPostXPosition, lowerYPosition, POST_WIDTH, POST_WIDTH, STYLE); // LOWER SHED LEFT CORNER
+            svgService.addRectangle(shedOuterCornerPostXPosition, lowerYPosition, POST_WIDTH, POST_WIDTH, STYLE); // LOWER SHED RIGHT CORNER
 
             if (shedWidth > MAX_LENGTH_BLOCKING) //POST FOR BETWEEN SHED CORNER ON WIDTH/Y IF NEEDED
             {
-                double middlePostOfShed = (isFullWidth) ? (POST_OFFSET_Y_TOP + (loverYPosition)) / 2 : (POST_OFFSET_Y_TOP + shedWidth + POST_OFFSET_Y_BOTTOM) / 2;
+                double middlePostOfShed = (isFullWidth) ? (POST_OFFSET_Y_TOP + (lowerYPosition)) / 2 : (POST_OFFSET_Y_TOP + shedWidth + POST_OFFSET_Y_BOTTOM) / 2;
 
                 svgService.addRectangle(shedOuterCornerPostXPosition, middlePostOfShed, POST_WIDTH, POST_WIDTH, STYLE); // MIDDLE SHED RIGHT
                 svgService.addRectangle(shedInnerCornerPostXPosition, middlePostOfShed, POST_WIDTH, POST_WIDTH, STYLE); // MIDDLE SHED LEFT
@@ -122,7 +124,7 @@ public class CarportTopViewSvg
                     double postX = shedInnerCornerPostXPosition + (i * spaceBetweenPosts);
 
                     svgService.addRectangle(postX, POST_OFFSET_Y_TOP, POST_WIDTH, POST_WIDTH, STYLE);
-                    svgService.addRectangle(postX, loverYPosition, POST_WIDTH, POST_WIDTH, STYLE);
+                    svgService.addRectangle(postX, lowerYPosition, POST_WIDTH, POST_WIDTH, STYLE);
                 }
             }
 
@@ -134,18 +136,18 @@ public class CarportTopViewSvg
 
                 if (isFullWidth)
                 {
-                    svgService.addRectangle(middlePostUnderTopPlatesX, carportWidth - POST_OFFSET_Y_BOTTOM, POST_WIDTH, POST_WIDTH, STYLE); // LOWER POST BETWEEN FRONT AND SHED CORNER
+                    svgService.addRectangle(middlePostUnderTopPlatesX, postAlignedWithLowerYTopPlate, POST_WIDTH, POST_WIDTH, STYLE); // LOWER POST BETWEEN FRONT AND SHED CORNER
                 }
             }
         }
-        else
+        else // NO SHED
         {
             if (carport.getLength() <= MAX_LENGTH_CARPORT_FOR_POST_SPACING)
             {
                 svgService.addRectangle(POST_OFFSET_X_SMALL, POST_OFFSET_Y_TOP, POST_WIDTH, POST_WIDTH, STYLE); // UPPER LEFT
                 svgService.addRectangle(carportLength - POST_OFFSET_X_SMALL, POST_OFFSET_Y_TOP, POST_WIDTH, POST_WIDTH, STYLE); // UPPER RIGHT
-                svgService.addRectangle(POST_OFFSET_X_SMALL, carportWidth - POST_OFFSET_Y_BOTTOM, POST_WIDTH, POST_WIDTH, STYLE); // LOWER LEFT
-                svgService.addRectangle(carportLength - POST_OFFSET_X_SMALL, carportWidth - POST_OFFSET_Y_BOTTOM, POST_WIDTH, POST_WIDTH, STYLE); // LOWER RIGHT
+                svgService.addRectangle(POST_OFFSET_X_SMALL, postAlignedWithLowerYTopPlate, POST_WIDTH, POST_WIDTH, STYLE); // LOWER LEFT
+                svgService.addRectangle(carportLength - POST_OFFSET_X_SMALL, postAlignedWithLowerYTopPlate, POST_WIDTH, POST_WIDTH, STYLE); // LOWER RIGHT
             }
             if (carport.getLength() > MAX_LENGTH_CARPORT_FOR_POST_SPACING)
             {
@@ -156,7 +158,7 @@ public class CarportTopViewSvg
                 {
                     double x = POST_OFFSET_X_LARGE + (i * spaceBetween);
                     svgService.addRectangle(x, POST_OFFSET_Y_TOP, POST_WIDTH, POST_WIDTH, STYLE);
-                    svgService.addRectangle(x, carportWidth - POST_OFFSET_Y_BOTTOM, POST_WIDTH, POST_WIDTH, STYLE);
+                    svgService.addRectangle(x, postAlignedWithLowerYTopPlate, POST_WIDTH, POST_WIDTH, STYLE);
                 }
             }
         }
