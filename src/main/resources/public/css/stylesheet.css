@@ -222,11 +222,11 @@ main {
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 45%
+    width: 45%;
 }
 
 .carport-form label {
-    width: 75%
+    width: 75%;
 }
 
 .carport-form select {
@@ -331,11 +331,11 @@ main {
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 45%
+    width: 45%;
 }
 
 .contact-form label {
-    width: 75%
+    width: 75%;
 }
 
 .contact-form input {
