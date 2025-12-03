@@ -135,7 +135,7 @@ public class OrderDetailsServiceImpl implements OrderDetailsService
         HashMap<Double, Integer> ceilingJoists = calculatorService.calculateCeilingJoist(carport);
         forEachMaterial(ceilingJoists, materialList, shortCeilingJoist, longCeilingJoist, shortCeilingJoistMaterialId, longCeilingJoistMaterialId);
 
-        int ceilingJoistFittings = sumHashMapValues(ceilingJoists); //Needs double amount, 1 right and 1 left fitting for each ceiling joist
+        int ceilingJoistFittings = calculatorService.sumHashMapValues(ceilingJoists); //Needs double amount, 1 right and 1 left fitting for each ceiling joist
         materialList.add(insertMaterialLine(ceilingJoistFittings, rightCeilingJoistFittingMaterialId));
         materialList.add(insertMaterialLine(ceilingJoistFittings, leftCeilingJoistFittingMaterialId));
 
@@ -177,7 +177,7 @@ public class OrderDetailsServiceImpl implements OrderDetailsService
             HashMap<Double, Integer> blockings = calculatorService.calculateBlocking(carport);
             forEachMaterial(blockings, materialList, shortBlocking, longBlocking, shortBlockingMaterialId, longBlockingMaterialId);
 
-            int blockingFittings = sumHashMapValues(blockings) * 2; //Need two pr blocking (according to delivered material, 16 blockings and 32 fittings)
+            int blockingFittings = calculatorService.sumHashMapValues(blockings) * 2; //Need two pr blocking (according to delivered material, 16 blockings and 32 fittings)
             materialList.add(insertMaterialLine(blockingFittings, blockingFittingMaterialId));
 
             int blockingFittingsScrews = calculatorService.calculateScrewsNeeded(blockingFittings, screwsPerBlockingFitting);
@@ -250,11 +250,5 @@ public class OrderDetailsServiceImpl implements OrderDetailsService
             }
         }
     }
-
-    private int sumHashMapValues(HashMap<?, Integer> map)
-    {
-        return map.values().stream().mapToInt(Integer::intValue).sum();
-    }
-
 
 }

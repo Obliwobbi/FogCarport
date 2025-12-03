@@ -33,4 +33,6 @@ public interface CalculatorService
     HashMap<Double, Integer> calculateFasciaBoardWidth(Carport carport);
 
     int calculatePerforatedStrip(Carport carport);
+
+    int sumHashMapValues(HashMap<?, Integer> map);
 }
