@@ -69,11 +69,11 @@ public class SvgServiceImpl implements SvgService
         svg.append(String.format(SVG_TEXT_TEMPLATE, x, y, rotation, text));
     }
 
-    @Override
-    public void addSvg(SvgServiceImpl innerSvg)
-    {
-        svg.append(innerSvg).toString();
-    }
+   @Override
+   public void addSvg(SvgServiceImpl innerSvg)
+   {
+       svg.append(innerSvg.toString());
+   }
 
     @Override
     public String toString()

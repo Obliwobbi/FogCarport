@@ -30,15 +30,11 @@ public class DrawingController
 
         Carport carport = ctx.sessionAttribute("carport");
 
-        String viewBox = drawingService.createViewBox(carport);
+        SvgService svgService = new SvgServiceImpl(0, 0, String.format("0 0 %.1f %.1f", (carport.getLength()), carport.getWidth()), "100%", "auto");
 
-        SvgService svgService = new SvgServiceImpl(0, 0, viewBox, "100%", "auto");
-
-
-        //TODO error Handling of potential nulls
         CarportTopViewSvg carportSvg = new CarportTopViewSvg(carport, calculatorService, svgService);
 
-        ctx.attribute("svg", carportSvg.toString());
+        ctx.attribute("svg", carportSvg.createMeasuredCarportSvg());
         ctx.render("drawing.html");
     }
 

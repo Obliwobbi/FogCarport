@@ -13,11 +13,11 @@ public class CarportTopViewSvg
     private final String DASHED_LINE = "stroke-width:1px; stroke: black; stroke-dasharray:5 5;";
     private final String ARROW = "marker-start: url(#beginArrow); marker-end: url(#endArrow);";
     private final String SHED_STYLE_ONE = "stroke-width:2px; stroke: black; stroke-dasharray:10 10;";
-    private final String SHED_STYLE_TWO = "stroke-width:2px; stroke: black; stroke-dasharray:10 10; stroke-dashoffset:10;"
+    private final String SHED_STYLE_TWO = "stroke-width:2px; stroke: black; stroke-dasharray:10 10; stroke-dashoffset:10;";
 
     private double TOP_PLATE_WIDTH = 4.5;
     private double POST_WIDTH = 10;
-    private double TOP_PLATE_OFFSET = 50;
+    private double TOP_PLATE_OFFSET = 35;
     private double POST_OFFSET_Y_TOP = TOP_PLATE_OFFSET - 2.5;
     private double POST_OFFSET_Y_BOTTOM = TOP_PLATE_OFFSET + 2.5;
     private double POST_OFFSET_X_SMALL = 40;
@@ -253,6 +253,56 @@ public class CarportTopViewSvg
         // Right line (double-dashed)
         svgService.addLine(shedOuterCornerPostX, upperY, shedOuterCornerPostX, lowerY, SHED_STYLE_ONE);
         svgService.addLine(shedOuterCornerPostX + lineOffset, upperY, shedOuterCornerPostX + lineOffset, lowerY, SHED_STYLE_TWO);
+    }
+
+    public String createMeasuredCarportSvg()
+    {
+        double carportWidth = carport.getWidth();
+        double carportLength = carport.getLength();
+
+        double leftMargin = 50;
+        double topMargin = 50;
+        double bottomMargin = 40;
+        double rightMargin = 200;
+
+        double totalWidth = leftMargin + carportLength + rightMargin;
+        double totalHeight = topMargin + carportWidth + bottomMargin;
+
+        SvgServiceImpl outerSvg = new SvgServiceImpl(0, 0, String.format("0 0 %.1f %.1f", totalWidth, totalHeight), "100%", "auto");
+        SvgServiceImpl innerSvg = new SvgServiceImpl((int) leftMargin, (int) topMargin, String.format("0 0 %.1f %.1f", carportLength + 5, carportWidth), String.format("%.1f", carportLength), String.format("%.1f", carportWidth));
+
+        innerSvg.addSvg((SvgServiceImpl) svgService);
+        outerSvg.addSvg(innerSvg);
+
+        // Width measurement (left side) with arrows
+        outerSvg.addArrow(20, 52.5, 20, 32.5 + carportWidth, STYLE + ARROW);
+        outerSvg.addText(12, (int) (topMargin + carportWidth / 2), 270, String.format("%.0f cm", carportWidth));
+
+        // Length measurement (bottom) with arrows
+        outerSvg.addArrow(leftMargin, topMargin + carportWidth + 10, leftMargin + carportLength, topMargin + carportWidth + 10, STYLE + ARROW);
+        outerSvg.addText((int) (leftMargin + carportLength / 2), (int) (topMargin + carportWidth + 25), 0, String.format("%.0f cm", carportLength));
+
+        // Post spacing measurement on width (left side)
+        double postSpacingOnWidth = carportWidth - (2 * TOP_PLATE_OFFSET);
+        outerSvg.addArrow(40, topMargin + TOP_PLATE_OFFSET, 40, 40 + carportWidth - TOP_PLATE_OFFSET, STYLE + ARROW);
+        outerSvg.addText(35, (int) (topMargin + carportWidth / 2), 270, String.format("%.0f cm", postSpacingOnWidth));
+
+
+        // Ceiling joist spacing measurements (top)
+        int joists = calculatorService.sumHashMapValues(calculatorService.calculateCeilingJoist(carport));
+        double joistSpacing = carportLength / (joists - 1);
+
+        for (int i = 0; i < joists - 1; i++)
+        {
+            double x1 = leftMargin + (i * joistSpacing);
+            double x2 = leftMargin + ((i + 1) * joistSpacing) ;
+            double y = topMargin - 8;
+
+            outerSvg.addArrow(x1, y, x2, y, STYLE + ARROW);
+            outerSvg.addText((int) ((x1 + x2) / 2), (int) (y - 3), 0, String.format("%.02f", joistSpacing / 100));
+        }
+
+        return outerSvg.toString();
     }
 
     @Override
