@@ -20,11 +20,13 @@ public class CalculatorServiceImpl implements CalculatorService
 
             if (carport.getShedWidth() > blockingMaxLength)
             {
-                result += 2;
+                result += (carport.getShedWidth()-blockingMaxLength > blockingMaxLength ? 4 : 2);
+
             }
             if (carport.getShedLength() > blockingMaxLength)
             {
-                result += 2;
+                result += (carport.getShedLength()-blockingMaxLength > blockingMaxLength ? 6 : 2);
+
             }
 
             double remainingLength = (carport.getLength() - 100.0) - carport.getShedLength(); //Calculation of remaining length between shed and corner post due to max length of Top plate(Rem træ).
@@ -363,7 +365,8 @@ public class CalculatorServiceImpl implements CalculatorService
     @Override
     public int calculateScrewPacks(int packsize, int screws)
     {
-        return (int) Math.ceil(screws / packsize);
+        double result = Math.ceil((double) screws / packsize);
+        return (int) result;
     }
 
     @Override

@@ -105,6 +105,17 @@ class CalculatorServiceImplTest
         assertEquals(expected, actual);
     }
 
+    @DisplayName("Max size carport with over full Length and half Width shed")
+    @Test
+    void calculatePostMaxSizeVeryBigShed()
+    {
+        Carport carport = new Carport(1, 600, 780, 225, true, 270, 600, "");
+
+        int actual = materialListService.calculatePosts(carport);
+        int expected = 13;
+
+        assertEquals(expected, actual);
+    }
 
     // ************************ TESTING OF: CEILING JOISTS ************************
 
