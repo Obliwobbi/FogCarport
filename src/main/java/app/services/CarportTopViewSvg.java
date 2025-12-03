@@ -4,7 +4,6 @@ import app.entities.Carport;
 
 public class CarportTopViewSvg
 {
-
     private Carport carport;
     private SvgService svgService;
     private final CalculatorService calculatorService;
@@ -41,7 +40,6 @@ public class CarportTopViewSvg
         addPosts();
         addPerforatedStrips();
         addShedOutline();
-
     }
 
     private void addFasciaBoard()
@@ -143,7 +141,6 @@ public class CarportTopViewSvg
                 }
             }
 
-
             if (!isFullWidth)
             {
                 int stnCarportLengthMedium = 350;
@@ -201,7 +198,6 @@ public class CarportTopViewSvg
             }
         }
     }
-
 
     private void addPerforatedStrips()
     {
@@ -263,7 +259,7 @@ public class CarportTopViewSvg
         double leftMargin = 50;
         double topMargin = 50;
         double bottomMargin = 40;
-        double rightMargin = 200;
+        double rightMargin = 50;
 
         double totalWidth = leftMargin + carportLength + rightMargin;
         double totalHeight = topMargin + carportWidth + bottomMargin;
@@ -295,11 +291,11 @@ public class CarportTopViewSvg
         for (int i = 0; i < joists - 1; i++)
         {
             double x1 = leftMargin + (i * joistSpacing);
-            double x2 = leftMargin + ((i + 1) * joistSpacing) ;
+            double x2 = leftMargin + ((i + 1) * joistSpacing);
             double y = topMargin - 8;
 
             outerSvg.addArrow(x1, y, x2, y, STYLE + ARROW);
-            outerSvg.addText((int) ((x1 + x2) / 2), (int) (y - 3), 0, String.format("%.02f", joistSpacing / 100));
+            outerSvg.addText((int) ((x1 + x2) / 2), (int) (y - 10), 0, String.format("%.02f", joistSpacing / 100));
         }
 
         return outerSvg.toString();
@@ -310,5 +306,4 @@ public class CarportTopViewSvg
     {
         return svgService.toString();
     }
-
 }

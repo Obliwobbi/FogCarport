@@ -9,16 +9,25 @@
 
 </head>
 <body>
+
+
+<div th:replace="~{fragments :: headerFragment}"></div>
+
 <main>
+    <section class="body-style align-items-center">
+        <h1>Vejledende Tegning af din Carport</h1>
 
-    <h1>Vejledende Tegning af din Carport</h1>
+        <div class="carport-svg-topview">
+            <div th:utext="${svg}"></div>
+        </div>
 
-    <div class="carport-svg-topview">
-        <div th:utext="${svg}"></div>
-
-    </div>
+        <div class="buttons">
+            <a class="customer-button" href="carport.html" th:href="@{/carport}">Ret Mål</a>
+            <a class="employee-button" href="contact.html" th:href="@{/contact}">Indhent Tilbud</a>
+        </div>
+    </section>
 
 </main>
-
+<div th:replace="~{fragments :: footerFragment}"></div>
 </body>
 </html>

@@ -26,7 +26,7 @@ public class DrawingController
 
     private void showDrawing(Context ctx)
     {
-        Locale.setDefault(new Locale("US"));
+        Locale.setDefault(new Locale("US")); //is used to make sure numbers passed to svg is with "." instead of ","
 
         Carport carport = ctx.sessionAttribute("carport");
 

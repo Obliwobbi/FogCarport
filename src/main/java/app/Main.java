@@ -41,8 +41,6 @@ public class Main
         MaterialMapper materialMapper = new MaterialMapper(connectionPool);
         MaterialsLinesMapper materialsLinesMapper = new MaterialsLinesMapper(connectionPool);
 
-        CalculatorService calculatorService = new CalculatorServiceImpl();
-
         HomeController homeController = new HomeController();
 
         CarportService carportService = new CarportServiceImpl(carportMapper);
