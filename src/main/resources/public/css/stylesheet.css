@@ -364,7 +364,6 @@ main {
 }
 
 /* ORDER DETAILS */
-/* ORDER DETAILS SPECIFIC STYLES */
 
 .details-header {
     padding: 2rem 1rem 1rem;
@@ -422,7 +421,7 @@ main {
     grid-column: 1 / -1;
 }
 
-/* Materials Table */
+/* ORDER DETAILS - Materials Table */
 .materials-table {
     overflow-x: auto;
     margin-top: 1rem;
@@ -467,7 +466,7 @@ main {
     border-top: 2px solid var(--color-fogblue-light);
 }
 
-/* No Materials Section */
+/* ORDER DETAILS - No Materials Section */
 .no-materials {
     text-align: center;
     padding: 2rem;
