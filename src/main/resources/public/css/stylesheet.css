@@ -30,8 +30,8 @@
     --color-fogblue-dark: #011c3d;
     --color-text-light: whitesmoke;
     --color-text-dark: Black;
-    --gradient-header: linear-gradient(to top, var(--color-fogblue) ,20%,var(--color-fogblue-dark));
-    --gradient-footer: linear-gradient(to bottom,var(--color-fogblue) ,20%,var(--color-fogblue-dark));
+    --gradient-header: linear-gradient(to top, var(--color-fogblue), 20%, var(--color-fogblue-dark));
+    --gradient-footer: linear-gradient(to bottom, var(--color-fogblue), 20%, var(--color-fogblue-dark));
 
 }
 
@@ -516,7 +516,6 @@ main {
         font-size: var(--font-small);
     }
 }
-
 
 
 /* Footer adjustments */
