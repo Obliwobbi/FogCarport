@@ -22,7 +22,7 @@ public class CarportTopViewSvg
     private double POST_OFFSET_X_SMALL = 40;
     private double POST_OFFSET_X_LARGE = 100; // first post can start 1 meter into the carport
     private double POST_OFFSET_EDGE_BUFFER = 200;
-    private double POST_OFFSET_X_WITH_SHED = 30;
+    private double POST_OFFSET_X_WITH_SHED = 15;
     private int MAX_LENGTH_CARPORT_FOR_POST_SPACING = 390;
     private double MAX_LENGTH_BLOCKING = 270;
     private double MAX_LENGTH_BETWEEN_POST = 310;
@@ -87,7 +87,8 @@ public class CarportTopViewSvg
         {
             if (!isFullLength)
             {
-                svgService.addRectangle(POST_OFFSET_X_LARGE, POST_OFFSET_Y_TOP, POST_WIDTH, POST_WIDTH, STYLE); // FRONT UPPER LEFT
+                double frontPost = (carportLength > (MAX_LENGTH_BETWEEN_POST + POST_OFFSET_X_WITH_SHED)) ? POST_OFFSET_X_LARGE : POST_OFFSET_X_SMALL;
+                svgService.addRectangle(frontPost, POST_OFFSET_Y_TOP, POST_WIDTH, POST_WIDTH, STYLE); // FRONT UPPER LEFT
             }
 
             if (isFullWidth)
@@ -141,17 +142,37 @@ public class CarportTopViewSvg
             }
 
 
-//            double postX = (carportLength <= MAX_LENGTH_CARPORT_FOR_POST_SPACING)? POST_OFFSET_X_SMALL + (i * spaceBetweenPosts) : POST_OFFSET_X_LARGE + (i * spaceBetweenPosts);
-
             if (!isFullWidth)
             {
-                int numberOfSegments = (int) Math.ceil(carportLength / MAX_LENGTH_BETWEEN_POST);
-                double spaceBetweenPosts = (carportLength - POST_OFFSET_EDGE_BUFFER) / (2); //2
+                int stnCarportLengthMedium = 350;
+                int stnCarportLengthMediumLarge = 450;
+                int stnCarportLengthLarge = 510;
 
-                for (int i = 0; i < numberOfSegments; i++)
+                if (carportLength > stnCarportLengthLarge)
                 {
-                    double postX = POST_OFFSET_X_LARGE + (i * spaceBetweenPosts);
-                    svgService.addRectangle(postX, postAlignedWithLowerYTopPlate, POST_WIDTH, POST_WIDTH, STYLE); // ALL POSTS UNDER LOWER TOP PLATE SHED !FULLWIDTH
+                    int numberOfSegments = Math.max((int) Math.ceil(carportLength / MAX_LENGTH_BETWEEN_POST), 3);
+                    double spaceBetweenPosts = (carportLength - POST_OFFSET_EDGE_BUFFER) / (2);
+
+                    for (int i = 0; i < numberOfSegments; i++)
+                    {
+                        double postX = POST_OFFSET_X_LARGE + (i * spaceBetweenPosts);
+                        svgService.addRectangle(postX, postAlignedWithLowerYTopPlate, POST_WIDTH, POST_WIDTH, STYLE); // ALL POSTS UNDER LOWER TOP PLATE SHED !FULLWIDTH
+                    }
+                }
+                else if (carportLength >= stnCarportLengthMediumLarge)
+                {
+                    svgService.addRectangle(POST_OFFSET_X_LARGE, postAlignedWithLowerYTopPlate, POST_WIDTH, POST_WIDTH, STYLE); // LOWER LEFT
+                    svgService.addRectangle(carportLength - POST_OFFSET_X_LARGE, postAlignedWithLowerYTopPlate, POST_WIDTH, POST_WIDTH, STYLE); // LOWER RIGHT
+                }
+                else if (carportLength > stnCarportLengthMedium)
+                {
+                    svgService.addRectangle(POST_OFFSET_X_LARGE, postAlignedWithLowerYTopPlate, POST_WIDTH, POST_WIDTH, STYLE); // LOWER LEFT
+                    svgService.addRectangle(carportLength - POST_OFFSET_X_WITH_SHED, postAlignedWithLowerYTopPlate, POST_WIDTH, POST_WIDTH, STYLE); // LOWER RIGHT
+                }
+                else
+                {
+                    svgService.addRectangle(POST_OFFSET_X_SMALL, postAlignedWithLowerYTopPlate, POST_WIDTH, POST_WIDTH, STYLE); // LOWER LEFT
+                    svgService.addRectangle(carportLength - POST_OFFSET_X_WITH_SHED, postAlignedWithLowerYTopPlate, POST_WIDTH, POST_WIDTH, STYLE); // LOWER RIGHT
                 }
             }
         }
