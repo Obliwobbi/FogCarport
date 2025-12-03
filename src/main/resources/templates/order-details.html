@@ -17,121 +17,125 @@
             <p th:text="'Ordre #' + ${order.orderId}"></p>
         </div>
 
-        <!-- Order Information -->
-        <div class="details-section">
-            <h2>Ordre Information</h2>
-            <div class="info-grid">
-                <div class="info-item">
-                    <strong>Status:</strong>
-                    <span th:text="${order.status}"></span>
-                </div>
-                <div class="info-item">
-                    <strong>Ordre Dato:</strong>
-                    <span th:text="${#temporals.format(order.orderDate, 'dd-MM-yyyy HH:mm')}"></span>
-                </div>
-                <div class="info-item">
-                    <strong>Leverings Dato:</strong>
-                    <span th:text="${order.deliveryDate != null ? #temporals.format(order.deliveryDate, 'dd-MM-yyyy') : 'Ikke planlagt'}"></span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Customer Information -->
-        <div class="details-section">
-            <h2>Kunde Information</h2>
-            <div class="info-grid">
-                <div class="info-item">
-                    <strong>Navn:</strong>
-                    <span th:text="${order.customer.firstName + ' ' + order.customer.lastName}"></span>
-                </div>
-                <div class="info-item">
-                    <strong>Email:</strong>
-                    <span th:text="${order.customer.email}"></span>
-                </div>
-                <div class="info-item">
-                    <strong>Telefon:</strong>
-                    <span th:text="${order.customer.phone}"></span>
-                </div>
-                <div class="info-item full-width">
-                    <strong>Adresse:</strong>
-                    <span th:text="${order.customer.street + ' ' + order.customer.houseNumber + ', ' + order.customer.zipcode + ' ' + order.customer.city}"></span>
+        <div class="details-body">
+            <!-- Order Information -->
+            <div class="details-section">
+                <h2>Ordre Information</h2>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <strong>Status:</strong>
+                        <span th:text="${order.status}"></span>
+                    </div>
+                    <div class="info-item">
+                        <strong>Ordre Dato:</strong>
+                        <span th:text="${#temporals.format(order.orderDate, 'dd-MM-yyyy HH:mm')}"></span>
+                    </div>
+                    <div class="info-item">
+                        <strong>Leverings Dato:</strong>
+                        <span th:text="${order.deliveryDate != null ? #temporals.format(order.deliveryDate, 'dd-MM-yyyy') : 'Ikke planlagt'}"></span>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Carport Information -->
-        <div class="details-section">
-            <h2>Carport Specifikationer</h2>
-            <div class="info-grid">
-                <div class="info-item">
-                    <strong>Bredde:</strong>
-                    <span th:text="${order.carport.width + ' cm'}"></span>
-                </div>
-                <div class="info-item">
-                    <strong>Længde:</strong>
-                    <span th:text="${order.carport.length + ' cm'}"></span>
-                </div>
-                <div class="info-item">
-                    <strong>Højde:</strong>
-                    <span th:text="${order.carport.height + ' cm'}"></span>
-                </div>
-                <div class="info-item" th:if="${order.carport.withShed}">
-                    <strong>Skur Bredde:</strong>
-                    <span th:text="${order.carport.shedWidth + ' cm'}"></span>
-                </div>
-                <div class="info-item" th:if="${order.carport.withShed}">
-                    <strong>Skur Længde:</strong>
-                    <span th:text="${order.carport.shedLength + ' cm'}"></span>
-                </div>
-                <div class="info-item full-width" th:if="${order.carport.customerWishes != null and !order.carport.customerWishes.isEmpty()}">
-                    <strong>Kundens ønsker:</strong>
-                    <span th:text="${order.carport.customerWishes}"></span>
+            <!-- Customer Information -->
+            <div class="details-section">
+                <h2>Kunde Information</h2>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <strong>Navn:</strong>
+                        <span th:text="${order.customer.firstName + ' ' + order.customer.lastName}"></span>
+                    </div>
+                    <div class="info-item">
+                        <strong>Email:</strong>
+                        <span th:text="${order.customer.email}"></span>
+                    </div>
+                    <div class="info-item">
+                        <strong>Telefon:</strong>
+                        <span th:text="${order.customer.phone}"></span>
+                    </div>
+                    <div class="info-item full-width">
+                        <strong>Adresse:</strong>
+                        <span th:text="${order.customer.street + ' ' + order.customer.houseNumber + ', ' + order.customer.zipcode + ' ' + order.customer.city}"></span>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Materials List -->
-        <div class="details-section">
-            <h2>Stykliste</h2>
-
-            <div th:if="${!hasMaterialsList}" class="no-materials">
-                <p>Der er endnu ikke genereret en stykliste for denne ordre.</p>
-                <form method="post" th:action="@{/orders/details/{id}/stykliste(id=${order.orderId})}">
-                    <button type="submit" class="button">Generer Stykliste</button>
-                </form>
+            <!-- Carport Information -->
+            <div class="details-section">
+                <h2>Carport Specifikationer</h2>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <strong>Bredde:</strong>
+                        <span th:text="${order.carport.width + ' cm'}"></span>
+                    </div>
+                    <div class="info-item">
+                        <strong>Længde:</strong>
+                        <span th:text="${order.carport.length + ' cm'}"></span>
+                    </div>
+                    <div class="info-item">
+                        <strong>Højde:</strong>
+                        <span th:text="${order.carport.height + ' cm'}"></span>
+                    </div>
+                    <div class="info-item" th:if="${order.carport.withShed}">
+                        <strong>Skur Bredde:</strong>
+                        <span th:text="${order.carport.shedWidth + ' cm'}"></span>
+                    </div>
+                    <div class="info-item" th:if="${order.carport.withShed}">
+                        <strong>Skur Længde:</strong>
+                        <span th:text="${order.carport.shedLength + ' cm'}"></span>
+                    </div>
+                    <div class="info-item full-width"
+                         th:if="${order.carport.customerWishes != null and !order.carport.customerWishes.isEmpty()}">
+                        <strong>Kundens ønsker:</strong>
+                        <span th:text="${order.carport.customerWishes}"></span>
+                    </div>
+                </div>
             </div>
 
-            <div th:if="${hasMaterialsList}">
-                <div class="materials-table">
-                    <table>
-                        <thead>
-                        <tr>
-                            <th>Materiale</th>
-                            <th>Enhed</th>
-                            <th>Antal</th>
-                            <th>Enhedspris</th>
-                            <th>Total</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr th:each="line : ${materialsLines}">
-                            <td th:text="${line.material.name}"></td>
-                            <td th:text="${line.material.unitType}"></td>
-                            <td th:text="${line.quantity}"></td>
-                            <td th:text="${#numbers.formatDecimal(line.material.price, 1, 2) + ' kr.'}"></td>
-                            <td th:text="${#numbers.formatDecimal(line.linePrice, 1, 2) + ' kr.'}"></td>
-                        </tr>
-                        </tbody>
-                        <tfoot>
-                        <tr class="total-row">
-                            <td colspan="4"><strong>Total Pris:</strong></td>
-                            <td>
-                                <strong th:text="${#numbers.formatDecimal(order.totalPrice, 1, 2) + ' kr.'}">0,00 kr.</strong>
+            <!-- Materials List -->
+            <div class="details-section materials-section">
+                <h2>Stykliste</h2>
 
-                            </td>
-                        </tr>
-                        </tfoot>
-                    </table>
+                <div th:if="${!hasMaterialsList}" class="no-materials">
+                    <p>Der er endnu ikke genereret en stykliste for denne ordre.</p>
+                    <form method="post" th:action="@{/orders/details/{id}/stykliste(id=${order.orderId})}">
+                        <button type="submit" class="button">Generer Stykliste</button>
+                    </form>
+                </div>
+
+                <div th:if="${hasMaterialsList}">
+                    <div class="materials-table">
+                        <table>
+                            <thead>
+                            <tr>
+                                <th>Materiale</th>
+                                <th>Enhed</th>
+                                <th>Antal</th>
+                                <th>Enhedspris</th>
+                                <th>Total</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="line : ${materialsLines}">
+                                <td th:text="${line.material.name}"></td>
+                                <td th:text="${line.material.unitType}"></td>
+                                <td th:text="${line.quantity}"></td>
+                                <td th:text="${#numbers.formatDecimal(line.material.price, 1, 2) + ' kr.'}"></td>
+                                <td th:text="${#numbers.formatDecimal(line.linePrice, 1, 2) + ' kr.'}"></td>
+                            </tr>
+                            </tbody>
+                            <tfoot>
+                            <tr class="total-row">
+                                <td colspan="4"><strong>Total Pris:</strong></td>
+                                <td>
+                                    <strong th:text="${#numbers.formatDecimal(order.totalPrice, 1, 2) + ' kr.'}">0,00
+                                        kr.</strong>
+
+                                </td>
+                            </tr>
+                            </tfoot>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
