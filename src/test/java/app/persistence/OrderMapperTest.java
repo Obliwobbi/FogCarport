@@ -304,7 +304,6 @@ class OrderMapperTest
 
         assertNotNull(order.getDrawing());
         assertEquals(1, order.getDrawing().getDrawingId());
-        assertFalse(order.getDrawing().isAccepted());
     }
 
     @Test
