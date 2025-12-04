@@ -70,5 +70,32 @@ public class DrawingMapper
             throw new DatabaseException("Fejl ved hentning af data for tegning" + e);
         }
     }
+
+    public boolean updateDrawing(Drawing drawing) throws DatabaseException
+    {
+        String sql = "UPDATE drawings SET drawing_data = ? WHERE drawing_id = ?";
+
+        try (Connection connection = connectionPool.getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql))
+        {
+            ps.setString(1, drawing.getDrawingData());
+            ps.setInt(2, drawing.getDrawingId());
+
+            int rowsAffected = ps.executeUpdate();
+            if (rowsAffected == 1)
+            {
+                return true;
+            }
+            else
+            {
+                throw new DatabaseException("Tegning blev ikke opdateret - id: " + drawing.getDrawingId());
+            }
+
+        }
+        catch (SQLException e)
+        {
+            throw new DatabaseException("Fejl ved opdatering af tegning: " + e.getMessage());
+        }
+    }
 }
 
