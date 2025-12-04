@@ -3,14 +3,14 @@ package app.controllers;
 import app.dto.OrderWithDetailsDTO;
 import app.entities.Carport;
 import app.entities.MaterialsLine;
-import app.entities.Order;
 import app.exceptions.DatabaseException;
 import app.services.OrderDetailsService;
 import app.services.OrderService;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
-import org.jetbrains.annotations.NotNull;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,40 +39,6 @@ public class OrderController
 
         app.post("/orders/details/{id}/stykliste", this::generateMaterialList);
         app.post("/orders/details/{id}/regenerate-stykliste", this::regenerateMaterialList);
-
-    }
-
-    private void showOrders(Context ctx)
-    {
-        try
-        {
-            List<OrderWithDetailsDTO> newOrders = orderService.getOrdersByStatusDTO("NY ORDRE");
-            List<OrderWithDetailsDTO> pendingOrders = orderService.getOrdersByStatusDTO("AFVENTER ACCEPT");
-            List<OrderWithDetailsDTO> paidOrders = orderService.getOrdersByStatusDTO("BETALT");
-            List<OrderWithDetailsDTO> inTransitOrders = orderService.getOrdersByStatusDTO("AFSENDT");
-            List<OrderWithDetailsDTO> doneOrders = orderService.getOrdersByStatusDTO("AFSLUTTET");
-
-            ctx.attribute("newOrders", newOrders);
-            ctx.attribute("pendingOrders", pendingOrders);
-            ctx.attribute("paidOrders", paidOrders);
-            ctx.attribute("inTransitOrders", inTransitOrders);
-            ctx.attribute("doneOrders", doneOrders);
-
-            ctx.render("orders.html");
-        }
-        catch (DatabaseException e)
-        {
-            ctx.attribute("orderErrorMessage", e.getMessage());
-            ctx.attribute("paidOrders", new ArrayList<>());
-            ctx.attribute("inTransitOrders", new ArrayList<>());
-            ctx.attribute("doneOrders", new ArrayList<>());
-            ctx.attribute("newOrders", new ArrayList<>());
-            ctx.attribute("pendingOrders", new ArrayList<>());
-
-            ctx.redirect("/orders");
-        }
-
-        ctx.render("orders.html");
     }
 
     private void showOrderDetails(Context ctx)
@@ -95,7 +61,7 @@ public class OrderController
             ctx.attribute("order", order);
             ctx.attribute("materialsLines", materialsLines);
             ctx.attribute("hasMaterialsList", materialsLines != null && !materialsLines.isEmpty());
-            ctx.attribute("editsection", editSection);
+            ctx.attribute("editSection", editSection);
 
             ctx.render("order-details.html");
         }
@@ -133,7 +99,6 @@ public class OrderController
         {
             ctx.redirect("/orders/details/"+orderId + "?error="+e.getMessage());
         }
-
     }
 
     private void updateCustomerInfo(Context ctx)
@@ -148,6 +113,9 @@ public class OrderController
     {
     }
 
+    private void regenerateMaterialList(Context ctx)
+    {
+    }
 
     private void generateMaterialList(Context ctx)
     {
@@ -182,11 +150,37 @@ public class OrderController
         {
             ctx.attribute("errorMessage", "Kunne ikke oprette materiale liste: " + e.getMessage());
         }
-
     }
 
-    private void regenerateMaterialList(Context ctx)
+    private void showOrders(Context ctx)
     {
+        try
+        {
+            List<OrderWithDetailsDTO> newOrders = orderService.getOrdersByStatusDTO("NY ORDRE");
+            List<OrderWithDetailsDTO> pendingOrders = orderService.getOrdersByStatusDTO("AFVENTER ACCEPT");
+            List<OrderWithDetailsDTO> paidOrders = orderService.getOrdersByStatusDTO("BETALT");
+            List<OrderWithDetailsDTO> inTransitOrders = orderService.getOrdersByStatusDTO("AFSENDT");
+            List<OrderWithDetailsDTO> doneOrders = orderService.getOrdersByStatusDTO("AFSLUTTET");
+
+            ctx.attribute("newOrders", newOrders);
+            ctx.attribute("pendingOrders", pendingOrders);
+            ctx.attribute("paidOrders", paidOrders);
+            ctx.attribute("inTransitOrders", inTransitOrders);
+            ctx.attribute("doneOrders", doneOrders);
+
+            ctx.render("orders.html");
+        }
+        catch (DatabaseException e)
+        {
+            ctx.attribute("orderErrorMessage", e.getMessage());
+            ctx.attribute("paidOrders", new ArrayList<>());
+            ctx.attribute("inTransitOrders", new ArrayList<>());
+            ctx.attribute("doneOrders", new ArrayList<>());
+            ctx.attribute("newOrders", new ArrayList<>());
+            ctx.attribute("pendingOrders", new ArrayList<>());
+
+            ctx.render("orders.html");
+        }
     }
 
     private void deleteOrder(Context ctx) throws DatabaseException
@@ -206,7 +200,6 @@ public class OrderController
                 ctx.attribute("errorMessage", "Kunne ikke slette ordren");
                 ctx.redirect("/orders");
             }
-
         }
         catch (NumberFormatException e)
         {
@@ -220,4 +213,3 @@ public class OrderController
         }
     }
 }
-
