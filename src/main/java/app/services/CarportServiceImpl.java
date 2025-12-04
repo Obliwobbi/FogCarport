@@ -22,7 +22,7 @@ public class CarportServiceImpl implements CarportService
     @Override
     public Carport createCarport(double width, double length, double height, boolean withShed, double shedWidth, double shedLength, String customerWishes) throws DatabaseException
     {
-        return carportMapper.createCarport(width,length,height,withShed,shedWidth,shedLength,customerWishes);
+        return carportMapper.createCarport(width, length, height, withShed, shedWidth, shedLength, customerWishes);
     }
 
     @Override
@@ -40,7 +40,28 @@ public class CarportServiceImpl implements CarportService
     @Override
     public double validateShedMeasurement(double carportMeasurement, double shedMeasurement)
     {
-        return Math.min(carportMeasurement, shedMeasurement);
+        double smallMediumCarport = 330;
+        double overhangSmall = 30;
+        double overhangLarge = 70;
+        double deadZone = 40;
+
+
+        //creates dead zone so if a shed is to close to the edge it resizes shed to match carport width
+        double maxShedSize = (carportMeasurement <= smallMediumCarport) ? carportMeasurement - overhangSmall : carportMeasurement - (overhangSmall+deadZone);
+        double minShedSize = (carportMeasurement <= smallMediumCarport) ? carportMeasurement - overhangLarge : carportMeasurement - (overhangLarge+deadZone);
+
+        if (shedMeasurement > maxShedSize)
+        {
+            return maxShedSize;
+        }
+        else if (shedMeasurement > minShedSize)
+        {
+            return maxShedSize;
+        }
+        else
+        {
+            return shedMeasurement;
+        }
     }
 
     @Override
