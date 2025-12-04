@@ -6,9 +6,6 @@ import app.services.CarportService;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 
-import java.util.HashMap;
-
-
 public class CarportController
 {
     private final CarportService carportservice;
