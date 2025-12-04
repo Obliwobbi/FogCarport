@@ -78,6 +78,8 @@ public class OrderController
     private void showOrderDetails(Context ctx)
     {
         String orderIdString = ctx.pathParam("id");
+        String editSection = ctx.queryParam("edit");
+
         try
         {
             int orderId = Integer.parseInt(orderIdString);
@@ -93,6 +95,7 @@ public class OrderController
             ctx.attribute("order", order);
             ctx.attribute("materialsLines", materialsLines);
             ctx.attribute("hasMaterialsList", materialsLines != null && !materialsLines.isEmpty());
+            ctx.attribute("editsection", editSection);
 
             ctx.render("order-details.html");
         }
@@ -115,6 +118,22 @@ public class OrderController
 
     private void updateOrderInfo(Context ctx)
     {
+        int orderId = Integer.parseInt(ctx.pathParam("id"));
+        try
+        {
+            String status = ctx.formParam("status");
+            String deliveryDateString = ctx.formParam("deliveryDate");
+            LocalDateTime deliveryDate = (deliveryDateString != null && !deliveryDateString.isEmpty()) ? LocalDateTime.parse(deliveryDateString) : null;
+
+            orderService.updateOrderStatus(orderId,status);
+            orderService.updateOrderDeliveryDate(orderId,deliveryDate);
+            ctx.redirect("/orders/details/"+orderId+"?success=order");
+        }
+        catch (DatabaseException e)
+        {
+            ctx.redirect("/orders/details/"+orderId + "?error="+e.getMessage());
+        }
+
     }
 
     private void updateCustomerInfo(Context ctx)
