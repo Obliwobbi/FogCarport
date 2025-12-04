@@ -21,6 +21,7 @@
             <div th:utext="${svg}"></div>
         </div>
 
+        <p th:if="${session.drawingErrorLabel != null}" th:text="${session.drawingErrorLabel}"></p>
         <div class="buttons">
             <a class="customer-button" href="carport.html" th:href="@{/carport}">Ret Mål</a>
             <a class="employee-button" href="contact.html" th:href="@{/contact}">Indhent Tilbud</a>

@@ -9,5 +9,10 @@ import lombok.*;
 public class Drawing {
     private int drawingId;
     private String drawingData;
+
+    public Drawing(String drawingData)
+    {
+        this.drawingData = drawingData;
+    }
 }
 

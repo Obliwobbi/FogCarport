@@ -55,7 +55,7 @@ public class Main
         CustomerService customerService = new CustomerServiceImpl(customerMapper);
         ContactController contactController = new ContactController(customerService, orderService);
 
-        DrawingService drawingService = new DrawingServiceImpl();
+        DrawingService drawingService = new DrawingServiceImpl(drawingMapper);
         DrawingController drawingController = new DrawingController(drawingService, calculatorService);
 
         // Routing
