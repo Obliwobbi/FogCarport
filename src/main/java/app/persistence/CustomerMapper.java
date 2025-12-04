@@ -88,6 +88,47 @@ public class CustomerMapper
         }
     }
 
+    public boolean updateCustomerInfo(int orderId, Customer customer) throws DatabaseException
+    {
+        String sql = """
+                UPDATE customers
+                SET firstname = ?,
+                    lastname = ?,
+                    email = ?,
+                    phone = ?,
+                    street = ?,
+                    house_number = ?,
+                    zipcode = ?,
+                    city = ?
+                WHERE customer_id = ?;
+                """;
+        try (Connection connection = connectionPool.getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql))
+        {
+            ps.setString(1,customer.getFirstName());
+            ps.setString(2,customer.getLastName());
+            ps.setString(3,customer.getEmail());
+            ps.setString(4,customer.getPhone());
+            ps.setString(5,customer.getStreet());
+            ps.setString(6,customer.getHouseNumber());
+            ps.setInt(7,customer.getZipcode());
+            ps.setString(8,customer.getCity());
+            ps.setInt(9,orderId);
+
+            int rowsAffected = ps.executeUpdate();
+            if (rowsAffected >= 1)
+            {
+                return true;
+            }
+        }
+        catch (SQLException e)
+        {
+            throw new DatabaseException("Fejl ved kunde: " + e.getMessage());
+        }
+
+        return false;
+    }
+
     public boolean deleteCustomer(int customerId) throws DatabaseException
     {
         String sql = "DELETE FROM customers WHERE customer_id = ?";
@@ -98,7 +139,7 @@ public class CustomerMapper
             ps.setInt(1, customerId);
             int rowsAffected = ps.executeUpdate();
 
-            if(rowsAffected == 1)
+            if (rowsAffected == 1)
             {
                 return true;
             }

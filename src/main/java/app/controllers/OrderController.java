@@ -2,6 +2,7 @@ package app.controllers;
 
 import app.dto.OrderWithDetailsDTO;
 import app.entities.Carport;
+import app.entities.Customer;
 import app.entities.MaterialsLine;
 import app.exceptions.DatabaseException;
 import app.services.OrderDetailsService;
@@ -106,6 +107,31 @@ public class OrderController
 
     private void updateCustomerInfo(Context ctx)
     {
+        int orderId = Integer.parseInt(ctx.pathParam("id"));
+
+        try
+        {
+            OrderWithDetailsDTO order = orderService.getOrderwithDetails(orderId);
+            Customer customer = order.getCustomer();
+
+            customer.setFirstName(ctx.formParam("firstName"));
+            customer.setLastName(ctx.formParam("lastName"));
+            customer.setEmail(ctx.formParam("email"));
+            customer.setPhone(ctx.formParam("phone"));
+            customer.setStreet(ctx.formParam("street"));
+            customer.setHouseNumber(ctx.formParam("houseNumber"));
+            customer.setZipcode(Integer.parseInt(ctx.formParam("zipcode")));
+            customer.setCity(ctx.formParam("city"));
+
+            orderService.updateCustomerInfo(orderId, customer);
+            ctx.redirect("/orders/details/" + orderId + "?success=customer");
+
+        }
+        catch (DatabaseException e)
+        {
+            ctx.attribute("errorMessage", e.getMessage());
+            ctx.redirect("/orders/details/"+orderId + "?error="+e.getMessage());
+        }
     }
 
     private void updateCarportInfo(Context ctx)

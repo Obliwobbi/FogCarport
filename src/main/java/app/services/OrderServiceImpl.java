@@ -86,6 +86,12 @@ public class OrderServiceImpl implements OrderService
     }
 
     @Override
+    public void updateCustomerInfo(int orderId, Customer customer) throws DatabaseException
+    {
+        customerMapper.updateCustomerInfo(orderId,customer);
+    }
+
+    @Override
     public void updateCarport(Carport carport) throws DatabaseException
     {
         carportMapper.updateCarport(carport);
