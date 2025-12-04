@@ -16,9 +16,6 @@ public class CarportTopViewSvg
 
     private double TOP_PLATE_WIDTH = 4.5;
     private double POST_WIDTH = 10;
-    private double TOP_PLATE_OFFSET = 35;
-    private double POST_OFFSET_Y_TOP = TOP_PLATE_OFFSET - 2.5;
-    private double POST_OFFSET_Y_BOTTOM = TOP_PLATE_OFFSET + 2.5;
     private double POST_OFFSET_X_SMALL = 40;
     private double POST_OFFSET_X_LARGE = 100; // first post can start 1 meter into the carport
     private double POST_OFFSET_EDGE_BUFFER = 200;
@@ -26,7 +23,12 @@ public class CarportTopViewSvg
     private int MAX_LENGTH_CARPORT_FOR_POST_SPACING = 390;
     private double MAX_LENGTH_BLOCKING = 270;
     private double MAX_LENGTH_BETWEEN_POST = 310;
-    double MAX_OVERHANG = 120;  //your able to move top plate further in if you have slightly larger overhang
+
+
+    private double TOP_PLATE_OFFSET;
+    private double MAX_OVERHANG;
+    private double POST_OFFSET_Y_TOP;
+    private double POST_OFFSET_Y_BOTTOM;
 
     public CarportTopViewSvg(Carport carport, CalculatorService calculatorService, SvgService svgService)
     {
@@ -34,12 +36,34 @@ public class CarportTopViewSvg
         this.calculatorService = calculatorService;
         this.svgService = svgService;
 
+        setDynamicMeasurements();
+
+
         addFasciaBoard();
         addTopPlate();
         addCeilingJoist();
+
         addPosts();
+
         addPerforatedStrips();
+
         addShedOutline();
+    }
+
+    private void setDynamicMeasurements()
+    {
+        if (carport.getWidth() >= 330)
+        {
+            TOP_PLATE_OFFSET = 35;
+            MAX_OVERHANG = 70;
+        }
+        else
+        {
+            TOP_PLATE_OFFSET = 15;
+            MAX_OVERHANG = 30;
+        }
+        POST_OFFSET_Y_TOP = TOP_PLATE_OFFSET - 2.5;
+        POST_OFFSET_Y_BOTTOM = TOP_PLATE_OFFSET + 2.5;
     }
 
     private void addFasciaBoard()
