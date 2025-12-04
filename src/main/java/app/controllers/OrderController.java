@@ -10,7 +10,6 @@ import io.javalin.Javalin;
 import io.javalin.http.Context;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -89,10 +88,14 @@ public class OrderController
         {
             String status = ctx.formParam("status");
             String deliveryDateString = ctx.formParam("deliveryDate");
-            LocalDateTime deliveryDate = (deliveryDateString != null && !deliveryDateString.isEmpty()) ? LocalDateTime.parse(deliveryDateString) : null;
+            LocalDate deliveryDate = (deliveryDateString != null && !deliveryDateString.isEmpty())
+                    ? LocalDate.parse(deliveryDateString) : null;
 
             orderService.updateOrderStatus(orderId,status);
-            orderService.updateOrderDeliveryDate(orderId,deliveryDate);
+            if (deliveryDate != null)
+            {
+                orderService.updateOrderDeliveryDate(orderId,deliveryDate.atStartOfDay().plusHours(12));
+            }
             ctx.redirect("/orders/details/"+orderId+"?success=order");
         }
         catch (DatabaseException e)
