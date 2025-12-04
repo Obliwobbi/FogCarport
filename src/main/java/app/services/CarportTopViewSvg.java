@@ -263,6 +263,7 @@ public class CarportTopViewSvg
 
         double totalWidth = leftMargin + carportLength + rightMargin;
         double totalHeight = topMargin + carportWidth + bottomMargin;
+        double minOverhang = 30; //15 each side
 
         SvgServiceImpl outerSvg = new SvgServiceImpl(0, 0, String.format("0 0 %.1f %.1f", totalWidth, totalHeight), "100%", "auto");
         SvgServiceImpl innerSvg = new SvgServiceImpl((int) leftMargin, (int) topMargin, String.format("0 0 %.1f %.1f", carportLength + 5, carportWidth), String.format("%.1f", carportLength), String.format("%.1f", carportWidth));
@@ -276,10 +277,10 @@ public class CarportTopViewSvg
 
         // Length measurement (bottom) with arrows
         outerSvg.addArrow(leftMargin, topMargin + carportWidth + 10, leftMargin + carportLength, topMargin + carportWidth + 10, STYLE + ARROW);
-        outerSvg.addText((int) (leftMargin + carportLength / 2), (int) (topMargin + carportWidth + 25), 0, String.format("%.0f cm", carportLength));
+        outerSvg.addText((int) (leftMargin + carportLength / 2), (int) (topMargin + carportWidth + 35), 0, String.format("%.0f cm", carportLength));
 
         // Post spacing measurement on width (left side)
-        double postSpacingOnWidth = carportWidth - (2 * TOP_PLATE_OFFSET);
+        double postSpacingOnWidth = (carportWidth < 340) ? carportWidth - minOverhang : carportWidth - (2 * TOP_PLATE_OFFSET);
         outerSvg.addArrow(40, topMargin + TOP_PLATE_OFFSET, 40, 40 + carportWidth - TOP_PLATE_OFFSET, STYLE + ARROW);
         outerSvg.addText(35, (int) (topMargin + carportWidth / 2), 270, String.format("%.0f cm", postSpacingOnWidth));
 
