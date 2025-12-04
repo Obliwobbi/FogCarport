@@ -24,7 +24,6 @@ public class CarportTopViewSvg
     private double MAX_LENGTH_BLOCKING = 270;
     private double MAX_LENGTH_BETWEEN_POST = 310;
 
-
     private double TOP_PLATE_OFFSET;
     private double MAX_OVERHANG;
     private double POST_OFFSET_Y_TOP;
@@ -38,15 +37,11 @@ public class CarportTopViewSvg
 
         setDynamicMeasurements();
 
-
         addFasciaBoard();
         addTopPlate();
         addCeilingJoist();
-
         addPosts();
-
         addPerforatedStrips();
-
         addShedOutline();
     }
 
