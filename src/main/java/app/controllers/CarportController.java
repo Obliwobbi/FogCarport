@@ -54,11 +54,9 @@ public class CarportController
             Carport carport = carportservice.createCarport(carportWidth, carportLength, carportHeight, withShed, shedWidth, shedLength, customerWishes);
 
             ctx.sessionAttribute("carportErrorLabel", null);
-
-            //TODO WILL NEED TO REDIRECT TO drawing.html, FOR THE MOMENT IT JUST TAKES TO contact.html
             ctx.sessionAttribute("carportId", carport.getCarportId());
             ctx.sessionAttribute("carport", carport);
-            ctx.redirect("/contact");
+            ctx.redirect("/drawing");
         }
         catch (NullPointerException | NumberFormatException e)
         {

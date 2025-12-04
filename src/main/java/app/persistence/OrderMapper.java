@@ -28,7 +28,7 @@ public class OrderMapper
         try (Connection connection = connectionPool.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS))
         {
-            ps.setTimestamp(1, Timestamp.valueOf(orderDate));
+            ps.setTimestamp(1, Timestamp.valueOf(LocalDateTime.now()));
             ps.setString(2, status);
             ps.setTimestamp(3, Timestamp.valueOf(deliveryDate));
             if(drawingId != null)
@@ -287,8 +287,7 @@ public class OrderMapper
                     if (!rs.wasNull()) {
                         drawing = new Drawing(
                                 drawingId,
-                                rs.getString("drawing_data"),
-                                rs.getBoolean("accepted"));
+                                rs.getString("drawing_data"));
                     }
 
                     List<MaterialsLine> materialLines = materialsLinesMapper.getMaterialLinesByOrderId(orderId);
