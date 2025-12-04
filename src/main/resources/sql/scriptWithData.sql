@@ -71,7 +71,6 @@ CREATE TABLE drawings
 (
     drawing_id   SERIAL PRIMARY KEY,
     drawing_data TEXT NOT NULL,
-    accepted     BOOLEAN DEFAULT FALSE
 );
 
 -- Orders Table (now includes total_price from BOM)
@@ -182,12 +181,12 @@ VALUES (600, 780, 210, FALSE, NULL, NULL, 'Standard carport uden skur'),
        (780, 780, 240, TRUE, 400, 240, 'Ekstra stort skur til værktøj');
 
 -- Insert test drawings
-INSERT INTO drawings (drawing_data, accepted)
-VALUES ('SVG drawing data for standard carport 600x780...', TRUE),
-       ('SVG drawing data for carport with shed 600x600...', TRUE),
-       ('SVG drawing data for large carport 780x600...', TRUE),
-       ('SVG drawing data for black carport 600x780...', FALSE),
-       ('SVG drawing data for extra large shed 780x780...', TRUE);
+INSERT INTO drawings (drawing_data)
+VALUES ('SVG drawing data for standard carport 600x780...'),
+       ('SVG drawing data for carport with shed 600x600...'),
+       ('SVG drawing data for large carport 780x600...'),
+       ('SVG drawing data for black carport 600x780...'),
+       ('SVG drawing data for extra large shed 780x780...');
 
 -- Insert test orders with all 5 status types
 INSERT INTO orders (order_date, status, delivery_date, drawing_id, carport_id, customer_id, total_price)
