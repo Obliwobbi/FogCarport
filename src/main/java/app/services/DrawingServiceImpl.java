@@ -14,8 +14,8 @@ public class DrawingServiceImpl implements DrawingService
     }
 
     @Override
-    public Drawing createDrawing(String svgData) throws DatabaseException
+    public Drawing createDrawing(Drawing drawing) throws DatabaseException
     {
-        return drawingMapper.createDrawing(svgData);
+        return drawingMapper.createDrawing(drawing.getDrawingData());
     }
 }

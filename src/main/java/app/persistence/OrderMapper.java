@@ -20,6 +20,8 @@ public class OrderMapper
         this.materialsLinesMapper = new MaterialsLinesMapper(connectionPool);
     }
 
+
+    //TODO Fjern orderDate og DeliveryDate og fjern drawingId nullhandling
     public Order createOrder(LocalDateTime orderDate, String status, LocalDateTime deliveryDate, Integer drawingId, int carportId, int customerId) throws DatabaseException
     {
         String sql = "INSERT INTO orders (order_date, status, delivery_date, drawing_id, carport_id, customer_id)" +

@@ -5,5 +5,5 @@ import app.exceptions.DatabaseException;
 
 public interface DrawingService
 {
-    Drawing createDrawing(String svgData) throws DatabaseException;
+    Drawing createDrawing(Drawing drawing) throws DatabaseException;
 }

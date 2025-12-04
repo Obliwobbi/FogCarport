@@ -7,7 +7,7 @@ public interface CarportService
 {
     Carport getCarportById(int id) throws DatabaseException;
 
-    Carport createCarport(double width, double length, double height, boolean withShed, double shedWidth, double shedLength, String customerWishes) throws DatabaseException;
+    Carport createCarport(Carport carport) throws DatabaseException;
 
     void deleteCarport(int id) throws DatabaseException;
 

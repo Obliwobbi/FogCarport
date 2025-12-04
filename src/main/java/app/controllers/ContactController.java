@@ -1,8 +1,12 @@
 package app.controllers;
 
+import app.entities.Carport;
 import app.entities.Customer;
+import app.entities.Drawing;
 import app.exceptions.DatabaseException;
+import app.services.CarportService;
 import app.services.CustomerService;
+import app.services.DrawingService;
 import app.services.OrderService;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
@@ -14,11 +18,15 @@ public class ContactController
 
     private CustomerService customerService;
     private OrderService orderService;
+    private DrawingService drawingService;
+    private CarportService carportService;
 
-    public ContactController(CustomerService customerService, OrderService orderService)
+    public ContactController(CustomerService customerService, OrderService orderService, DrawingService drawingService, CarportService carportService)
     {
         this.customerService = customerService;
         this.orderService = orderService;
+        this.drawingService = drawingService;
+        this.carportService = carportService;
     }
 
     public void addRoutes(Javalin app)
@@ -31,6 +39,7 @@ public class ContactController
     private void handleCreateCustomer(Context ctx) throws DatabaseException
     {
         Customer customer = null;
+
         try
         {
             customer = customerService.registerNewCustomer(
@@ -44,23 +53,33 @@ public class ContactController
                     ctx.formParam("city")
             );
 
-            Integer carportId = ctx.sessionAttribute("carportId");
-            if (carportId == null)
+            Drawing drawing = drawingService.createDrawing(ctx.sessionAttribute("drawing"));
+            Carport carport = carportService.createCarport(ctx.sessionAttribute("carport"));
+
+
+            Integer carportId = carport.getCarportId();
+            Integer drawingId = drawing.getDrawingId();
+            int customerId = customer.getCustomerId();
+
+            if (carportId == null || drawingId == null)
             {
                 ctx.attribute("errorMessage","Ingen carport fundet - gå tilbage og indtast mål");
                 customerService.deleteCustomer(customer.getCustomerId());
                 ctx.render("contact.html");
             }
 
-            boolean orderSucces = orderService.createOrder(carportId, customer.getCustomerId());
 
-            if (!orderSucces)
-            {
-                customerService.deleteCustomer(customer.getCustomerId());
-                ctx.attribute("errorMessage","Ordre kunne ikke oprettes");
-                ctx.render("contact.html");
-                return;
-            }
+            //TODO
+//            boolean orderSucces = orderService.createOrder(carportId, customer.getCustomerId());
+             orderService.createOrder(LocalDateTime.now(), "NY ORDRE", LocalDateTime.now().plusYears(1),drawingId, carportId,customerId);
+
+//            if (!orderSucces)
+//            {
+//                customerService.deleteCustomer(customer.getCustomerId());
+//                ctx.attribute("errorMessage","Ordre kunne ikke oprettes");
+//                ctx.render("contact.html");
+//                return;
+//            }
 
             ctx.sessionAttribute("successMessage", "Kontakt info modtaget - du hører fra os snarest");
             ctx.redirect("/success");
