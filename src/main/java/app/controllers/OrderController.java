@@ -28,9 +28,51 @@ public class OrderController
     public void addRoutes(Javalin app)
     {
         app.get("/orders", this::showOrders);
-        app.post("/orders/delete/{id}", this::deleteOrder);
         app.get("/orders/details/{id}", this::showOrderDetails);
+
+        app.post("/orders/delete/{id}", this::deleteOrder);
+
+        app.post("/orders/details/{id}/update-order", this::updateOrderInfo);
+        app.post("/orders/details/{id}/update-customer", this::updateCustomerInfo);
+        app.post("/orders/details/{id}/update-carport", this::updateCarportInfo);
+        app.post("/orders/details/{id}/update-prices", this::updateMaterialPrices);
+
         app.post("/orders/details/{id}/stykliste", this::generateMaterialList);
+        app.post("/orders/details/{id}/regenerate-stykliste", this::regenerateMaterialList);
+
+    }
+
+    private void showOrders(Context ctx)
+    {
+        try
+        {
+            List<OrderWithDetailsDTO> newOrders = orderService.getOrdersByStatusDTO("NY ORDRE");
+            List<OrderWithDetailsDTO> pendingOrders = orderService.getOrdersByStatusDTO("AFVENTER ACCEPT");
+            List<OrderWithDetailsDTO> paidOrders = orderService.getOrdersByStatusDTO("BETALT");
+            List<OrderWithDetailsDTO> inTransitOrders = orderService.getOrdersByStatusDTO("AFSENDT");
+            List<OrderWithDetailsDTO> doneOrders = orderService.getOrdersByStatusDTO("AFSLUTTET");
+
+            ctx.attribute("newOrders", newOrders);
+            ctx.attribute("pendingOrders", pendingOrders);
+            ctx.attribute("paidOrders", paidOrders);
+            ctx.attribute("inTransitOrders", inTransitOrders);
+            ctx.attribute("doneOrders", doneOrders);
+
+            ctx.render("orders.html");
+        }
+        catch (DatabaseException e)
+        {
+            ctx.attribute("orderErrorMessage", e.getMessage());
+            ctx.attribute("paidOrders", new ArrayList<>());
+            ctx.attribute("inTransitOrders", new ArrayList<>());
+            ctx.attribute("doneOrders", new ArrayList<>());
+            ctx.attribute("newOrders", new ArrayList<>());
+            ctx.attribute("pendingOrders", new ArrayList<>());
+
+            ctx.redirect("/orders");
+        }
+
+        ctx.render("orders.html");
     }
 
     private void showOrderDetails(Context ctx)
@@ -71,6 +113,23 @@ public class OrderController
         }
     }
 
+    private void updateOrderInfo(Context ctx)
+    {
+    }
+
+    private void updateCustomerInfo(Context ctx)
+    {
+    }
+
+    private void updateCarportInfo(Context ctx)
+    {
+    }
+
+    private void updateMaterialPrices(Context ctx)
+    {
+    }
+
+
     private void generateMaterialList(Context ctx)
     {
         String orderIdStr = ctx.pathParam("id");
@@ -107,37 +166,8 @@ public class OrderController
 
     }
 
-    private void showOrders(Context ctx)
+    private void regenerateMaterialList(Context ctx)
     {
-        try
-        {
-            List<OrderWithDetailsDTO> newOrders = orderService.getOrdersByStatusDTO("NY ORDRE");
-            List<OrderWithDetailsDTO> pendingOrders = orderService.getOrdersByStatusDTO("AFVENTER ACCEPT");
-            List<OrderWithDetailsDTO> paidOrders = orderService.getOrdersByStatusDTO("BETALT");
-            List<OrderWithDetailsDTO> inTransitOrders = orderService.getOrdersByStatusDTO("AFSENDT");
-            List<OrderWithDetailsDTO> doneOrders = orderService.getOrdersByStatusDTO("AFSLUTTET");
-
-            ctx.attribute("newOrders", newOrders);
-            ctx.attribute("pendingOrders", pendingOrders);
-            ctx.attribute("paidOrders", paidOrders);
-            ctx.attribute("inTransitOrders", inTransitOrders);
-            ctx.attribute("doneOrders", doneOrders);
-
-            ctx.render("orders.html");
-        }
-        catch (DatabaseException e)
-        {
-            ctx.attribute("orderErrorMessage", e.getMessage());
-            ctx.attribute("paidOrders", new ArrayList<>());
-            ctx.attribute("inTransitOrders", new ArrayList<>());
-            ctx.attribute("doneOrders", new ArrayList<>());
-            ctx.attribute("newOrders", new ArrayList<>());
-            ctx.attribute("pendingOrders", new ArrayList<>());
-
-            ctx.redirect("/orders");
-        }
-
-        ctx.render("orders.html");
     }
 
     private void deleteOrder(Context ctx) throws DatabaseException
