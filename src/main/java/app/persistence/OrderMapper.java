@@ -161,6 +161,24 @@ public class OrderMapper
         return false;
     }
 
+    public void updateOrderTotalPrice(int orderId, double totalPrice) throws DatabaseException
+    {
+        String sql = "UPDATE orders SET total_price = ? WHERE order_id = ?";
+
+        try (Connection connection = connectionPool.getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql))
+        {
+            ps.setDouble(1, totalPrice);
+            ps.setInt(2, orderId);
+            ps.executeUpdate();
+        }
+        catch (SQLException e)
+        {
+            throw new DatabaseException("Fejl ved opdatering af total pris: " + e.getMessage());
+        }
+    }
+
+
     public boolean updateOrderDeliveryDate(int orderId, LocalDateTime deliveryDate) throws DatabaseException
     {
         String sql = "UPDATE orders SET delivery_date = ? WHERE order_id = ?";

@@ -25,6 +25,8 @@ public interface OrderService
 
     void updateCarport(Carport carport) throws DatabaseException;
 
+    void updateOrderTotalPrice(int orderId, double newTotalPrice) throws DatabaseException;
+
     List<Order> getOrdersByStatus(String status) throws DatabaseException;
 
     List<OrderWithDetailsDTO> getOrdersByStatusDTO(String status) throws DatabaseException;

@@ -106,6 +106,13 @@ public class OrderDetailsServiceImpl implements OrderDetailsService
     }
 
     @Override
+    public void updateMaterialLinePrice(int lineId, double newPrice, int quantity) throws DatabaseException
+    {
+        materialsLinesMapper.updateMaterialLinePrice(lineId, newPrice, quantity);
+    }
+
+
+    @Override
     public List<MaterialsLine> createMaterialList(Carport carport) throws DatabaseException
     {
         List<MaterialsLine> materialList = new ArrayList<>();

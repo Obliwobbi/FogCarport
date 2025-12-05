@@ -182,7 +182,48 @@ public class OrderController
 
     private void updateMaterialPrices(Context ctx)
     {
+        int orderId = Integer.parseInt(ctx.pathParam("id"));
+
+        try
+        {
+            OrderWithDetailsDTO order = orderService.getOrderwithDetails(orderId);
+            List<MaterialsLine> lines = order.getMaterialsLines();
+
+            double totalPrice = 0;
+
+            for (int i = 0; i < lines.size(); i++)
+            {
+                String lineIdParam = ctx.formParam("lineIds[" + i + "]");
+                String priceParam = ctx.formParam("prices[" + i + "]");
+
+                if (lineIdParam != null && priceParam != null)
+                {
+                    int lineId = Integer.parseInt(lineIdParam);
+                    double newPrice = Double.parseDouble(priceParam);
+
+                    MaterialsLine line = lines.stream()
+                            .filter(l -> l.getLineId() == lineId)
+                            .findFirst()
+                            .orElse(null);
+
+                    if (line != null)
+                    {
+                        orderDetailsService.updateMaterialLinePrice(lineId, newPrice, line.getQuantity());
+                        totalPrice += newPrice * line.getQuantity();
+                    }
+                }
+            }
+
+            orderService.updateOrderTotalPrice(orderId, totalPrice);
+            ctx.redirect("/orders/details/" + orderId + "?success=prices");
+        }
+        catch (DatabaseException e)
+        {
+            ctx.redirect("/orders/details/" + orderId + "?error=" + e.getMessage());
+        }
     }
+
+
 
     private void regenerateMaterialList(Context ctx)
     {

@@ -11,5 +11,7 @@ public interface OrderDetailsService
 {
     boolean addMaterialListToOrder (int orderId, Carport carport) throws DatabaseException;
 
+    void updateMaterialLinePrice(int lineId, double newPrice, int quantity) throws DatabaseException;
+
     List<MaterialsLine> createMaterialList(Carport carport) throws DatabaseException;
 }

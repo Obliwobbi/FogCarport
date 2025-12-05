@@ -88,6 +88,12 @@ public class OrderServiceImpl implements OrderService
     }
 
     @Override
+    public void updateOrderTotalPrice(int orderId, double newTotalPrice) throws DatabaseException
+    {
+        orderMapper.updateOrderTotalPrice(orderId, newTotalPrice);
+    }
+
+    @Override
     public List<Order> getOrdersByStatus(String status) throws DatabaseException
     {
         return orderMapper.getAllOrders().stream()

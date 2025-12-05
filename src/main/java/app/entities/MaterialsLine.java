@@ -15,6 +15,7 @@ public class MaterialsLine
 {
     private int lineId;
     private int quantity;
+    private double unitPrice;
     private double linePrice;
     private Material material;
 
@@ -24,4 +25,5 @@ public class MaterialsLine
         this.linePrice = linePrice;
         this.material = material;
     }
+
 }
