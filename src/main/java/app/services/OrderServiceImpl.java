@@ -51,10 +51,10 @@ public class OrderServiceImpl implements OrderService
     }
 
     @Override
-    public boolean createOrder(int drawingId, int carportId, int customerId) throws DatabaseException
+    public int createOrder(int drawingId, int carportId, int customerId) throws DatabaseException
     {
         Order order = orderMapper.createOrder(drawingId, carportId, customerId);
-        return order != null;
+        return order != null ? order.getOrderId() : -1;
     }
 
     @Override
