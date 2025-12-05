@@ -50,10 +50,7 @@ public class CarportController
 
             Carport tmpCarport = new Carport(carportWidth, carportLength, carportHeight, withShed, shedWidth, shedLength, customerWishes);
 
-//            Carport carport = carportservice.createCarport(carportWidth, carportLength, carportHeight, withShed, shedWidth, shedLength, customerWishes);
-
             ctx.sessionAttribute("carportErrorLabel", null);
-//            ctx.sessionAttribute("carportId", carport.getCarportId());
             ctx.sessionAttribute("carport", tmpCarport);
 
             ctx.redirect("/drawing");

@@ -78,31 +78,33 @@ public class ContactController
                 return;
             }
 
-            ctx.sessionAttribute("successMessage", "Kontakt info modtaget - du hører fra os snarest");
+            clearCustomerSession(ctx);
             ctx.redirect("/success");
         }
         catch (DatabaseException e)
         {
             orderFailure(drawing, carport, customer);
+            clearCustomerSession(ctx);
             ctx.attribute("errorMessage", e.getMessage() + "fejl ved indlæsning af kunde info");
             ctx.render("contact.html");
         }
         catch (IllegalArgumentException e)
         {
             orderFailure(drawing, carport, customer);
+            clearCustomerSession(ctx);
             ctx.attribute("errorMessage", e.getMessage());
             ctx.render("contact.html");
         }
         catch (NullPointerException e)
         {
             orderFailure(drawing, carport, customer);
-            ctx.attribute("errorMessage", "Noget gik galt, Gå venligst tilbage til start og prøv igen");
+            ctx.attribute("errorMessage", "Udfyld venligtst alle Felterne");
             ctx.render("contact.html");
         }
         catch (Exception e)
         {
             orderFailure(drawing, carport, customer);
-
+            clearCustomerSession(ctx);
             ctx.attribute("errorMessage", "Der opstod en uventet fejl");
             ctx.render("contact.html");
         }
@@ -135,5 +137,11 @@ public class ContactController
             //TODO Should probably be logged
             System.err.println("Cleanup failed: " + e.getMessage());
         }
+    }
+
+    private void clearCustomerSession(Context ctx)
+    {
+        ctx.sessionAttribute("drawing", null);
+        ctx.sessionAttribute("carport", null);
     }
 }
