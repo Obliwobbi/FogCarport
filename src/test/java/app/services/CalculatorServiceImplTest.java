@@ -39,7 +39,7 @@ class CalculatorServiceImplTest
         Carport carport = new Carport(1, 600, 780, 225, true, 530, 510, "");
 
         int actual = materialListService.calculatePosts(carport);
-        int expected = 11; //From delivered material
+        int expected = 11;
         assertEquals(expected, actual);
     }
 
@@ -88,7 +88,7 @@ class CalculatorServiceImplTest
         Carport carport = new Carport(1, 600, 780, 225, true, 120, 120, "");
 
         int actual = materialListService.calculatePosts(carport);
-        int expected = 9;
+        int expected = 10;
 
         assertEquals(expected, actual);
     }
@@ -113,6 +113,18 @@ class CalculatorServiceImplTest
 
         int actual = materialListService.calculatePosts(carport);
         int expected = 13;
+
+        assertEquals(expected, actual);
+    }
+
+    @DisplayName("Max size carport with over full Length and half Width shed, partial shed")
+    @Test
+    void calculatePostPartialShed()
+    {
+        Carport carport = new Carport(1, 390, 390, 225, true, 120, 120, "");
+
+        int actual = materialListService.calculatePosts(carport);
+        int expected = 8;
 
         assertEquals(expected, actual);
     }
