@@ -418,6 +418,7 @@ main {
     flex-direction: column;
     gap: 0.25rem;
     padding: 0.5rem;
+    border-bottom: 1px solid rgba(0, 61, 118, 0.1);
 }
 
 .info-item strong {
@@ -511,6 +512,157 @@ main {
     border: 1px solid rgba(40, 167, 69, 0.3);
 }
 
+/* ORDERS TABLE */
+.orders-table {
+    overflow-x: auto;
+    margin-top: 1rem;
+}
+
+.orders-table table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    table-layout: fixed;
+}
+
+.orders-table thead {
+    background: var(--color-fogblue);
+    color: var(--color-text-light);
+}
+
+.orders-table th,
+.orders-table td {
+    padding: 0.75rem 1rem;
+    text-align: left;
+    border-bottom: none;
+}
+
+/* Full-width divider line across the entire row */
+.orders-table tbody tr {
+    position: relative;
+}
+
+.orders-table tbody tr::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 1px;
+    background: #e0e0e0;
+    pointer-events: none;
+}
+
+/* Fixed column widths for consistent spacing */
+.orders-table th:nth-child(1),
+.orders-table td:nth-child(1) { width: 7%; }  /* Ordre Id */
+
+.orders-table th:nth-child(2),
+.orders-table td:nth-child(2) { width: 12%; } /* Kunde */
+
+.orders-table th:nth-child(3),
+.orders-table td:nth-child(3) { width: 17%; overflow: hidden; text-overflow: ellipsis; } /* Email */
+
+.orders-table th:nth-child(4),
+.orders-table td:nth-child(4) { width: 13%; } /* Ordre dato */
+
+.orders-table th:nth-child(5),
+.orders-table td:nth-child(5) { width: 11%; } /* Leverings dato */
+
+.orders-table th:nth-child(6),
+.orders-table td:nth-child(6) { width: 10%; } /* Total pris */
+
+.orders-table th:nth-child(7),
+.orders-table td:nth-child(7) { width: 13%; } /* Status */
+
+.orders-table th:nth-child(8),
+.orders-table td:nth-child(8) { width: 17%; } /* Handlinger */
+
+.orders-table th {
+    font-weight: var(--fw-semibold);
+    white-space: nowrap;
+}
+
+.orders-table tbody tr:hover {
+    background: rgba(40, 153, 250, 0.08);
+}
+
+.orders-table tbody tr:nth-child(even) {
+    background: rgba(0, 0, 0, 0.02);
+}
+
+.orders-table tbody tr:nth-child(even):hover {
+    background: rgba(40, 153, 250, 0.08);
+}
+
+.orders-table td {
+    vertical-align: middle;
+}
+
+.orders-table .status {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: var(--font-small);
+    font-weight: var(--fw-semibold);
+    background: var(--color-fogblue-light);
+    color: var(--color-text-light);
+    white-space: nowrap;
+}
+
+/* Action Buttons - in a row */
+.action-buttons {
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+    align-items: center;
+    flex-wrap: nowrap;
+}
+
+.action-buttons form {
+    display: inline-flex;
+    margin: 0;
+    padding: 0;
+}
+
+.action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    padding: 0.4rem;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.2s ease, transform 0.1s ease;
+    background: var(--color-fogblue);
+    text-decoration: none;
+}
+
+.action-btn:hover {
+    opacity: 0.85;
+    background: var(--color-fogblue-light)
+}
+
+.action-btn img {
+    width: 18px;
+    height: 18px;
+    filter: brightness(0) invert(1);
+}
+
+.view-btn {
+    background: var(--color-fogblue);
+}
+
+.delete-btn {
+    background: var(--color-fogblue);
+}
+
+.delete-btn:hover {
+    background: #c0392b;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .info-grid {
@@ -526,6 +678,26 @@ main {
     .materials-table td {
         padding: 0.5rem;
         font-size: var(--font-small);
+    }
+
+    .orders-table th,
+    .orders-table td {
+        padding: 0.5rem;
+        font-size: var(--font-small);
+    }
+
+    .action-buttons {
+        flex-wrap: wrap;
+    }
+
+    .action-btn {
+        width: 30px;
+        height: 30px;
+    }
+
+    .action-btn img {
+        width: 14px;
+        height: 14px;
     }
 }
 
