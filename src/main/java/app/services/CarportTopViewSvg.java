@@ -51,8 +51,8 @@ public class CarportTopViewSvg
     {
         double carportWidth = carport.getWidth();
 
-        MAX_OVERHANG = (carportWidth >= 330) ? 70 : 35;
-        TOP_PLATE_OFFSET = (carportWidth >= 330) ? 35 : 15;
+        MAX_OVERHANG = (carportWidth >= 330) ? 70 : 35;  //smaller overhang on smaller carports to give space for car
+        TOP_PLATE_OFFSET = (carportWidth >= 330) ? 35 : 15; //aligns Top Plate with Posts
 
         POST_OFFSET_Y_TOP = TOP_PLATE_OFFSET - 2.5;
         POST_OFFSET_Y_BOTTOM = TOP_PLATE_OFFSET + 2.5;

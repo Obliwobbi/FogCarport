@@ -28,10 +28,11 @@ public class CalculatorServiceImpl implements CalculatorService
     double ROOF_PLATE_SHORT = 360.0; // 360 is the shortest roof Plate in database
     double ROOF_PLATE_LONG = 600.0; // 600 is the longest Top Plate in database
     int BACKSIDE_OVERHANG = 5; //5 cm overhang on backside of carport for running of water, src: documentation provided by product owner
-    double MAX_OVERHANG;
+    int ROOF_PLATE_SCREWS_M2 = 12; //documentation says 12 screws pr squaremeter of roofplate
 
     double POST_OFFSET_LONG = 100;
     double MAX_LENGTH_CARPORT_NO_SHED_FEWER_SUPPORTS = 510; // for no shed, corner posts  can start 1 meter in from both ends. needs 1 in middle of each side to account for no more than 310 between posts
+    double MAX_OVERHANG;
 
 
     @Override
@@ -43,7 +44,7 @@ public class CalculatorServiceImpl implements CalculatorService
         double shedLength = carport.getShedLength();
         boolean withShed = carport.isWithShed();
 
-        MAX_OVERHANG = (carportWidth >= 330) ? 70 : 35;
+        MAX_OVERHANG = (carportWidth >= 330) ? 70 : 35; //smaller overhang on smaller carports to give space for car
 
         boolean isFullWidth = shedWidth >= (carportWidth - MAX_OVERHANG);
 
@@ -336,7 +337,7 @@ public class CalculatorServiceImpl implements CalculatorService
         double carportLength = carport.getLength();
 
         //Insert return in helper method to calculate packs
-        return (int) Math.ceil((((carportWidth / 100) * (carportLength / 100)) * 12)); //documentation says 12 screws pr squaremeter of roofplate
+        return (int) Math.ceil((((carportWidth / 100) * (carportLength / 100)) * ROOF_PLATE_SCREWS_M2));
     }
 
     @Override
