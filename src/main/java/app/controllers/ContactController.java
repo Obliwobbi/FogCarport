@@ -32,6 +32,10 @@ public class ContactController
         app.get("/contact", this::showContactPage);
 
         app.post("/contact/create-order", this::handleCreateOrder);
+
+        app.get("/success", this::showSuccessPage);
+
+        app.post("/success/return-home", this::returnToHome);
     }
 
     private void handleCreateOrder(Context ctx) throws DatabaseException
@@ -68,9 +72,9 @@ public class ContactController
             int drawingId = drawing.getDrawingId();
             int customerId = customer.getCustomerId();
 
-            boolean orderSuccess = orderService.createOrder(drawingId, carportId, customerId);
+            int orderId = orderService.createOrder(drawingId, carportId, customerId);
 
-            if (!orderSuccess)
+            if (orderId == -1)
             {
                 orderFailure(drawing, carport, customer);
                 ctx.attribute("errorMessage", "Ordre kunne ikke oprettes");
@@ -78,7 +82,12 @@ public class ContactController
                 return;
             }
 
+            ctx.sessionAttribute("successOrderId", orderId);
+            ctx.sessionAttribute("successCustomer", customer);
+            ctx.sessionAttribute("successCarport", carport);
+
             clearCustomerSession(ctx);
+
             ctx.redirect("/success");
         }
         catch (DatabaseException e)
@@ -111,7 +120,31 @@ public class ContactController
 
     private void showContactPage(Context ctx)
     {
-        ctx.render("contact");
+        ctx.render("contact.html");
+    }
+
+    private void showSuccessPage(Context ctx)
+    {
+        Integer orderId = ctx.sessionAttribute("successOrderId");
+        Customer customer = ctx.sessionAttribute("successCustomer");
+        Carport carport = ctx.sessionAttribute("successCarport");
+
+        if (orderId == null || customer == null || carport == null)
+        {
+            ctx.redirect("/");
+            return;
+        }
+
+        ctx.attribute("orderId", orderId);
+        ctx.attribute("customer", customer);
+        ctx.attribute("carport", carport);
+        ctx.render("success.html");
+    }
+
+    private void returnToHome(Context ctx)
+    {
+        clearSuccessSession(ctx);
+        ctx.redirect("/");
     }
 
     private void orderFailure(Drawing drawing, Carport carport, Customer customer) throws DatabaseException
@@ -142,5 +175,12 @@ public class ContactController
     {
         ctx.sessionAttribute("drawing", null);
         ctx.sessionAttribute("carport", null);
+    }
+
+    private void clearSuccessSession(Context ctx)
+    {
+        ctx.sessionAttribute("successOrderId", null);
+        ctx.sessionAttribute("successCustomer", null);
+        ctx.sessionAttribute("successCarport", null);
     }
 }

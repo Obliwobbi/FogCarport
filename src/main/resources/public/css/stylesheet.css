@@ -162,6 +162,7 @@ main {
     flex: 1;
     background: whitesmoke;
     border-radius: 10px;
+
 }
 
 .index-body {
@@ -555,28 +556,62 @@ main {
 
 /* Fixed column widths for consistent spacing */
 .orders-table th:nth-child(1),
-.orders-table td:nth-child(1) { width: 7%; }  /* Ordre Id */
+.orders-table td:nth-child(1) {
+    width: 7%;
+}
+
+/* Ordre Id */
 
 .orders-table th:nth-child(2),
-.orders-table td:nth-child(2) { width: 12%; } /* Kunde */
+.orders-table td:nth-child(2) {
+    width: 12%;
+}
+
+/* Kunde */
 
 .orders-table th:nth-child(3),
-.orders-table td:nth-child(3) { width: 17%; overflow: hidden; text-overflow: ellipsis; } /* Email */
+.orders-table td:nth-child(3) {
+    width: 17%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Email */
 
 .orders-table th:nth-child(4),
-.orders-table td:nth-child(4) { width: 13%; } /* Ordre dato */
+.orders-table td:nth-child(4) {
+    width: 13%;
+}
+
+/* Ordre dato */
 
 .orders-table th:nth-child(5),
-.orders-table td:nth-child(5) { width: 11%; } /* Leverings dato */
+.orders-table td:nth-child(5) {
+    width: 11%;
+}
+
+/* Leverings dato */
 
 .orders-table th:nth-child(6),
-.orders-table td:nth-child(6) { width: 10%; } /* Total pris */
+.orders-table td:nth-child(6) {
+    width: 10%;
+}
+
+/* Total pris */
 
 .orders-table th:nth-child(7),
-.orders-table td:nth-child(7) { width: 13%; } /* Status */
+.orders-table td:nth-child(7) {
+    width: 13%;
+}
+
+/* Status */
 
 .orders-table th:nth-child(8),
-.orders-table td:nth-child(8) { width: 17%; } /* Handlinger */
+.orders-table td:nth-child(8) {
+    width: 17%;
+}
+
+/* Handlinger */
 
 .orders-table th {
     font-weight: var(--fw-semibold);
@@ -698,6 +733,124 @@ main {
     .action-btn img {
         width: 14px;
         height: 14px;
+    }
+}
+
+/*SUCCES*/
+.success-container {
+    max-width: 900px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.success-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.success-header h1 {
+    color: var(--color-fogblue);
+    margin-bottom: 0.5rem;
+}
+
+.success-header .order-number {
+    font-size: var(--font-h4);
+    color: var(--color-fogblue-dark);
+    margin-bottom: 1rem;
+}
+
+.success-message {
+    background: rgba(40, 167, 69, 0.1);
+    border: 2px solid rgba(40, 167, 69, 0.3);
+    border-radius: 8px;
+    padding: 1.5rem;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.success-message p {
+    color: #155724;
+    font-size: var(--font-h5);
+    margin: 0;
+}
+
+.info-box {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+}
+
+.info-box-header {
+    background: var(--color-fogblue);
+    color: var(--color-text-light);
+    padding: 1rem 1.5rem;
+}
+
+.info-box-header h2 {
+    margin: 0;
+    font-size: var(--font-h5);
+}
+
+.info-box-content {
+    padding: 1.5rem;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.info-item strong {
+    color: var(--color-fogblue-dark);
+    font-size: var(--font-small);
+}
+
+.info-item span {
+    color: var(--color-text-dark);
+    font-size: var(--font-base);
+}
+
+.info-item.full-width {
+    grid-column: 1 / -1;
+}
+
+.action-section {
+    text-align: center;
+    margin-top: 2rem;
+}
+
+.home-button {
+    background: var(--color-fogblue);
+    color: var(--color-text-light);
+    border: none;
+    border-radius: 8px;
+    padding: 1rem 2rem;
+    font-size: var(--font-h6);
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.home-button:hover {
+    background: var(--color-fogblue-light);
+}
+
+@media (max-width: 768px) {
+    .success-container {
+        padding: 1rem;
+    }
+
+    .info-grid {
+        grid-template-columns: 1fr;
     }
 }
 
