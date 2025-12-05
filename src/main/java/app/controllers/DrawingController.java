@@ -2,13 +2,9 @@ package app.controllers;
 
 import app.entities.Carport;
 import app.entities.Drawing;
-import app.exceptions.DatabaseException;
 import app.services.*;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
-
-import java.util.Locale;
-
 
 public class DrawingController
 {
@@ -30,24 +26,16 @@ public class DrawingController
     {
         try
         {
-            Locale.setDefault(new Locale("US")); //is used to make sure numbers passed to svg is with "." instead of ","
-
             Carport carport = ctx.sessionAttribute("carport");
 
-            SvgService svgService = new SvgServiceImpl(0, 0, String.format("0 0 %.1f %.1f", (carport.getLength()), carport.getWidth()), "100%", "auto");
-
-            CarportTopViewSvg carportSvg = new CarportTopViewSvg(carport, calculatorService, svgService);
-
-            String carportTopView = carportSvg.createMeasuredCarportSvg();
-
-            ctx.attribute("svg", carportTopView);
+            String carportTopView = drawingService.showDrawing(carport, calculatorService);
 
             Drawing tmpDrawing = new Drawing(carportTopView);
 
+            ctx.attribute("svg", carportTopView);
             ctx.sessionAttribute("drawing", tmpDrawing);
 
             ctx.render("drawing.html");
-
         }
         catch (NullPointerException e)
         {

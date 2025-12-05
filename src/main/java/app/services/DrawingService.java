@@ -10,5 +10,5 @@ public interface DrawingService
 
     void deleteDrawing(int drawingId) throws DatabaseException;
 
-    String showDrawing(Carport carport);
+    String showDrawing(Carport carport, CalculatorService calculatorService);
 }
