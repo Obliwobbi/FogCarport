@@ -2,20 +2,24 @@
 <html lang="da" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8"/>
-    <title>FogCarport</title>
+    <title>Alle Ordre - FogCarport</title>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <link rel="stylesheet" href="/css/stylesheet.css" th:href="@{/css/stylesheet.css}"/>
-    <link rel="stylesheet" href="/css/orders.css" th:href="@{/css/orders.css}"/>
 </head>
 <body>
 
+<div th:replace="~{fragments :: headerFragment}"></div>
+
 <main>
-    <section class="orders-body">
-        <h1>Alle Ordre</h1>
+    <section class="body-style">
+        <div class="details-header center-text">
+            <h1>Alle Ordre</h1>
+        </div>
 
         <!-- NYE ORDRE -->
-        <h2>Nye Ordre</h2>
-        <div th:if="${newOrders != null and !newOrders.isEmpty()}" class="orders-table">
+        <div class="details-section">
+            <h2>Nye Ordre</h2>
+            <div th:if="${newOrders != null and !newOrders.isEmpty()}" class="orders-table">
             <table>
                 <thead>
                 <tr>
@@ -46,11 +50,6 @@
                             <img th:src="@{/images/view-w.svg}" alt="Se detaljer"/>
                         </a>
 
-                        <form method="post" th:action="@{/orders/mark-paid/{id}(id=${order.orderId})}">
-                            <button type="submit" class="action-btn paid-btn" title="Marker som betalt">
-                                <img th:src="@{/images/check-w.svg}" alt="Marker betalt"/>
-                            </button>
-                        </form>
 
                         <form method="post" th:action="@{/orders/delete/{id}(id=${order.orderId})}"
                               onsubmit="return confirm('Er du sikker på du vil slette ordren?')">
@@ -66,8 +65,10 @@
         <p th:if="${newOrders == null or newOrders.isEmpty()}">
             Ingen nye ordre
         </p>
+        </div>
 
         <!-- AFVENTER ACCEPT -->
+        <div class="details-section">
         <h2>Afventer accept fra kunde</h2>
         <div th:if="${pendingOrders != null and !pendingOrders.isEmpty()}" class="orders-table">
             <table>
@@ -100,11 +101,6 @@
                             <img th:src="@{/images/view-w.svg}" alt="Se detaljer"/>
                         </a>
 
-                        <form method="post" th:action="@{/orders/mark-paid/{id}(id=${order.orderId})}">
-                            <button type="submit" class="action-btn paid-btn" title="Marker som betalt">
-                                <img th:src="@{/images/check-w.svg}" alt="Marker betalt"/>
-                            </button>
-                        </form>
 
                         <form method="post" th:action="@{/orders/delete/{id}(id=${order.orderId})}"
                               onsubmit="return confirm('Er du sikker på du vil slette ordren?')">
@@ -120,8 +116,10 @@
         <p th:if="${pendingOrders == null or pendingOrders.isEmpty()}">
             Ingen uaccepterede ordre
         </p>
+        </div>
 
         <!-- BETALT -->
+        <div class="details-section">
         <h2>Betalte ordre</h2>
         <div th:if="${paidOrders != null and !paidOrders.isEmpty()}" class="orders-table">
             <table>
@@ -154,11 +152,6 @@
                             <img th:src="@{/images/view-w.svg}" alt="Se detaljer"/>
                         </a>
 
-                        <form method="post" th:action="@{/orders/mark-paid/{id}(id=${order.orderId})}">
-                            <button type="submit" class="action-btn paid-btn" title="Marker som betalt">
-                                <img th:src="@{/images/check-w.svg}" alt="Marker betalt"/>
-                            </button>
-                        </form>
 
                         <form method="post" th:action="@{/orders/delete/{id}(id=${order.orderId})}"
                               onsubmit="return confirm('Er du sikker på du vil slette ordren?')">
@@ -174,8 +167,10 @@
         <p th:if="${paidOrders == null or paidOrders.isEmpty()}">
             Ingen betalte ordrer
         </p>
+        </div>
 
         <!-- AFSENDT -->
+        <div class="details-section">
         <h2>Afsendte ordre</h2>
         <div th:if="${inTransitOrders != null and !inTransitOrders.isEmpty()}" class="orders-table">
             <table>
@@ -208,11 +203,6 @@
                             <img th:src="@{/images/view-w.svg}" alt="Se detaljer"/>
                         </a>
 
-                        <form method="post" th:action="@{/orders/mark-paid/{id}(id=${order.orderId})}">
-                            <button type="submit" class="action-btn paid-btn" title="Marker som betalt">
-                                <img th:src="@{/images/check-w.svg}" alt="Marker betalt"/>
-                            </button>
-                        </form>
 
                         <form method="post" th:action="@{/orders/delete/{id}(id=${order.orderId})}"
                               onsubmit="return confirm('Er du sikker på du vil slette ordren?')">
@@ -228,8 +218,10 @@
         <p th:if="${inTransitOrders == null or inTransitOrders.isEmpty()}">
             Ingen afsendte ordre
         </p>
+        </div>
 
         <!-- AFSLUTTET -->
+        <div class="details-section">
         <h2>Afsluttede ordre</h2>
         <div th:if="${doneOrders != null and !doneOrders.isEmpty()}" class="orders-table">
             <table>
@@ -262,11 +254,6 @@
                             <img th:src="@{/images/view-w.svg}" alt="Se detaljer"/>
                         </a>
 
-                        <form method="post" th:action="@{/orders/mark-paid/{id}(id=${order.orderId})}">
-                            <button type="submit" class="action-btn paid-btn" title="Marker som betalt">
-                                <img th:src="@{/images/check-w.svg}" alt="Marker betalt"/>
-                            </button>
-                        </form>
 
                         <form method="post" th:action="@{/orders/delete/{id}(id=${order.orderId})}"
                               onsubmit="return confirm('Er du sikker på du vil slette ordren?')">
@@ -282,10 +269,12 @@
         <p th:if="${doneOrders == null or doneOrders.isEmpty()}">
             Ingen afsluttede ordre
         </p>
+        </div>
 
     </section>
 </main>
 
+<div th:replace="~{fragments :: footerFragment}"></div>
 
 </body>
 </html>
