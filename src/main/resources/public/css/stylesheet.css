@@ -534,7 +534,23 @@ main {
 .orders-table td {
     padding: 0.75rem 1rem;
     text-align: left;
-    border-bottom: 1px solid #e0e0e0;
+    border-bottom: none;
+}
+
+/* Full-width divider line across the entire row */
+.orders-table tbody tr {
+    position: relative;
+}
+
+.orders-table tbody tr::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 1px;
+    background: #e0e0e0;
+    pointer-events: none;
 }
 
 /* Fixed column widths for consistent spacing */
@@ -626,7 +642,7 @@ main {
 
 .action-btn:hover {
     opacity: 0.85;
-    transform: scale(1.05);
+    background: var(--color-fogblue-light)
 }
 
 .action-btn img {
