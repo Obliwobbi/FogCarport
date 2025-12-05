@@ -49,23 +49,21 @@ public class CarportTopViewSvg
 
     private void setDynamicMeasurements()
     {
-        if (carport.getWidth() >= 330)
-        {
-            TOP_PLATE_OFFSET = 35;
-            MAX_OVERHANG = 70;
-        }
-        else
-        {
-            TOP_PLATE_OFFSET = 15;
-            MAX_OVERHANG = 30;
-        }
+        double carportWidth = carport.getWidth();
+
+        MAX_OVERHANG = (carportWidth >= 330) ? 70 : 35;
+        TOP_PLATE_OFFSET = (carportWidth >= 330) ? 35 : 15;
+
         POST_OFFSET_Y_TOP = TOP_PLATE_OFFSET - 2.5;
         POST_OFFSET_Y_BOTTOM = TOP_PLATE_OFFSET + 2.5;
     }
 
     private void addFasciaBoard()
     {
-        svgService.addRectangle(0, 0, carport.getWidth(), carport.getLength(), STYLE);
+        double carportWidth = carport.getWidth();
+        double carportLength = carport.getLength();
+
+        svgService.addRectangle(0, 0, carportWidth, carportLength, STYLE);
     }
 
     private void addTopPlate()
@@ -79,13 +77,16 @@ public class CarportTopViewSvg
 
     private void addCeilingJoist()
     {
+        double carportWidth = carport.getWidth();
+        double carportLength = carport.getLength();
+
         int joists = calculatorService.sumHashMapValues(calculatorService.calculateCeilingJoist(carport));
 
-        double spaceBetween = (carport.getLength() / (joists - 1)); //joist-1 is amount of gaps needed for equal spacing
+        double spaceBetween = (carportLength / (joists - 1)); //joist-1 is amount of gaps needed for equal spacing
         for (double i = 0; i < joists; i++)
         {
             double x = i * spaceBetween;
-            svgService.addRectangle(x, 0, carport.getWidth(), TOP_PLATE_WIDTH, STYLE);
+            svgService.addRectangle(x, 0, carportWidth, TOP_PLATE_WIDTH, STYLE);
         }
     }
 
@@ -286,24 +287,24 @@ public class CarportTopViewSvg
         double totalHeight = topMargin + carportWidth + bottomMargin;
         double minOverhang = 30; //15 each side
 
-        SvgServiceImpl outerSvg = new SvgServiceImpl(0, 0, String.format(Locale.US,"0 0 %.1f %.1f", totalWidth, totalHeight), "100%", "auto");
-        SvgServiceImpl innerSvg = new SvgServiceImpl((int) leftMargin, (int) topMargin, String.format(Locale.US,"0 0 %.1f %.1f", carportLength + 5, carportWidth), String.format(Locale.US,"%.1f", carportLength), String.format(Locale.US,"%.1f", carportWidth));
+        SvgServiceImpl outerSvg = new SvgServiceImpl(0, 0, String.format(Locale.US, "0 0 %.1f %.1f", totalWidth, totalHeight), "100%", "auto");
+        SvgServiceImpl innerSvg = new SvgServiceImpl((int) leftMargin, (int) topMargin, String.format(Locale.US, "0 0 %.1f %.1f", carportLength + 5, carportWidth), String.format(Locale.US, "%.1f", carportLength), String.format(Locale.US, "%.1f", carportWidth));
 
         innerSvg.addSvg((SvgServiceImpl) svgService);
         outerSvg.addSvg(innerSvg);
 
         // Width measurement (left side) with arrows
         outerSvg.addArrow(20, 52.5, 20, 32.5 + carportWidth, STYLE + ARROW);
-        outerSvg.addText(12, (int) (topMargin + carportWidth / 2), 270, String.format(Locale.US,"%.0f cm", carportWidth));
+        outerSvg.addText(12, (int) (topMargin + carportWidth / 2), 270, String.format(Locale.US, "%.0f cm", carportWidth));
 
         // Length measurement (bottom) with arrows
         outerSvg.addArrow(leftMargin, topMargin + carportWidth + 10, leftMargin + carportLength, topMargin + carportWidth + 10, STYLE + ARROW);
-        outerSvg.addText((int) (leftMargin + carportLength / 2), (int) (topMargin + carportWidth + 35), 0, String.format(Locale.US,"%.0f cm", carportLength));
+        outerSvg.addText((int) (leftMargin + carportLength / 2), (int) (topMargin + carportWidth + 35), 0, String.format(Locale.US, "%.0f cm", carportLength));
 
         // Post spacing measurement on width (left side)
         double postSpacingOnWidth = (carportWidth < 340) ? carportWidth - minOverhang : carportWidth - (2 * TOP_PLATE_OFFSET);
         outerSvg.addArrow(40, topMargin + TOP_PLATE_OFFSET, 40, 40 + carportWidth - TOP_PLATE_OFFSET, STYLE + ARROW);
-        outerSvg.addText(35, (int) (topMargin + carportWidth / 2), 270, String.format(Locale.US,"%.0f cm", postSpacingOnWidth));
+        outerSvg.addText(35, (int) (topMargin + carportWidth / 2), 270, String.format(Locale.US, "%.0f cm", postSpacingOnWidth));
 
 
         // Ceiling joist spacing measurements (top)
@@ -317,7 +318,7 @@ public class CarportTopViewSvg
             double y = topMargin - 8;
 
             outerSvg.addArrow(x1, y, x2, y, STYLE + ARROW);
-            outerSvg.addText((int) ((x1 + x2) / 2), (int) (y - 10), 0, String.format(Locale.US,"%.02f", joistSpacing / 100));
+            outerSvg.addText((int) ((x1 + x2) / 2), (int) (y - 10), 0, String.format(Locale.US, "%.02f", joistSpacing / 100));
         }
 
         return outerSvg.toString();
