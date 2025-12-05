@@ -51,7 +51,7 @@ public class CalculatorServiceImpl implements CalculatorService
 
         if (withShed)
         {
-            result += (isFullWidth) ? 3 : 4; //door and corners of shed, partial width sheds need 1 more corner
+            result += (isFullWidth || shedLength > MAX_LENGTH_BLOCKING ) ? 3 : 4; //door and corners of shed, partial width sheds need 1 more corner
 
             if (shedWidth > MAX_LENGTH_BLOCKING)
             {
