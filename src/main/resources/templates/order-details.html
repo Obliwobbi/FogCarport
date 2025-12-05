@@ -193,15 +193,51 @@
                     <div class="info-grid">
                         <div class="info-item">
                             <label for="width"><strong>Bredde (cm):</strong></label>
-                            <input type="number" id="width" name="width" th:value="${order.carport.width}" required/>
+                            <select name="width" id="width" required="">
+                                <option value="240" th:selected="${order.carport.width == 240}">240 cm</option>
+                                <option value="270" th:selected="${order.carport.width == 270}">270 cm</option>
+                                <option value="300" th:selected="${order.carport.width == 300}">300 cm</option>
+                                <option value="330" th:selected="${order.carport.width == 330}">330 cm</option>
+                                <option value="360" th:selected="${order.carport.width == 360}">360 cm</option>
+                                <option value="390" th:selected="${order.carport.width == 390}">390 cm</option>
+                                <option value="420" th:selected="${order.carport.width == 420}">420 cm</option>
+                                <option value="450" th:selected="${order.carport.width == 450}">450 cm</option>
+                                <option value="480" th:selected="${order.carport.width == 480}">480 cm</option>
+                                <option value="510" th:selected="${order.carport.width == 510}">510 cm</option>
+                                <option value="540" th:selected="${order.carport.width == 540}">540 cm</option>
+                                <option value="570" th:selected="${order.carport.width == 570}">570 cm</option>
+                                <option value="600" th:selected="${order.carport.width == 600}">600 cm</option>
+                            </select>
                         </div>
                         <div class="info-item">
                             <label for="length"><strong>Længde (cm):</strong></label>
-                            <input type="number" id="length" name="length" th:value="${order.carport.length}" required/>
+                            <select name="length" id="length" required="">
+                                <option value="240" th:selected="${order.carport.length == 240}">240 cm</option>
+                                <option value="270" th:selected="${order.carport.length == 270}">270 cm</option>
+                                <option value="300" th:selected="${order.carport.length == 300}">300 cm</option>
+                                <option value="330" th:selected="${order.carport.length == 330}">330 cm</option>
+                                <option value="360" th:selected="${order.carport.length == 360}">360 cm</option>
+                                <option value="390" th:selected="${order.carport.length == 390}">390 cm</option>
+                                <option value="420" th:selected="${order.carport.length == 420}">420 cm</option>
+                                <option value="450" th:selected="${order.carport.length == 450}">450 cm</option>
+                                <option value="480" th:selected="${order.carport.length == 480}">480 cm</option>
+                                <option value="510" th:selected="${order.carport.length == 510}">510 cm</option>
+                                <option value="540" th:selected="${order.carport.length == 540}">540 cm</option>
+                                <option value="570" th:selected="${order.carport.length == 570}">570 cm</option>
+                                <option value="600" th:selected="${order.carport.length == 600}">600 cm</option>
+                                <option value="630" th:selected="${order.carport.length == 630}">630 cm</option>
+                                <option value="660" th:selected="${order.carport.length == 660}">660 cm</option>
+                                <option value="690" th:selected="${order.carport.length == 690}">690 cm</option>
+                                <option value="720" th:selected="${order.carport.length == 720}">720 cm</option>
+                                <option value="750" th:selected="${order.carport.length == 750}">750 cm</option>
+                                <option value="780" th:selected="${order.carport.length == 780}">780 cm</option>
+                            </select>
                         </div>
                         <div class="info-item">
                             <label for="height"><strong>Højde (cm):</strong></label>
-                            <input type="number" id="height" name="height" th:value="${order.carport.height}" required/>
+                            <select name="height" id="height" required="">
+                                <option value="225" th:selected="${order.carport.height == 225}">225 cm</option>
+                            </select>
                         </div>
                         <div class="info-item">
                             <label for="withShedEdit"><strong>Med skur:</strong></label>
@@ -212,11 +248,53 @@
                         </div>
                         <div class="info-item">
                             <label for="shedWidth"><strong>Skur Bredde (cm):</strong></label>
-                            <input type="number" id="shedWidth" name="shedWidth" th:value="${order.carport.shedWidth}"/>
+                            <select name="shedWidth" id="shedWidth">
+                                <option value="" th:selected="${order.carport.shedWidth == 0}"></option>
+                                <option value="120" th:selected="${order.carport.shedWidth == 120}">120 cm</option>
+                                <option value="150" th:selected="${order.carport.shedWidth == 150}">150 cm</option>
+                                <option value="180" th:selected="${order.carport.shedWidth == 180}">180 cm</option>
+                                <option value="210" th:selected="${order.carport.shedWidth == 210}">210 cm</option>
+                                <option value="240" th:selected="${order.carport.shedWidth == 240}">240 cm</option>
+                                <option value="270" th:selected="${order.carport.shedWidth == 270}">270 cm</option>
+                                <option value="300" th:selected="${order.carport.shedWidth == 300}">300 cm</option>
+                                <option value="330" th:selected="${order.carport.shedWidth == 330}">330 cm</option>
+                                <option value="360" th:selected="${order.carport.shedWidth == 360}">360 cm</option>
+                                <option value="390" th:selected="${order.carport.shedWidth == 390}">390 cm</option>
+                                <option value="420" th:selected="${order.carport.shedWidth == 420}">420 cm</option>
+                                <option value="450" th:selected="${order.carport.shedWidth == 450}">450 cm</option>
+                                <option value="480" th:selected="${order.carport.shedWidth == 480}">480 cm</option>
+                                <option value="510" th:selected="${order.carport.shedWidth == 510}">510 cm</option>
+                                <option value="540" th:selected="${order.carport.shedWidth == 540}">540 cm</option>
+                                <option value="570" th:selected="${order.carport.shedWidth == 570}">570 cm</option>
+                            </select>
                         </div>
                         <div class="info-item">
                             <label for="shedLength"><strong>Skur Længde (cm):</strong></label>
-                            <input type="number" id="shedLength" name="shedLength" th:value="${order.carport.shedLength}"/>
+                            <select name="shedLength" id="shedLength">
+                                <option value="" th:selected="${order.carport.shedLength == 0}"></option>
+                                <option value="120" th:selected="${order.carport.shedLength == 120}">120 cm</option>
+                                <option value="150" th:selected="${order.carport.shedLength == 150}">150 cm</option>
+                                <option value="180" th:selected="${order.carport.shedLength == 180}">180 cm</option>
+                                <option value="210" th:selected="${order.carport.shedLength == 210}">210 cm</option>
+                                <option value="240" th:selected="${order.carport.shedLength == 240}">240 cm</option>
+                                <option value="270" th:selected="${order.carport.shedLength == 270}">270 cm</option>
+                                <option value="300" th:selected="${order.carport.shedLength == 300}">300 cm</option>
+                                <option value="330" th:selected="${order.carport.shedLength == 330}">330 cm</option>
+                                <option value="360" th:selected="${order.carport.shedLength == 360}">360 cm</option>
+                                <option value="390" th:selected="${order.carport.shedLength == 390}">390 cm</option>
+                                <option value="420" th:selected="${order.carport.shedLength == 420}">420 cm</option>
+                                <option value="450" th:selected="${order.carport.shedLength == 450}">450 cm</option>
+                                <option value="480" th:selected="${order.carport.shedLength == 480}">480 cm</option>
+                                <option value="510" th:selected="${order.carport.shedLength == 510}">510 cm</option>
+                                <option value="540" th:selected="${order.carport.shedLength == 540}">540 cm</option>
+                                <option value="570" th:selected="${order.carport.shedLength == 570}">570 cm</option>
+                                <option value="600" th:selected="${order.carport.shedLength == 600}">600 cm</option>
+                                <option value="630" th:selected="${order.carport.shedLength == 630}">630 cm</option>
+                                <option value="660" th:selected="${order.carport.shedLength == 660}">660 cm</option>
+                                <option value="690" th:selected="${order.carport.shedLength == 690}">690 cm</option>
+                                <option value="720" th:selected="${order.carport.shedLength == 720}">720 cm</option>
+                                <option value="750" th:selected="${order.carport.shedLength == 750}">750 cm</option>
+                            </select>
                         </div>
                         <div class="info-item full-width">
                             <label for="customerWishes"><strong>Kundens ønsker:</strong></label>

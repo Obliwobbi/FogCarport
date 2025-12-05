@@ -123,7 +123,7 @@ public class OrderController
             customer.setZipcode(Integer.parseInt(ctx.formParam("zipcode")));
             customer.setCity(ctx.formParam("city"));
 
-            orderService.updateCustomerInfo(orderId, customer);
+            orderService.updateCustomerInfo(customer);
             ctx.redirect("/orders/details/" + orderId + "?success=customer");
 
         }
@@ -136,6 +136,48 @@ public class OrderController
 
     private void updateCarportInfo(Context ctx)
     {
+        int orderId = Integer.parseInt(ctx.pathParam("id"));
+        try
+        {
+            OrderWithDetailsDTO order = orderService.getOrderwithDetails(orderId);
+            Carport carport = order.getCarport();
+
+            double carportWidth = Double.parseDouble(ctx.formParam("width"));
+            double carportLength = Double.parseDouble(ctx.formParam("length"));
+            double carportHeight = Double.parseDouble(ctx.formParam("height"));
+            boolean withShed = Boolean.parseBoolean(ctx.formParam("withShed"));
+
+            Integer shedWidth = null;
+            Integer shedLength = null;
+            if(withShed)
+            {
+                String shedWidthString = ctx.formParam("shedWidth");
+                String shedLengthString = ctx.formParam("shedLength");
+                shedWidth = (shedWidthString != null && !shedWidthString.isEmpty())
+                        ? Integer.parseInt(shedWidthString) : null;
+                shedLength = (shedLengthString != null && !shedLengthString.isEmpty())
+                        ? Integer.parseInt(shedLengthString) : null;
+            }
+            String customerWishes = ctx.formParam("customerWishes");
+
+            carport.setWidth(carportWidth);
+            carport.setLength(carportLength);
+            carport.setHeight(carportHeight);
+            carport.setWithShed(withShed);
+            if(carport.isWithShed())
+            {
+                carport.setShedWidth(shedWidth);
+                carport.setShedLength(shedLength);
+            }
+            carport.setCustomerWishes(customerWishes);
+
+            orderService.updateCarport(carport);
+            ctx.redirect("/orders/details/" + orderId + "?success=carport");
+        }
+        catch (DatabaseException e)
+        {
+            ctx.redirect("/orders/details/" + orderId + "?error=" + e.getMessage());
+        }
     }
 
     private void updateMaterialPrices(Context ctx)
