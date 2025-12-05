@@ -1,5 +1,6 @@
 package app.services;
 
+import app.entities.Carport;
 import app.entities.Drawing;
 import app.exceptions.DatabaseException;
 import app.persistence.DrawingMapper;
@@ -11,6 +12,12 @@ public class DrawingServiceImpl implements DrawingService
     public DrawingServiceImpl(DrawingMapper drawingMapper)
     {
         this.drawingMapper = drawingMapper;
+    }
+
+    @Override
+    public String showDrawing(Carport carport)
+    {
+        return "";
     }
 
     @Override

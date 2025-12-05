@@ -52,7 +52,6 @@ public class CarportController
 
             ctx.sessionAttribute("carportErrorLabel", null);
             ctx.sessionAttribute("carport", tmpCarport);
-
             ctx.redirect("/drawing");
         }
         catch (NullPointerException | NumberFormatException e)
