@@ -88,7 +88,7 @@ public class CustomerMapper
         }
     }
 
-    public boolean updateCustomerInfo(int orderId, Customer customer) throws DatabaseException
+    public boolean updateCustomerInfo(Customer customer) throws DatabaseException
     {
         String sql = """
                 UPDATE customers
@@ -113,7 +113,7 @@ public class CustomerMapper
             ps.setString(6,customer.getHouseNumber());
             ps.setInt(7,customer.getZipcode());
             ps.setString(8,customer.getCity());
-            ps.setInt(9,orderId);
+            ps.setInt(9,customer.getCustomerId());
 
             int rowsAffected = ps.executeUpdate();
             if (rowsAffected >= 1)

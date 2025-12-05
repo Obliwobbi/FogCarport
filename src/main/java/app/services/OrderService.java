@@ -23,7 +23,7 @@ public interface OrderService
 
     void updateOrderDeliveryDate(int orderId, LocalDateTime deliveryDate) throws DatabaseException;
 
-    void updateCustomerInfo(int orderId, Customer customer) throws DatabaseException;
+    void updateCustomerInfo(Customer customer) throws DatabaseException;
 
     void updateCarport(Carport carport) throws DatabaseException;
 
