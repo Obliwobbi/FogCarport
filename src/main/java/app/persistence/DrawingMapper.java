@@ -97,5 +97,27 @@ public class DrawingMapper
             throw new DatabaseException("Fejl ved opdatering af tegning: " + e.getMessage());
         }
     }
+
+    public boolean deleteDrawing(int drawingId) throws DatabaseException
+    {
+        String sql = "DELETE FROM drawings WHERE drawing_id = ?";
+
+        try (Connection connection = connectionPool.getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql))
+        {
+            ps.setInt(1, drawingId);
+            int rowsAffected = ps.executeUpdate();
+
+            if (rowsAffected == 1)
+            {
+                return true;
+            }
+        }
+        catch (SQLException e)
+        {
+            throw new DatabaseException("Fejl ved sletning af Tegning med id: " + drawingId);
+        }
+        return false;
+    }
 }
 

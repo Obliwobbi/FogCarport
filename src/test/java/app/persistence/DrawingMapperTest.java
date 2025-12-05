@@ -47,12 +47,14 @@ class DrawingMapperTest
                                 )
                             """);
                 }
-            } catch (SQLException e)
+            }
+            catch (SQLException e)
             {
                 e.printStackTrace();
                 fail("Database connection failed: " + e.getMessage());
             }
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             e.printStackTrace();
             fail("Failed to set up test database");
@@ -85,7 +87,8 @@ class DrawingMapperTest
 
                 stmt.execute("SELECT setval('test.drawings_drawing_id_seq', 3, true)");
             }
-        } catch (SQLException e)
+        }
+        catch (SQLException e)
         {
             fail("Failed to insert test data: " + e.getMessage());
         }
@@ -136,5 +139,14 @@ class DrawingMapperTest
 
         Drawing updatedDrawing = drawingMapper.getDrawingById(1);
         assertEquals(updatedSvgData, updatedDrawing.getDrawingData());
+    }
+
+    @Test
+    void deleteDrawing() throws DatabaseException
+    {
+        boolean actual = drawingMapper.deleteDrawing(3);
+
+        assertTrue(actual);
+        assertThrows(DatabaseException.class, () -> drawingMapper.getDrawingById(3));
     }
 }
