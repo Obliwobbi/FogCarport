@@ -20,7 +20,7 @@ public class OrderMapper
         this.materialsLinesMapper = new MaterialsLinesMapper(connectionPool);
     }
 
-    public Order createOrder(int carportId, int drawingId, int customerId) throws DatabaseException
+    public Order createOrder(int drawingId, int carportId, int customerId) throws DatabaseException
     {
         String sql = "INSERT INTO orders (drawing_id, carport_id, customer_id)" +
                 "VALUES (?,?,?)";
