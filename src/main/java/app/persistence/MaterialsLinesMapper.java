@@ -104,7 +104,6 @@ public class MaterialsLinesMapper
 
     public boolean updateMaterialLineName(int orderId, MaterialsLine line, String newMaterialName) throws DatabaseException
     {
-        boolean result = false;
         String sql = """
                 UPDATE materials_lines
                 SET material_name=?
@@ -119,10 +118,10 @@ public class MaterialsLinesMapper
             ps.setInt(3, line.getLineId());
 
             int rowsAffected = ps.executeUpdate();
-            if (rowsAffected > 0)
+            if (rowsAffected == 1)
             {
 
-                result = true;
+                return true;
             } else
             {
                 throw new DatabaseException("Ingen material line fundet med id: " + line.getLineId());
@@ -132,7 +131,6 @@ public class MaterialsLinesMapper
         {
             throw new DatabaseException("Fejl ved hentning af materials_lines: " + e.getMessage());
         }
-        return result;
     }
 
     public String getMaterialLineName(int orderId, MaterialsLine line) throws DatabaseException
@@ -187,5 +185,4 @@ public class MaterialsLinesMapper
         }
         return result;
     }
-
 }

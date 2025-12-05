@@ -17,12 +17,13 @@ public class OrderServiceImpl implements OrderService
     private CustomerMapper customerMapper;
     private MaterialsLinesMapper materialsLinesMapper;
 
-    public OrderServiceImpl(OrderMapper orderMapper, CarportMapper carportMapper, DrawingMapper drawingMapper, CustomerMapper customerMapper)
+    public OrderServiceImpl(OrderMapper orderMapper, CarportMapper carportMapper, DrawingMapper drawingMapper, CustomerMapper customerMapper, MaterialsLinesMapper materialsLinesMapper)
     {
         this.orderMapper = orderMapper;
         this.carportMapper = carportMapper;
         this.drawingMapper = drawingMapper;
         this.customerMapper = customerMapper;
+        this.materialsLinesMapper = materialsLinesMapper;
     }
 
     @Override

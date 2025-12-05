@@ -49,7 +49,7 @@ public class Main
         CalculatorService calculatorService = new CalculatorServiceImpl();
 
         OrderDetailsService orderDetailsService = new OrderDetailsServiceImpl(calculatorService,materialsLinesMapper,materialMapper);
-        OrderService orderService = new OrderServiceImpl(orderMapper, carportMapper, drawingMapper, customerMapper);
+        OrderService orderService = new OrderServiceImpl(orderMapper, carportMapper, drawingMapper, customerMapper, materialsLinesMapper);
         OrderController orderController = new OrderController(orderService,orderDetailsService);
 
         CustomerService customerService = new CustomerServiceImpl(customerMapper);
