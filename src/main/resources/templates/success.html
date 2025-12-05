@@ -2,21 +2,103 @@
 <html lang="da" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8"/>
-    <title>FogCarport</title>
+    <title>Ordre Bekræftelse - FogCarport</title>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <link rel="stylesheet" href="/css/stylesheet.css" th:href="@{/css/stylesheet.css}"/>
-    <link rel="stylesheet" href="/css/success.css" th:href="@{/css/orders.css}"/>
 </head>
 
 <body>
+<div th:replace="~{fragments :: headerFragment}"></div>
+
 <main>
-    <section>
-        <div>
-            <h1>Success</h1>
-            <a href="" th:href="@{/}">Tilbage til hjem</a>
+    <section class="body-style">
+        <div class="success-container">
+            <div class="success-header">
+                <h1>Tak for din bestilling!</h1>
+                <p class="order-number">Ordre nr: <strong th:text="${orderId}"></strong></p>
+            </div>
+
+            <div class="success-message">
+                <p>Vi har modtaget din bestilling og vender tilbage snarest muligt.</p>
+            </div>
+
+            <!-- Customer Information -->
+            <div class="info-box">
+                <div class="info-box-header">
+                    <h2>Dine Oplysninger</h2>
+                </div>
+                <div class="info-box-content">
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <strong>Navn</strong>
+                            <span th:text="${customer.firstName + ' ' + customer.lastName}"></span>
+                        </div>
+                        <div class="info-item">
+                            <strong>Email</strong>
+                            <span th:text="${customer.email}"></span>
+                        </div>
+                        <div class="info-item">
+                            <strong>Telefon</strong>
+                            <span th:text="${customer.phone}"></span>
+                        </div>
+                        <div class="info-item">
+                            <strong>Adresse</strong>
+                            <span th:text="${customer.street + ' ' + customer.houseNumber + ', ' + customer.zipcode + ' ' + customer.city}"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Carport Information -->
+            <div class="info-box">
+                <div class="info-box-header">
+                    <h2>Din Carport</h2>
+                </div>
+                <div class="info-box-content">
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <strong>Bredde</strong>
+                            <span th:text="${carport.width + ' cm'}"></span>
+                        </div>
+                        <div class="info-item">
+                            <strong>Længde</strong>
+                            <span th:text="${carport.length + ' cm'}"></span>
+                        </div>
+                        <div class="info-item">
+                            <strong>Højde</strong>
+                            <span th:text="${carport.height + ' cm'}"></span>
+                        </div>
+                        <div class="info-item">
+                            <strong>Med skur</strong>
+                            <span th:text="${carport.withShed ? 'Ja' : 'Nej'}"></span>
+                        </div>
+                        <div class="info-item" th:if="${carport.withShed}">
+                            <strong>Skur bredde</strong>
+                            <span th:text="${carport.shedWidth + ' cm'}"></span>
+                        </div>
+                        <div class="info-item" th:if="${carport.withShed}">
+                            <strong>Skur længde</strong>
+                            <span th:text="${carport.shedLength + ' cm'}"></span>
+                        </div>
+                        <div class="info-item full-width" th:if="${carport.customerWishes != null and !carport.customerWishes.isEmpty()}">
+                            <strong>Dine ønsker</strong>
+                            <span th:text="${carport.customerWishes}"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="action-section">
+                <form th:action="@{/success/return-home}" method="post">
+                    <button type="submit" class="home-button">Tilbage til forsiden</button>
+                </form>
+            </div>
         </div>
     </section>
 </main>
+
+<div th:replace="~{fragments :: footerFragment}"></div>
+
 </body>
 
 </html>

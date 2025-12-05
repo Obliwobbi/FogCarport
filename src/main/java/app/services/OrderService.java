@@ -13,7 +13,7 @@ public interface OrderService
 
     List<Order> getAllOrders() throws DatabaseException;
 
-    boolean createOrder(int drawingId, int carportId, int customerId) throws DatabaseException;
+    int createOrder(int drawingId, int carportId, int customerId) throws DatabaseException;
 
     boolean deleteOrder(int orderId) throws DatabaseException;
 
