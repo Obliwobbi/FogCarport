@@ -31,7 +31,7 @@ public class ContactController
     {
         app.get("/contact", ctx -> showContactPage(ctx));
 
-        app.post("/contact", ctx -> handleCreateOrder(ctx));
+        app.post("/contact/create-order", ctx -> handleCreateOrder(ctx));
     }
 
     private void handleCreateOrder(Context ctx) throws DatabaseException
