@@ -20,8 +20,6 @@ public interface CalculatorService
 
     int calculateBolts(int posts, HashMap<Double, Integer> topPlates);
 
-    int calculateFittings(int material);
-
     int calculateScrewsNeeded(int material, int screws);
 
     int calculateScrewPacks(int packSize, int screws);
