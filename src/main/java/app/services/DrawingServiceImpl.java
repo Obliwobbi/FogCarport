@@ -18,4 +18,10 @@ public class DrawingServiceImpl implements DrawingService
     {
         return drawingMapper.createDrawing(drawing.getDrawingData());
     }
+
+    @Override
+    public void deleteDrawing(int drawingId) throws DatabaseException
+    {
+        drawingMapper.deleteDrawing(drawingId);
+    }
 }
