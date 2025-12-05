@@ -56,14 +56,13 @@ public class ContactController
             Drawing drawing = drawingService.createDrawing(ctx.sessionAttribute("drawing"));
             Carport carport = carportService.createCarport(ctx.sessionAttribute("carport"));
 
-
             Integer carportId = carport.getCarportId();
             Integer drawingId = drawing.getDrawingId();
             int customerId = customer.getCustomerId();
 
             if (carportId == null || drawingId == null)
             {
-                ctx.attribute("errorMessage","Ingen carport fundet - gå tilbage og indtast mål");
+                ctx.attribute("errorMessage", "Ingen carport fundet - gå tilbage og indtast mål");
                 customerService.deleteCustomer(customer.getCustomerId());
                 ctx.render("contact.html");
             }
@@ -71,7 +70,7 @@ public class ContactController
 
             //TODO
 //            boolean orderSucces = orderService.createOrder(carportId, customer.getCustomerId());
-             orderService.createOrder(LocalDateTime.now(), "NY ORDRE", LocalDateTime.now().plusYears(1),drawingId, carportId,customerId);
+            orderService.createOrder(drawingId, carportId, customerId);
 
 //            if (!orderSucces)
 //            {
