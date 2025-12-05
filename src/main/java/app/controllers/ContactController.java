@@ -14,10 +14,10 @@ import io.javalin.http.Context;
 public class ContactController
 {
 
-    private CustomerService customerService;
-    private OrderService orderService;
-    private DrawingService drawingService;
-    private CarportService carportService;
+    private final CustomerService customerService;
+    private final OrderService orderService;
+    private final DrawingService drawingService;
+    private final CarportService carportService;
 
     public ContactController(CustomerService customerService, OrderService orderService, DrawingService drawingService, CarportService carportService)
     {
@@ -29,9 +29,9 @@ public class ContactController
 
     public void addRoutes(Javalin app)
     {
-        app.get("/contact", ctx -> showContactPage(ctx));
+        app.get("/contact", this::showContactPage);
 
-        app.post("/contact/create-order", ctx -> handleCreateOrder(ctx));
+        app.post("/contact/create-order", this::handleCreateOrder);
     }
 
     private void handleCreateOrder(Context ctx) throws DatabaseException
@@ -91,7 +91,6 @@ public class ContactController
         catch (IllegalArgumentException e)
         {
             orderFailure(drawing, carport, customer);
-            clearCustomerSession(ctx);
             ctx.attribute("errorMessage", e.getMessage());
             ctx.render("contact.html");
         }
