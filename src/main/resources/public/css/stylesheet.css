@@ -183,6 +183,8 @@ main {
     border-radius: 4px;
     text-decoration: none;
     padding: .5rem;
+    width: 150px;
+    text-align: center;
 }
 
 .button {
@@ -193,6 +195,8 @@ main {
     text-decoration: none;
     padding: .5rem;
     margin-top: .5rem;
+    width: 150px;
+    text-align: center;
 }
 
 .button:hover {
@@ -323,6 +327,14 @@ main {
     border-radius: 5px;
 }
 
+/*DRAWING*/
+.carport-svg-topview {
+    width: 45%;
+    max-width: 750px;
+    height: auto;
+    align-items: center;
+    margin-bottom: 1rem;
+}
 
 /*CONTACT*/
 

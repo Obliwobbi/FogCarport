@@ -64,9 +64,8 @@ public class CarportMapper
         String sql = "INSERT INTO carports (width, length, height, with_shed, shed_width, shed_length, customer_wishes)" +
                 "VALUES(?,?,?,?,?,?,?)";
 
-        try (
-                Connection connection = connectionPool.getConnection();
-                PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS))
+        try (Connection connection = connectionPool.getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS))
         {
             ps.setDouble(1, width);
             ps.setDouble(2, length);

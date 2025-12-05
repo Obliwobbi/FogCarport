@@ -28,6 +28,17 @@ public class Carport
         this.withShed = withShed;
         this.customerWishes = customerWishes;
     }
+
+    public Carport(double width, double length, double height, boolean withShed, double shedWidth, double shedLength, String customerWishes)
+    {
+        this.width = width;
+        this.length = length;
+        this.height = height;
+        this.withShed = withShed;
+        this.shedWidth = shedWidth;
+        this.shedLength = shedLength;
+        this.customerWishes = customerWishes;
+    }
 }
 
 

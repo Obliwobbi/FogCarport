@@ -1,36 +1,45 @@
 package app.controllers;
 
+import app.entities.Carport;
 import app.entities.Customer;
+import app.entities.Drawing;
 import app.exceptions.DatabaseException;
+import app.services.CarportService;
 import app.services.CustomerService;
+import app.services.DrawingService;
 import app.services.OrderService;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 
-import java.time.LocalDateTime;
-
 public class ContactController
 {
 
-    private CustomerService customerService;
-    private OrderService orderService;
+    private final CustomerService customerService;
+    private final OrderService orderService;
+    private final DrawingService drawingService;
+    private final CarportService carportService;
 
-    public ContactController(CustomerService customerService, OrderService orderService)
+    public ContactController(CustomerService customerService, OrderService orderService, DrawingService drawingService, CarportService carportService)
     {
         this.customerService = customerService;
         this.orderService = orderService;
+        this.drawingService = drawingService;
+        this.carportService = carportService;
     }
 
     public void addRoutes(Javalin app)
     {
-        app.get("/contact", ctx -> showContactPage(ctx));
+        app.get("/contact", this::showContactPage);
 
-        app.post("/contact", ctx -> handleCreateCustomer(ctx));
+        app.post("/contact/create-order", this::handleCreateOrder);
     }
 
-    private void handleCreateCustomer(Context ctx) throws DatabaseException
+    private void handleCreateOrder(Context ctx) throws DatabaseException
     {
         Customer customer = null;
+        Drawing drawing = null;
+        Carport carport = null;
+
         try
         {
             customer = customerService.registerNewCustomer(
@@ -44,51 +53,57 @@ public class ContactController
                     ctx.formParam("city")
             );
 
-            Integer carportId = ctx.sessionAttribute("carportId");
-            if (carportId == null)
-            {
-                ctx.attribute("errorMessage","Ingen carport fundet - gå tilbage og indtast mål");
-                customerService.deleteCustomer(customer.getCustomerId());
-                ctx.render("contact.html");
-            }
+            drawing = drawingService.createDrawing(ctx.sessionAttribute("drawing"));
+            carport = carportService.createCarport(ctx.sessionAttribute("carport"));
 
-            boolean orderSucces = orderService.createOrder(carportId, customer.getCustomerId());
-
-            if (!orderSucces)
+            if (carport == null || drawing == null)
             {
-                customerService.deleteCustomer(customer.getCustomerId());
-                ctx.attribute("errorMessage","Ordre kunne ikke oprettes");
+                orderFailure(drawing, carport, customer);
+                ctx.attribute("errorMessage", "Ingen carport fundet - gå tilbage og indtast mål");
                 ctx.render("contact.html");
                 return;
             }
 
-            ctx.sessionAttribute("successMessage", "Kontakt info modtaget - du hører fra os snarest");
+            int carportId = carport.getCarportId();
+            int drawingId = drawing.getDrawingId();
+            int customerId = customer.getCustomerId();
+
+            boolean orderSuccess = orderService.createOrder(drawingId, carportId, customerId);
+
+            if (!orderSuccess)
+            {
+                orderFailure(drawing, carport, customer);
+                ctx.attribute("errorMessage", "Ordre kunne ikke oprettes");
+                ctx.render("contact.html");
+                return;
+            }
+
+            clearCustomerSession(ctx);
             ctx.redirect("/success");
         }
         catch (DatabaseException e)
         {
-            if (customer != null)
-            {
-                customerService.deleteCustomer(customer.getCustomerId());
-            }
+            orderFailure(drawing, carport, customer);
+            clearCustomerSession(ctx);
             ctx.attribute("errorMessage", e.getMessage() + "fejl ved indlæsning af kunde info");
             ctx.render("contact.html");
         }
         catch (IllegalArgumentException e)
         {
-            if (customer != null)
-            {
-                customerService.deleteCustomer(customer.getCustomerId());
-            }
+            orderFailure(drawing, carport, customer);
             ctx.attribute("errorMessage", e.getMessage());
+            ctx.render("contact.html");
+        }
+        catch (NullPointerException e)
+        {
+            orderFailure(drawing, carport, customer);
+            ctx.attribute("errorMessage", "Udfyld venligtst alle Felterne");
             ctx.render("contact.html");
         }
         catch (Exception e)
         {
-            if (customer != null)
-            {
-                customerService.deleteCustomer(customer.getCustomerId());
-            }
+            orderFailure(drawing, carport, customer);
+            clearCustomerSession(ctx);
             ctx.attribute("errorMessage", "Der opstod en uventet fejl");
             ctx.render("contact.html");
         }
@@ -99,4 +114,33 @@ public class ContactController
         ctx.render("contact");
     }
 
+    private void orderFailure(Drawing drawing, Carport carport, Customer customer) throws DatabaseException
+    {
+        try
+        {
+            if (drawing != null)
+            {
+                drawingService.deleteDrawing(drawing.getDrawingId());
+            }
+            if (carport != null)
+            {
+                carportService.deleteCarport(carport.getCarportId());
+            }
+            if (customer != null)
+            {
+                customerService.deleteCustomer(customer.getCustomerId());
+            }
+        }
+        catch (DatabaseException e)
+        {
+            //TODO Should probably be logged
+            System.err.println("Cleanup failed: " + e.getMessage());
+        }
+    }
+
+    private void clearCustomerSession(Context ctx)
+    {
+        ctx.sessionAttribute("drawing", null);
+        ctx.sessionAttribute("carport", null);
+    }
 }

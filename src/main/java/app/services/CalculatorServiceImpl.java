@@ -20,11 +20,13 @@ public class CalculatorServiceImpl implements CalculatorService
 
             if (carport.getShedWidth() > blockingMaxLength)
             {
-                result += 2;
+                result += (carport.getShedWidth()-blockingMaxLength > blockingMaxLength ? 4 : 2);
+
             }
             if (carport.getShedLength() > blockingMaxLength)
             {
-                result += 2;
+                result += (carport.getShedLength()-blockingMaxLength > blockingMaxLength ? 6 : 2);
+
             }
 
             double remainingLength = (carport.getLength() - 100.0) - carport.getShedLength(); //Calculation of remaining length between shed and corner post due to max length of Top plate(Rem træ).
