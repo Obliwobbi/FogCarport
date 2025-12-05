@@ -23,9 +23,9 @@ public class CarportServiceImpl implements CarportService
     }
 
     @Override
-    public Carport createCarport(double width, double length, double height, boolean withShed, double shedWidth, double shedLength, String customerWishes) throws DatabaseException
+    public Carport createCarport(Carport carport) throws DatabaseException
     {
-        return carportMapper.createCarport(width, length, height, withShed, shedWidth, shedLength, customerWishes);
+        return carportMapper.createCarport(carport.getWidth(), carport.getLength(), carport.getHeight(), carport.isWithShed(), carport.getShedWidth(), carport.getShedLength(), carport.getCustomerWishes());
     }
 
     @Override

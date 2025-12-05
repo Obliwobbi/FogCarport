@@ -13,9 +13,7 @@ public interface OrderService
 
     List<Order> getAllOrders() throws DatabaseException;
 
-    Order createOrder(LocalDateTime orderDate, String status, LocalDateTime deliveryDate, Integer drawingId, int carportId, int customerId) throws DatabaseException;
-
-    boolean createOrder(int carportId, int customerId) throws DatabaseException;
+    boolean createOrder(int drawingId, int carportId, int customerId) throws DatabaseException;
 
     boolean deleteOrder(int orderId) throws DatabaseException;
 

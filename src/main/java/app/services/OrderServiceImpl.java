@@ -50,21 +50,10 @@ public class OrderServiceImpl implements OrderService
     }
 
     @Override
-    public Order createOrder(LocalDateTime orderDate, String status, LocalDateTime deliveryDate, Integer drawingId, int carportId, int customerId) throws DatabaseException
+    public boolean createOrder(int drawingId, int carportId, int customerId) throws DatabaseException
     {
-        return orderMapper.createOrder(orderDate, status, deliveryDate, drawingId, carportId, customerId);
-    }
-
-    @Override
-    public boolean createOrder(int carportId, int customerId) throws DatabaseException
-    {
-        LocalDateTime orderDate = LocalDateTime.now();
-        String status = "NY ORDRE";
-        LocalDateTime deliveryDate = LocalDateTime.now().plusYears(1);
-        Integer drawingId = null;
-
-        orderMapper.createOrder(orderDate, status, deliveryDate, drawingId, carportId, customerId);
-        return true;
+        Order order = orderMapper.createOrder(drawingId, carportId, customerId);
+        return order != null;
     }
 
     @Override
@@ -99,6 +88,7 @@ public class OrderServiceImpl implements OrderService
                 .sorted(Comparator.comparing(Order::getOrderDate))
                 .collect(Collectors.toList());
     }
+
     public List<OrderWithDetailsDTO> getOrdersByStatusDTO(String status) throws DatabaseException
     {
         return orderMapper.getAllOrdersByStatus(status);
