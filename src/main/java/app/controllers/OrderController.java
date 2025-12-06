@@ -227,6 +227,22 @@ public class OrderController
 
     private void regenerateMaterialList(Context ctx)
     {
+        int orderId = Integer.parseInt(ctx.pathParam("id"));
+
+        try
+        {
+            OrderWithDetailsDTO order = orderService.getOrderwithDetails(orderId);
+
+            orderDetailsService.regenerateMaterialList(orderId, order.getCarport());
+
+            ctx.redirect("/orders/details/" + orderId + "?success=carport");
+        }
+        catch (DatabaseException e)
+        {
+
+            ctx.attribute("errorMessage", "Kunne ikke regenerere materiale liste");
+            ctx.redirect("/orders/details/" + orderId + "?error=" + e.getMessage());
+        }
     }
 
     private void generateMaterialList(Context ctx)
