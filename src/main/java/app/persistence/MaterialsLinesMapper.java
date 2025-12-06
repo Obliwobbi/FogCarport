@@ -62,7 +62,7 @@ public class MaterialsLinesMapper
         List<MaterialsLine> materialLines = new ArrayList<>();
         String sql = """
             SELECT ml.line_id, ml.quantity, ml.unit_price, ml.line_price,
-                   m.id, m.name, m.description, m.unit, m.unit_type, 
+                   m.id, m.name, m.description, m.unit, m.unit_type,
                    m.material_length, m.material_width, m.material_height, m.price
             FROM materials_lines ml
             LEFT JOIN materials m ON ml.material_id = m.id
@@ -212,5 +212,29 @@ public class MaterialsLinesMapper
             throw new DatabaseException(e.getMessage() + "Fejl ved sletning af ordrelinje med id: " + line.getLineId());
         }
         return result;
+    }
+
+    public boolean deleteAllMaterialLinesByOrderId(int orderId) throws DatabaseException
+    {
+        String sql = """
+                DELETE FROM materials_lines
+                WHERE order_id = ?;
+                """;
+
+        try (Connection connection = connectionPool.getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql))
+        {
+            ps.setInt(1, orderId);
+            int rowsAffected = ps.executeUpdate();
+            if (rowsAffected >= 1)
+            {
+                return true;
+            }
+        }
+        catch (SQLException e)
+        {
+            throw new DatabaseException("Fejl ved sletning af materiale linjer på ordre id: " + orderId + ": " + e.getMessage());
+        }
+        return false;
     }
 }
