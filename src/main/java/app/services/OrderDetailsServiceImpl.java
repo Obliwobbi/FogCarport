@@ -111,6 +111,15 @@ public class OrderDetailsServiceImpl implements OrderDetailsService
         materialsLinesMapper.updateMaterialLinePrice(lineId, newPrice, quantity);
     }
 
+    @Override
+    public void regenerateMaterialList(int orderId, Carport carport) throws DatabaseException
+    {
+        boolean materialsDeleted = materialsLinesMapper.deleteAllMaterialLinesByOrderId(orderId);
+        if (materialsDeleted)
+        {
+            addMaterialListToOrder(orderId, carport);
+        }
+    }
 
     @Override
     public List<MaterialsLine> createMaterialList(Carport carport) throws DatabaseException
