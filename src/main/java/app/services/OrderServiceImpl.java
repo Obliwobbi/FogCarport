@@ -88,9 +88,15 @@ public class OrderServiceImpl implements OrderService
     }
 
     @Override
-    public void updateOrderTotalPrice(int orderId, double newTotalPrice) throws DatabaseException
+    public void updateOrderTotalPrice(int orderId) throws DatabaseException
     {
-        orderMapper.updateOrderTotalPrice(orderId, newTotalPrice);
+        List<MaterialsLine> lines = getOrderwithDetails(orderId).getMaterialsLines();
+        double totalPrice = 0;
+        for(MaterialsLine materialsLine : lines)
+        {
+            totalPrice += materialsLine.getLinePrice();
+        }
+        orderMapper.updateOrderTotalPrice(orderId, totalPrice);
     }
 
     @Override
