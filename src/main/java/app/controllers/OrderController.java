@@ -92,16 +92,16 @@ public class OrderController
             LocalDate deliveryDate = (deliveryDateString != null && !deliveryDateString.isEmpty())
                     ? LocalDate.parse(deliveryDateString) : null;
 
-            orderService.updateOrderStatus(orderId,status);
+            orderService.updateOrderStatus(orderId, status);
             if (deliveryDate != null)
             {
-                orderService.updateOrderDeliveryDate(orderId,deliveryDate.atStartOfDay().plusHours(12));
+                orderService.updateOrderDeliveryDate(orderId, deliveryDate.atStartOfDay().plusHours(12));
             }
-            ctx.redirect("/orders/details/"+orderId+"?success=order");
+            ctx.redirect("/orders/details/" + orderId + "?success=order");
         }
         catch (DatabaseException e)
         {
-            ctx.redirect("/orders/details/"+orderId + "?error="+e.getMessage());
+            ctx.redirect("/orders/details/" + orderId + "?error=" + e.getMessage());
         }
     }
 
@@ -130,7 +130,7 @@ public class OrderController
         catch (DatabaseException e)
         {
             ctx.attribute("errorMessage", e.getMessage());
-            ctx.redirect("/orders/details/"+orderId + "?error="+e.getMessage());
+            ctx.redirect("/orders/details/" + orderId + "?error=" + e.getMessage());
         }
     }
 
@@ -149,7 +149,7 @@ public class OrderController
 
             Integer shedWidth = null;
             Integer shedLength = null;
-            if(withShed)
+            if (withShed)
             {
                 String shedWidthString = ctx.formParam("shedWidth");
                 String shedLengthString = ctx.formParam("shedLength");
@@ -164,7 +164,7 @@ public class OrderController
             carport.setLength(carportLength);
             carport.setHeight(carportHeight);
             carport.setWithShed(withShed);
-            if(carport.isWithShed())
+            if (carport.isWithShed())
             {
                 carport.setShedWidth(shedWidth);
                 carport.setShedLength(shedLength);
@@ -223,7 +223,41 @@ public class OrderController
         }
     }
 
+    private void generateMaterialList(Context ctx)
+    {
+        int orderId = Integer.parseInt(ctx.pathParam("id"));
 
+        try
+        {
+            OrderWithDetailsDTO order = new OrderWithDetailsDTO();
+            try
+            {
+                order = orderService.getOrderwithDetails(orderId);
+            }
+            catch (DatabaseException e)
+            {
+                ctx.attribute("errorMessage", "Ugyldigt ordre ID: " + orderId);
+            }
+            List<MaterialsLine> existingMaterialsLines = order.getMaterialsLines();
+            if (existingMaterialsLines != null && !existingMaterialsLines.isEmpty())
+            {
+                ctx.attribute("errorMessage", "Materialer er allerede generet for denne ordre");
+                ctx.redirect("/orders/details/" + orderId);
+                return;
+            }
+            Carport carport = order.getCarport();
+            orderDetailsService.addMaterialListToOrder(orderId, carport);
+            //TODO: insert order total price so it is set on material list creation
+
+
+            ctx.attribute("successMessage", "Materiale liste blev genereret");
+            ctx.redirect("/orders/details/" + orderId);
+        }
+        catch (DatabaseException e)
+        {
+            ctx.attribute("errorMessage", "Kunne ikke oprette materiale liste: " + e.getMessage());
+        }
+    }
 
     private void regenerateMaterialList(Context ctx)
     {
@@ -240,45 +274,8 @@ public class OrderController
         }
         catch (DatabaseException e)
         {
-
             ctx.attribute("errorMessage", "Kunne ikke regenerere materiale liste");
             ctx.redirect("/orders/details/" + orderId + "?error=" + e.getMessage());
-        }
-    }
-
-    private void generateMaterialList(Context ctx)
-    {
-        String orderIdStr = ctx.pathParam("id");
-
-        try
-        {
-            OrderWithDetailsDTO order = new OrderWithDetailsDTO();
-            int orderId = Integer.parseInt(orderIdStr);
-            try
-            {
-                order = orderService.getOrderwithDetails(orderId);
-            }
-            catch (DatabaseException e)
-            {
-                ctx.attribute("errorMessage", "Ugyldigt ordre ID: " + orderId);
-            }
-            List<MaterialsLine> existingMaterialsLines = order.getMaterialsLines();
-            if (existingMaterialsLines != null && !existingMaterialsLines.isEmpty())
-            {
-                ctx.attribute("errorMessage", "Materialer er allerede generet for denne ordre");
-                ctx.redirect("/orders/details/"+orderId);
-                return;
-            }
-            Carport carport = order.getCarport();
-            orderDetailsService.addMaterialListToOrder(orderId,carport);
-            //TODO: insert order total price so it is set on material list creation
-
-            ctx.attribute("successMessage", "Materiale liste blev genereret");
-            ctx.redirect("/orders/details/"+ orderId);
-        }
-        catch (DatabaseException e)
-        {
-            ctx.attribute("errorMessage", "Kunne ikke oprette materiale liste: " + e.getMessage());
         }
     }
 
