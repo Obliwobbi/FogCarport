@@ -229,11 +229,11 @@ public class OrderMapper
     public List<OrderWithDetailsDTO> getAllOrdersByStatus(String status) throws DatabaseException
     {
         String sql = """
-                SELECT 
+                SELECT
                     o.order_id, o.order_date, o.status, o.delivery_date,
-                    c.carport_id, c.width, c.length, c.height, c.with_shed, 
+                    c.carport_id, c.width, c.length, c.height, c.with_shed,
                     c.shed_width, c.shed_length, c.customer_wishes,
-                    cu.customer_id, cu.firstname, cu.lastname, cu.email, cu.phone, 
+                    cu.customer_id, cu.firstname, cu.lastname, cu.email, cu.phone,
                     cu.street, cu.house_number, cu.zipcode, cu.city,
                     d.drawing_id, d.drawing_data
                 FROM orders o
