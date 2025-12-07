@@ -102,7 +102,6 @@ public class OrderDetailsServiceImpl implements OrderDetailsService
                 throw new DatabaseException("Kunne ikke oprette MaterialLine med id og navn: " + materialsLine.getMaterial().getId() + ", " + materialsLine.getMaterial().getName() + " på ordre id " + orderId + ": " + e.getMessage());
             }
         }
-        //TODO: insert total materiallist price here to database
         return true;
     }
 
