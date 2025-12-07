@@ -186,10 +186,7 @@ public class OrderController
 
         try
         {
-            OrderWithDetailsDTO order = orderService.getOrderwithDetails(orderId);
-            List<MaterialsLine> lines = order.getMaterialsLines();
-
-            double totalPrice = 0;
+            List<MaterialsLine> lines = orderService.getOrderwithDetails(orderId).getMaterialsLines();
 
             for (int i = 0; i < lines.size(); i++)
             {
@@ -209,12 +206,10 @@ public class OrderController
                     if (line != null)
                     {
                         orderDetailsService.updateMaterialLinePrice(lineId, newPrice, line.getQuantity());
-                        totalPrice += newPrice * line.getQuantity();
                     }
                 }
             }
-
-            orderService.updateOrderTotalPrice(orderId, totalPrice);
+            orderService.updateOrderTotalPrice(orderId);
             ctx.redirect("/orders/details/" + orderId + "?success=prices");
         }
         catch (DatabaseException e)
