@@ -229,29 +229,20 @@ public class OrderController
 
         try
         {
-            OrderWithDetailsDTO order = new OrderWithDetailsDTO();
-            try
+            OrderWithDetailsDTO order = orderService.getOrderwithDetails(orderId);
+            Carport carport = order.getCarport();
+
+            if (orderDetailsService.addMaterialListToOrder(orderId, carport))
             {
-                order = orderService.getOrderwithDetails(orderId);
+                orderService.updateOrderTotalPrice(orderId);
+                ctx.attribute("successMessage", "Materiale liste blev genereret");
+                ctx.redirect("/orders/details/" + orderId);
             }
-            catch (DatabaseException e)
-            {
-                ctx.attribute("errorMessage", "Ugyldigt ordre ID: " + orderId);
-            }
-            List<MaterialsLine> existingMaterialsLines = order.getMaterialsLines();
-            if (existingMaterialsLines != null && !existingMaterialsLines.isEmpty())
+            else
             {
                 ctx.attribute("errorMessage", "Materialer er allerede generet for denne ordre");
                 ctx.redirect("/orders/details/" + orderId);
-                return;
             }
-            Carport carport = order.getCarport();
-            orderDetailsService.addMaterialListToOrder(orderId, carport);
-            //TODO: insert order total price so it is set on material list creation
-
-
-            ctx.attribute("successMessage", "Materiale liste blev genereret");
-            ctx.redirect("/orders/details/" + orderId);
         }
         catch (DatabaseException e)
         {
