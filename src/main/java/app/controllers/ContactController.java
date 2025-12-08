@@ -34,8 +34,6 @@ public class ContactController
         app.post("/contact/create-order", this::handleCreateOrder);
 
         app.get("/success", this::showSuccessPage);
-
-        app.post("/success/return-home", this::returnToHome);
     }
 
     private void handleCreateOrder(Context ctx) throws DatabaseException
@@ -141,12 +139,6 @@ public class ContactController
         ctx.render("success.html");
     }
 
-    private void returnToHome(Context ctx)
-    {
-        clearSuccessSession(ctx);
-        ctx.redirect("/");
-    }
-
     private void orderFailure(Drawing drawing, Carport carport, Customer customer) throws DatabaseException
     {
         try
@@ -175,12 +167,5 @@ public class ContactController
     {
         ctx.sessionAttribute("drawing", null);
         ctx.sessionAttribute("carport", null);
-    }
-
-    private void clearSuccessSession(Context ctx)
-    {
-        ctx.sessionAttribute("successOrderId", null);
-        ctx.sessionAttribute("successCustomer", null);
-        ctx.sessionAttribute("successCarport", null);
     }
 }
