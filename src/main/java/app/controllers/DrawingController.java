@@ -48,4 +48,32 @@ public class DrawingController
             ctx.redirect("/carport");
         }
     }
+
+    private void showOrderDrawing(Context ctx)
+    {
+        try
+        {
+            int orderId = Integer.parseInt(ctx.pathParam("id"));
+            OrderWithDetailsDTO order = orderService.getOrderwithDetails(orderId);
+
+            String svgData;
+            if (order.getDrawing() == null)
+            {
+                svgData = drawingService.showDrawing(order.getCarport(), calculatorService);
+            }
+            else
+            {
+                svgData = order.getDrawing().getDrawingData();
+            }
+
+            ctx.attribute("svg", svgData);
+            ctx.attribute("orderId", orderId);
+            ctx.attribute("isOrderView", true);
+            ctx.render("drawing.html");
+        }
+        catch (DatabaseException e)
+        {
+            ctx.redirect("/orders?error=" + e.getMessage());
+        }
+    }
 }
