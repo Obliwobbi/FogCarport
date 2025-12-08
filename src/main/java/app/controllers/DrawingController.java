@@ -76,4 +76,24 @@ public class DrawingController
             ctx.redirect("/orders?error=" + e.getMessage());
         }
     }
+
+    private void regenerateDrawing(Context ctx)
+    {
+        try
+        {
+            int orderId = Integer.parseInt(ctx.pathParam("id"));
+            OrderWithDetailsDTO order = orderService.getOrderwithDetails(orderId);
+
+            String newSvg = drawingService.showDrawing(order.getCarport(), calculatorService);
+            Drawing updatedDrawing = new Drawing(order.getDrawing().getDrawingId(), newSvg);
+
+            drawingService.updateDrawing(updatedDrawing);
+
+            ctx.redirect("/orders/details/" + orderId + "/drawing?success=Tegning opdateret");
+        }
+        catch (DatabaseException e)
+        {
+            ctx.redirect("/orders/details/" + ctx.pathParam("id") + "?error=" + e.getMessage());
+        }
+    }
 }
