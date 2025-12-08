@@ -1,25 +1,31 @@
 package app.controllers;
 
+import app.dto.OrderWithDetailsDTO;
 import app.entities.Carport;
 import app.entities.Drawing;
+import app.exceptions.DatabaseException;
 import app.services.*;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 
 public class DrawingController
 {
-    private final CalculatorService calculatorService;
     private final DrawingService drawingService;
+    private final CalculatorService calculatorService;
+    private final OrderService orderService;
 
-    public DrawingController(DrawingService drawingService, CalculatorService calculatorService)
+    public DrawingController(DrawingService drawingService, CalculatorService calculatorService, OrderService orderService)
     {
-        this.calculatorService = calculatorService;
         this.drawingService = drawingService;
+        this.calculatorService = calculatorService;
+        this.orderService = orderService;
     }
 
     public void addRoutes(Javalin app)
     {
         app.get("/drawing", this::showDrawing);
+        app.get("/orders/details/{id}/drawing", this::showOrderDrawing);
+        app.post("/orders/details/{id}/regenerate-drawing", this::regenerateDrawing);
     }
 
     private void showDrawing(Context ctx)
