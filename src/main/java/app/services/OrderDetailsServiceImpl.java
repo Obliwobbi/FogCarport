@@ -3,7 +3,6 @@ package app.services;
 import app.entities.Carport;
 import app.entities.Material;
 import app.entities.MaterialsLine;
-import app.entities.Order;
 import app.exceptions.DatabaseException;
 import app.persistence.*;
 
@@ -17,68 +16,6 @@ public class OrderDetailsServiceImpl implements OrderDetailsService
     private final MaterialsLinesMapper materialsLinesMapper;
     private final MaterialMapper materialMapper;
 
-    int postMaterialId = 12; //MaterialID '11' is taken from database to match with post material
-
-    double shortTopPlateBoard = 480.0;
-    int shortTopPlateBoardMaterialId = 9;
-    double longTopPlateBoard = 600.0;
-    int longTopPlateBoardMaterialId = 8;
-
-    int boltMaterialId = 22; //MaterialId '22' is for bolts 10x120mm
-    int washerMaterialId = 23;
-
-    double shortCeilingJoist = 480.0;
-    int shortCeilingJoistMaterialId = 10; //MaterialId '10' is for long ceiling joist (600)
-    double longCeilingJoist = 600.0;
-    int longCeilingJoistMaterialId = 11; //MaterialId '10' is for long ceiling joist (600)
-    int rightCeilingJoistFittingMaterialId = 20; //MaterialId '19' is for right fitting
-    int leftCeilingJoistFittingMaterialId = 21; //MaterialId '20' is for left fitting
-    int screwsPerCeilingJoistFitting = 9;  //according to documentation, 9 screws per ceiling joist fitting
-
-    int perforatedStripMaterialId = 19;
-
-    double shortFasciaBoard = 360.0;
-    int shortFasciaBoardMaterialId = 3;
-    int shortSubFasciaBoardMaterialId = 1;
-    int shortWeatherBoardMaterialId = 15;
-
-    double longFasciaBoard = 540.0;
-    int longFasciaBoardMaterialId = 4;
-    int longSubFasciaBoardMaterialId = 2;
-    int longWeatherBoardMaterialId = 14;
-
-    double shortRoofPlate = 360.0;
-    int shortRoofPlateMaterialId = 17;
-    double longRoofPlate = 600.0;
-    int longRoofPlateMaterialId = 16;
-
-    int packSizeRoofPlateScrew = 200; //According to documentation
-    int roofPlateScrewMaterialId = 18;
-
-    double shortBlocking = 240.0;
-    int shortBlockingMaterialId = 7;
-    double longBlocking = 270.0;
-    int longBlockingMaterialId = 6;
-
-    int blockingFittingMaterialId = 30;
-    int screwsPerBlockingFitting = 4;  //according to documentation
-
-    int sideBoardMaterialId = 13;
-
-    int packSizeShortScrew = 300; //according to documentation
-    int shortScrewsNeededPerBoard = 3; //according to documentation
-    int shortScrewMaterialId = 25;
-
-    int packSizeLongScrew = 400; //according to documentation
-    int longScrewsNeededPerBoard = 6; //according to documentation
-    int longScrewMaterialId = 27;
-
-    int shedDoorStripMaterialId = 5;
-    int shedDoorGripMaterialId = 28;
-    int shedDoorTHingeMaterialId = 29;
-
-    int packSizeFittingScrew = 250; //according to documentation
-    int universalScrewsMaterialId = 24;
 
     public OrderDetailsServiceImpl(CalculatorService calculatorService, MaterialsLinesMapper materialsLinesMapper, MaterialMapper materialMapper)
     {
@@ -130,38 +67,38 @@ public class OrderDetailsServiceImpl implements OrderDetailsService
                                POSTS
          ####################################################### */
         int posts = calculatorService.calculatePosts(carport);
-        materialList.add(insertMaterialLine(posts, postMaterialId));
+        materialList.add(insertMaterialLine(posts, Constants.POST_MATERIAL_ID));
 
         /* #######################################################
                              TOP PLATES
          ####################################################### */
         HashMap<Double, Integer> topPlates = calculatorService.calculateTopPlate(carport);
-        forEachMaterial(topPlates, materialList, shortTopPlateBoard, longTopPlateBoard, shortTopPlateBoardMaterialId, longTopPlateBoardMaterialId);
+        forEachMaterial(topPlates, materialList, Constants.TOP_PLATE_SHORT, Constants.TOP_PLATE_LONG, Constants.TOP_PLATE_SHORT_MATERIAL_ID, Constants.TOP_PLATE_LONG_MATERIAL_ID);
 
         /* #######################################################
                           BOLTS & WASHERS
          ####################################################### */
         int bolts = calculatorService.calculateBolts(posts, topPlates);
-        materialList.add(insertMaterialLine(bolts, boltMaterialId));
-        materialList.add(insertMaterialLine(bolts, washerMaterialId)); //same amount of washers as bolts
+        materialList.add(insertMaterialLine(bolts, Constants.BOLT_MATERIAL_ID));
+        materialList.add(insertMaterialLine(bolts, Constants.WASHER_MATERIAL_ID)); //same amount of washers as bolts
 
         /* #######################################################
                   CEILING JOISTS & FITTINGS + SCREWS
          ####################################################### */
         HashMap<Double, Integer> ceilingJoists = calculatorService.calculateCeilingJoist(carport);
-        forEachMaterial(ceilingJoists, materialList, shortCeilingJoist, longCeilingJoist, shortCeilingJoistMaterialId, longCeilingJoistMaterialId);
+        forEachMaterial(ceilingJoists, materialList, Constants.CEILING_JOIST_SHORT, Constants.CEILING_JOIST_LONG, Constants.CEILING_JOIST_SHORT_MATERIAL_ID, Constants.CEILING_JOIST_LONG_MATERIAL_ID);
 
         int ceilingJoistFittings = calculatorService.sumHashMapValues(ceilingJoists); //Needs double amount, 1 right and 1 left fitting for each ceiling joist
-        materialList.add(insertMaterialLine(ceilingJoistFittings, rightCeilingJoistFittingMaterialId));
-        materialList.add(insertMaterialLine(ceilingJoistFittings, leftCeilingJoistFittingMaterialId));
+        materialList.add(insertMaterialLine(ceilingJoistFittings, Constants.CEILING_JOIST_FITTING_RIGHT_MATERIAL_ID));
+        materialList.add(insertMaterialLine(ceilingJoistFittings, Constants.CEILING_JOIST_FITTING_LEFT_MATERIAL_ID));
 
-        int universalScrews = calculatorService.calculateScrewsNeeded(ceilingJoistFittings, screwsPerCeilingJoistFitting);
+        int universalScrews = calculatorService.calculateScrewsNeeded(ceilingJoistFittings, Constants.SCREWS_PER_CEILING_JOIST_FITTING);
 
         /* #######################################################
                             PERFORATED STRIP
          ####################################################### */
         int perforatedStrip = calculatorService.calculatePerforatedStrip(carport);
-        materialList.add(insertMaterialLine(perforatedStrip, perforatedStripMaterialId));
+        materialList.add(insertMaterialLine(perforatedStrip, Constants.PERFORATED_STRIP_MATERIAL_ID));
 
         /* #######################################################
                       FASCIA BOARDS + WEATHERBOARD/SIDING
@@ -179,11 +116,11 @@ public class OrderDetailsServiceImpl implements OrderDetailsService
                           ROOF PLATES & SCREWS
          ####################################################### */
         HashMap<Double, Integer> roofPlates = calculatorService.calculateRoofPlates(carport);
-        forEachMaterial(roofPlates, materialList, shortRoofPlate, longRoofPlate, shortRoofPlateMaterialId, longRoofPlateMaterialId);
+        forEachMaterial(roofPlates, materialList, Constants.ROOF_PLATE_SHORT, Constants.ROOF_PLATE_LONG, Constants.ROOF_PLATE_SHORT_MATERIAL_ID, Constants.ROOF_PLATE_LONG_MATERIAL_ID);
 
         int roofPlateScrews = calculatorService.calculateRoofPlateScrews(carport);
-        int roofPlateScrewPacks = calculatorService.calculateScrewPacks(packSizeRoofPlateScrew, roofPlateScrews);
-        materialList.add(insertMaterialLine(roofPlateScrewPacks, roofPlateScrewMaterialId));
+        int roofPlateScrewPacks = calculatorService.calculateScrewPacks(Constants.PACK_SIZE_ROOF_PLATE_SCREW, roofPlateScrews);
+        materialList.add(insertMaterialLine(roofPlateScrewPacks, Constants.ROOF_PLATE_SCREW_MATERIAL_ID));
 
         /* #######################################################
                             IF IS WITH SHED
@@ -191,36 +128,36 @@ public class OrderDetailsServiceImpl implements OrderDetailsService
         if (carport.isWithShed())
         {
             HashMap<Double, Integer> blockings = calculatorService.calculateBlocking(carport);
-            forEachMaterial(blockings, materialList, shortBlocking, longBlocking, shortBlockingMaterialId, longBlockingMaterialId);
+            forEachMaterial(blockings, materialList, Constants.BLOCKING_SHORT, Constants.BLOCKING_LONG, Constants.BLOCKING_SHORT_MATERIAL_ID, Constants.BLOCKING_LONG_MATERIAL_ID);
 
             int blockingFittings = calculatorService.sumHashMapValues(blockings) * 2; //Need two pr blocking (according to delivered material, 16 blockings and 32 fittings)
-            materialList.add(insertMaterialLine(blockingFittings, blockingFittingMaterialId));
+            materialList.add(insertMaterialLine(blockingFittings, Constants.BLOCKING_FITTING_MATERIAL_ID));
 
-            int blockingFittingsScrews = calculatorService.calculateScrewsNeeded(blockingFittings, screwsPerBlockingFitting);
+            int blockingFittingsScrews = calculatorService.calculateScrewsNeeded(blockingFittings, Constants.SCREWS_PER_BLOCKING_FITTING);
             universalScrews += blockingFittingsScrews; //Added later to materialslines (same screws as to ceiling joists)
 
             int sideBoards = calculatorService.calculateSidingBoard(carport);
-            materialList.add(insertMaterialLine(sideBoards, sideBoardMaterialId));
+            materialList.add(insertMaterialLine(sideBoards, Constants.SIDE_BOARD_MATERIAL_ID));
 
-            int screwsSideBoardsInnerLayer = calculatorService.calculateScrewsNeeded(sideBoards, shortScrewsNeededPerBoard);
-            int sideBoardsInnerScrewPack = calculatorService.calculateScrewPacks(packSizeShortScrew, screwsSideBoardsInnerLayer);
-            materialList.add(insertMaterialLine(sideBoardsInnerScrewPack, shortScrewMaterialId));
+            int screwsSideBoardsInnerLayer = calculatorService.calculateScrewsNeeded(sideBoards, Constants.SHORT_SCREWS_NEEDED_PER_BOARD);
+            int sideBoardsInnerScrewPack = calculatorService.calculateScrewPacks(Constants.PACK_SIZE_SHORT_SCREW, screwsSideBoardsInnerLayer);
+            materialList.add(insertMaterialLine(sideBoardsInnerScrewPack, Constants.SCREW_SHORT_MATERIAL_ID));
 
-            int screwsSideBoardsOuterLayer = calculatorService.calculateScrewsNeeded(sideBoards, longScrewsNeededPerBoard);
-            int sideBoardsOuterScrewPack = calculatorService.calculateScrewPacks(packSizeLongScrew, screwsSideBoardsOuterLayer);
-            materialList.add(insertMaterialLine(sideBoardsOuterScrewPack, longScrewMaterialId));
+            int screwsSideBoardsOuterLayer = calculatorService.calculateScrewsNeeded(sideBoards, Constants.LONG_SCREWS_NEEDED_PER_BOARD);
+            int sideBoardsOuterScrewPack = calculatorService.calculateScrewPacks(Constants.PACK_SIZE_LONG_SCREW, screwsSideBoardsOuterLayer);
+            materialList.add(insertMaterialLine(sideBoardsOuterScrewPack, Constants.SCREW_LONG_MATERIAL_ID));
 
             //These are always added if with shed, these are for the door, so no calculations needed.
-            materialList.add(insertMaterialLine(1, shedDoorStripMaterialId));
-            materialList.add(insertMaterialLine(1, shedDoorGripMaterialId));
-            materialList.add(insertMaterialLine(2, shedDoorTHingeMaterialId));
+            materialList.add(insertMaterialLine(1, Constants.SHED_DOOR_STRIP_MATERIAL_ID));
+            materialList.add(insertMaterialLine(1, Constants.SHED_DOOR_GRIP_MATERIAL_ID));
+            materialList.add(insertMaterialLine(2, Constants.SHED_DOOR_HINGE_MATERIAL_ID));
         }
 
         /* #######################################################
               UNIVERSAL SCREWS (CEILING JOISTS AND BLOCKING)
          ####################################################### */
-        int fittingScrewPacks = calculatorService.calculateScrewPacks(packSizeFittingScrew, universalScrews);
-        materialList.add(insertMaterialLine(fittingScrewPacks, universalScrewsMaterialId));
+        int fittingScrewPacks = calculatorService.calculateScrewPacks(Constants.PACK_SIZE_FITTING_SCREW, universalScrews);
+        materialList.add(insertMaterialLine(fittingScrewPacks, Constants.SCREW_UNIVERSAL_MATERIAL_ID));
 
         return materialList;
     }
@@ -250,19 +187,19 @@ public class OrderDetailsServiceImpl implements OrderDetailsService
     {
         for (HashMap.Entry<Double, Integer> fasciaBoard : fasciaBoards.entrySet())
         {
-            if (fasciaBoard.getKey().equals(shortFasciaBoard))
+            if (fasciaBoard.getKey().equals(Constants.FASCIA_BOARD_SHORT))
             {
-                materialList.add(insertMaterialLine(fasciaBoard.getValue(), shortSubFasciaBoardMaterialId));
+                materialList.add(insertMaterialLine(fasciaBoard.getValue(), Constants.SUB_FASCIA_BOARD_SHORT_MATERIAL_ID));
                 int quantity = isWidth ? fasciaBoard.getValue() / 2 : fasciaBoard.getValue();
-                materialList.add(insertMaterialLine(quantity, shortFasciaBoardMaterialId));
-                materialList.add(insertMaterialLine(quantity, shortWeatherBoardMaterialId));
+                materialList.add(insertMaterialLine(quantity, Constants.FASCIA_BOARD_SHORT_MATERIAL_ID));
+                materialList.add(insertMaterialLine(quantity, Constants.WEATHER_BOARD_SHORT_MATERIAL_ID));
             }
-            else if (fasciaBoard.getKey().equals(longFasciaBoard))
+            else if (fasciaBoard.getKey().equals(Constants.FASCIA_BOARD_LONG))
             {
-                materialList.add(insertMaterialLine(fasciaBoard.getValue(), longSubFasciaBoardMaterialId));
+                materialList.add(insertMaterialLine(fasciaBoard.getValue(), Constants.SUB_FASCIA_BOARD_LONG_MATERIAL_ID));
                 int quantity = isWidth ? fasciaBoard.getValue() / 2 : fasciaBoard.getValue();
-                materialList.add(insertMaterialLine(quantity, longFasciaBoardMaterialId));
-                materialList.add(insertMaterialLine(quantity, longWeatherBoardMaterialId));
+                materialList.add(insertMaterialLine(quantity, Constants.FASCIA_BOARD_LONG_MATERIAL_ID));
+                materialList.add(insertMaterialLine(quantity, Constants.WEATHER_BOARD_LONG_MATERIAL_ID));
             }
         }
     }
