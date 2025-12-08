@@ -89,7 +89,8 @@ public class OrderMapper
                             rs.getInt("drawing_id"),
                             rs.getInt("carport_id"),
                             materialsLines,
-                            rs.getInt("customer_id"));
+                            rs.getInt("customer_id"),
+                            rs.getInt("employee_id"));
                 }
             }
             throw new DatabaseException("Der blev ikke fundet en ordre med id: " + orderId);
@@ -124,7 +125,8 @@ public class OrderMapper
                             rs.getInt("drawing_id"),
                             rs.getInt("carport_id"),
                             materialsLines,
-                            rs.getInt("customer_id"));
+                            rs.getInt("customer_id"),
+                            rs.getInt("employee_id"));
 
                     orders.add(order);
                 }
@@ -229,20 +231,22 @@ public class OrderMapper
     public List<OrderWithDetailsDTO> getAllOrdersByStatus(String status) throws DatabaseException
     {
         String sql = """
-                SELECT
-                    o.order_id, o.order_date, o.status, o.delivery_date,
-                    c.carport_id, c.width, c.length, c.height, c.with_shed,
-                    c.shed_width, c.shed_length, c.customer_wishes,
-                    cu.customer_id, cu.firstname, cu.lastname, cu.email, cu.phone,
-                    cu.street, cu.house_number, cu.zipcode, cu.city,
-                    d.drawing_id, d.drawing_data
-                FROM orders o
-                JOIN carports c ON o.carport_id = c.carport_id
-                JOIN customers cu ON o.customer_id = cu.customer_id
-                LEFT JOIN drawings d ON o.drawing_id = d.drawing_id
-                WHERE o.status = ?
-                ORDER BY o.order_date
-                """;
+            SELECT
+                o.order_id, o.order_date, o.status, o.delivery_date, o.employee_id,
+                c.carport_id, c.width, c.length, c.height, c.with_shed,
+                c.shed_width, c.shed_length, c.customer_wishes,
+                cu.customer_id, cu.firstname, cu.lastname, cu.email, cu.phone,
+                cu.street, cu.house_number, cu.zipcode, cu.city,
+                d.drawing_id, d.drawing_data,
+                e.employee_id, e.name, e.email as emp_email, e.phone as emp_phone
+            FROM orders o
+            JOIN carports c ON o.carport_id = c.carport_id
+            JOIN customers cu ON o.customer_id = cu.customer_id
+            LEFT JOIN drawings d ON o.drawing_id = d.drawing_id
+            LEFT JOIN employees e ON o.employee_id = e.employee_id
+            WHERE o.status = ?
+            ORDER BY o.order_date
+            """;
 
         List<OrderWithDetailsDTO> orders = new ArrayList<>();
 
@@ -306,6 +310,18 @@ public class OrderMapper
                                 rs.getString("drawing_data"));
                     }
 
+                    Employee employee = null;
+                    int employeeId = rs.getInt("employee_id");
+                    if (!rs.wasNull())
+                    {
+                        employee = new Employee(
+                                employeeId,
+                                rs.getString("name"),
+                                rs.getString("emp_email"),
+                                rs.getString("emp_phone")
+                        );
+                    }
+
                     List<MaterialsLine> materialLines = materialsLinesMapper.getMaterialLinesByOrderId(orderId);
 
                     orders.add(new OrderWithDetailsDTO(
@@ -316,7 +332,8 @@ public class OrderMapper
                             drawing,
                             materialLines,
                             carport,
-                            customer
+                            customer,
+                            employee
                     ));
                 }
             }
