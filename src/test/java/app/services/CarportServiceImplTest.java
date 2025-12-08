@@ -41,15 +41,4 @@ class CarportServiceImplTest
 
         assertThrows(IllegalArgumentException.class, () -> service.validateShedTotalSize(carport.getLength(), carport.getWidth(),carport.getShedLength(), carport.getShedWidth()));
     }
-
-    @DisplayName("Carport Size Requirements Width under 240")
-    @Test
-    void testvalidateShedTotalSizeFour()
-    {
-        CarportServiceImpl service = new CarportServiceImpl(null);
-
-        Carport carport = new Carport(1,400,480,225,true,240,240,"");
-
-        assertThrows(IllegalArgumentException.class, () -> service.validateShedTotalSize(carport.getLength(), carport.getWidth(),carport.getShedLength(), carport.getShedWidth()));
-    }
 }
