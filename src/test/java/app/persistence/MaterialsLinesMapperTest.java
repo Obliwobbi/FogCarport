@@ -239,7 +239,7 @@ class MaterialsLinesMapperTest
         // Arrange
         int orderId = 1;
         Material material = new Material(2, "Skruer 4.5x60", "4,5 x 60 mm. skruer 200 stk.", 200, "pakke", 0, 0, 0, 120.00);
-        MaterialsLine line = new MaterialsLine(0, 10, 1200.00, material);
+        MaterialsLine line = new MaterialsLine(0, 10, 120.0, 1200.00, material);
 
         // Act
         materialsLinesMapper.createMaterialLine(orderId, line);
