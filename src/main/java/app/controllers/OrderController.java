@@ -6,7 +6,6 @@ import app.entities.Customer;
 import app.entities.Employee;
 import app.entities.MaterialsLine;
 import app.exceptions.DatabaseException;
-import app.services.EmployeeService;
 import app.services.OrderDetailsService;
 import app.services.OrderService;
 import io.javalin.Javalin;
@@ -20,13 +19,11 @@ public class OrderController
 {
     private final OrderService orderService;
     private final OrderDetailsService orderDetailsService;
-    private final EmployeeService employeeService;
 
-    public OrderController(OrderService orderService, OrderDetailsService orderDetailsService, EmployeeService employeeService)
+    public OrderController(OrderService orderService, OrderDetailsService orderDetailsService)
     {
         this.orderService = orderService;
         this.orderDetailsService = orderDetailsService;
-        this.employeeService = employeeService;
     }
 
     public void addRoutes(Javalin app)
@@ -61,7 +58,7 @@ public class OrderController
                 return;
             }
             List<MaterialsLine> materialsLines = order.getMaterialsLines();
-            List<Employee> employees = employeeService.getAllEmployees();
+            List<Employee> employees = orderService.getAllEmployees();
 
             ctx.attribute("order", order);
             ctx.attribute("employees", employees);

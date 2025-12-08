@@ -68,6 +68,12 @@ public class OrderServiceImpl implements OrderService
     }
 
     @Override
+    public List<Employee> getAllEmployees() throws DatabaseException
+    {
+        return employeeMapper.getAllEmployees();
+    }
+
+    @Override
     public void updateOrderStatus(int orderId, String status) throws DatabaseException
     {
         orderMapper.updateOrderStatus(orderId, status);
