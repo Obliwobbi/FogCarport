@@ -93,8 +93,6 @@
                             <option value="450">450 cm</option>
                             <option value="480">480 cm</option>
                             <option value="510">510 cm</option>
-                            <option value="540">540 cm</option>
-                            <option value="570">570 cm</option>
                         </select>
                     </div>
 
@@ -122,15 +120,13 @@
                             <option value="630">630 cm</option>
                             <option value="660">660 cm</option>
                             <option value="690">690 cm</option>
-                            <option value="720">720 cm</option>
-                            <option value="750">750 cm</option>
                         </select>
 
                     </div>
                 </div>
             </div>
 
-            <label for="customerWishes">Særlige ønsker eller evt. bemærkninger</label>
+            <label for="customerWishes">Særlige ønsker eller evt. bemærkninger. Max 250 tegn.</label>
             <textarea class="customer-wishes" name="customerWishes" id="customerWishes"></textarea>
 
             <p th:if="${session.carportErrorLabel != null}" th:text="${session.carportErrorLabel}"></p>
