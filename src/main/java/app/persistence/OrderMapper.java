@@ -172,10 +172,10 @@ public class OrderMapper
                 """;
 
         try (Connection connection = connectionPool.getConnection();
-            PreparedStatement ps = connection.prepareStatement(sql))
+             PreparedStatement ps = connection.prepareStatement(sql))
         {
             ps.setInt(1, employeeId);
-            ps.setInt(2,orderId);
+            ps.setInt(2, orderId);
             ps.executeUpdate();
 
             int rowsAffected = ps.executeUpdate();
@@ -233,6 +233,30 @@ public class OrderMapper
         return false;
     }
 
+    public boolean setOrderEmployeeNull(int orderId) throws DatabaseException
+    {
+        String sql = """
+                UPDATE orders
+                SET employee_Id = null
+                WHERE order_id = ?
+                """;
+
+        try (Connection connection = connectionPool.getConnection();
+            PreparedStatement ps = connection.prepareStatement(sql))
+        {
+            ps.setInt(1, orderId);
+            int rowsAffected = ps.executeUpdate();
+            if (rowsAffected == 1)
+            {
+                return true;
+            }
+        }
+        catch (SQLException e)
+        {
+            throw new DatabaseException("Fejl ved fjernelse af ansvarlig medarbejder" + e.getMessage());
+        }
+        return false;
+    }
 
     public boolean deleteOrder(int orderId) throws DatabaseException
     {
@@ -259,22 +283,22 @@ public class OrderMapper
     public List<OrderWithDetailsDTO> getAllOrdersByStatus(String status) throws DatabaseException
     {
         String sql = """
-            SELECT
-                o.order_id, o.order_date, o.status, o.delivery_date, o.employee_id,
-                c.carport_id, c.width, c.length, c.height, c.with_shed,
-                c.shed_width, c.shed_length, c.customer_wishes,
-                cu.customer_id, cu.firstname, cu.lastname, cu.email, cu.phone,
-                cu.street, cu.house_number, cu.zipcode, cu.city,
-                d.drawing_id, d.drawing_data,
-                e.employee_id, e.name, e.email as emp_email, e.phone as emp_phone
-            FROM orders o
-            JOIN carports c ON o.carport_id = c.carport_id
-            JOIN customers cu ON o.customer_id = cu.customer_id
-            LEFT JOIN drawings d ON o.drawing_id = d.drawing_id
-            LEFT JOIN employees e ON o.employee_id = e.employee_id
-            WHERE o.status = ?
-            ORDER BY o.order_date
-            """;
+                SELECT
+                    o.order_id, o.order_date, o.status, o.delivery_date, o.employee_id,
+                    c.carport_id, c.width, c.length, c.height, c.with_shed,
+                    c.shed_width, c.shed_length, c.customer_wishes,
+                    cu.customer_id, cu.firstname, cu.lastname, cu.email, cu.phone,
+                    cu.street, cu.house_number, cu.zipcode, cu.city,
+                    d.drawing_id, d.drawing_data,
+                    e.employee_id, e.name, e.email as emp_email, e.phone as emp_phone
+                FROM orders o
+                JOIN carports c ON o.carport_id = c.carport_id
+                JOIN customers cu ON o.customer_id = cu.customer_id
+                LEFT JOIN drawings d ON o.drawing_id = d.drawing_id
+                LEFT JOIN employees e ON o.employee_id = e.employee_id
+                WHERE o.status = ?
+                ORDER BY o.order_date
+                """;
 
         List<OrderWithDetailsDTO> orders = new ArrayList<>();
 

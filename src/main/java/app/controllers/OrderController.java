@@ -107,6 +107,10 @@ public class OrderController
                 int employeeId = Integer.parseInt(employeeIdString);
                 orderService.updateOrderEmployee(orderId, employeeId);
             }
+            else
+            {
+                orderService.updateOrderEmployee(orderId, 0);
+            }
 
             ctx.redirect("/orders/details/" + orderId + "?success=order");
         }
