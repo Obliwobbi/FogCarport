@@ -5,6 +5,7 @@ import app.entities.Order;
 import app.exceptions.DatabaseException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
@@ -148,12 +149,20 @@ class OrderMapperTest
              Statement stmt = connection.createStatement())
         {
             stmt.execute("DELETE FROM test.materials_lines");
-            stmt.execute("DELETE FROM test.employees");
             stmt.execute("DELETE FROM test.orders");
+            stmt.execute("DELETE FROM test.employees");
             stmt.execute("DELETE FROM test.drawings");
             stmt.execute("DELETE FROM test.carports");
             stmt.execute("DELETE FROM test.materials");
             stmt.execute("DELETE FROM test.customers");
+
+            stmt.execute("ALTER SEQUENCE test.employees_employee_id_seq RESTART WITH 1");
+
+            stmt.execute("""
+                        INSERT INTO test.employees (name, email, phone)
+                        VALUES ('Jesper Person', 'jp@fogcarport.dk','+45 23456789'),
+                               ('Toby Person', 'tp@fogcarport.dk','+45 23456790')
+                    """);
 
             stmt.execute("""
                         INSERT INTO test.customers (customer_id, firstname, lastname, email, phone, street, house_number, zipcode, city)
@@ -183,22 +192,18 @@ class OrderMapperTest
                                (3, 'Plastmo bundskruer', 'Skruer til tagplader', 200, 'pakke(r)', NULL, NULL, NULL, 129.00)
                     """);
 
+            stmt.execute("SELECT setval('test.customers_customer_id_seq', 2, true)");
             stmt.execute("SELECT setval('test.customers_customer_id_seq', 3, true)");
             stmt.execute("SELECT setval('test.carports_carport_id_seq', 3, true)");
             stmt.execute("SELECT setval('test.drawings_drawing_id_seq', 3, true)");
             stmt.execute("SELECT setval('test.materials_id_seq', 3, true)");
 
-            stmt.execute("""
-                        INSERT INTO test.employees (name, email, phone)
-                        VALUES ('Jesper Person', 'jp@fogcarport.dk','+45 23456789'),
-                               ('Toby Person', 'tp@fogcarport.dk','+45 23456790')
-                    """);
 
             stmt.execute("""
-                        INSERT INTO test.orders (order_id, order_date, status, delivery_date, drawing_id, carport_id, customer_id, total_price)
-                        VALUES (1, '2024-01-15 10:30:00', 'AFVENTER ACCEPT', '2024-02-15 10:00:00', 1, 1, 1, 0.00),
-                               (2, '2024-01-10 14:20:00', 'BETALT', '2024-02-10 12:00:00', 2, 2, 2, 6484.00),
-                               (3, '2024-01-05 09:15:00', 'AFSENDT', '2024-02-01 08:00:00', 3, 3, 3, 8143.00)
+                        INSERT INTO test.orders (order_id, order_date, status, delivery_date, drawing_id, carport_id, customer_id, total_price, employee_id)
+                        VALUES (1, '2024-01-15 10:30:00', 'AFVENTER ACCEPT', '2024-02-15 10:00:00', 1, 1, 1, 0.00, NULL),
+                               (2, '2024-01-10 14:20:00', 'BETALT', '2024-02-10 12:00:00', 2, 2, 2, 6484.00, 1),
+                               (3, '2024-01-05 09:15:00', 'AFSENDT', '2024-02-01 08:00:00', 3, 3, 3, 8143.00, 2)
                     """);
 
             stmt.execute("SELECT setval('test.orders_order_id_seq', 3, true)");
@@ -317,5 +322,25 @@ class OrderMapperTest
         List<OrderWithDetailsDTO> orders = orderMapper.getAllOrdersByStatus("IKKE_EKSISTERENDE");
 
         assertTrue(orders.isEmpty());
+    }
+
+    @DisplayName("Update to new Employee")
+    @Test
+    void updateEmployee() throws DatabaseException
+    {
+        Order orderBefore =  orderMapper.getOrderById(1);
+        orderMapper.updateOrderEmployee(1, 2);
+        Order orderAfter = orderMapper.getOrderById(1);
+        assertEquals(0, orderBefore.getEmployeeId());
+        assertEquals(2, orderAfter.getEmployeeId());
+    }
+
+    @DisplayName("Remove Employee from order")
+    @Test
+    void removeEmployee() throws DatabaseException
+    {
+        orderMapper.setOrderEmployeeNull(2);
+        Order order = orderMapper.getOrderById(2);
+        assertEquals(0,order.getEmployeeId());
     }
 }
