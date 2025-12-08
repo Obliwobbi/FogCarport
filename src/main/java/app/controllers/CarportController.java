@@ -6,9 +6,6 @@ import app.services.CarportService;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 
-import java.util.HashMap;
-
-
 public class CarportController
 {
     private final CarportService carportservice;
@@ -51,27 +48,21 @@ public class CarportController
                 carportservice.validateShedTotalSize(carportLength, carportWidth, shedLength, shedWidth);
             }
 
-            HashMap<String, Object> model = new HashMap<>();
-            Carport carport = carportservice.createCarport(carportWidth, carportLength, carportHeight, withShed, shedWidth, shedLength, customerWishes);
-
-            model.put("carport", carport);
+            Carport tmpCarport = new Carport(carportWidth, carportLength, carportHeight, withShed, shedWidth, shedLength, customerWishes);
 
             ctx.sessionAttribute("carportErrorLabel", null);
-
-            //TODO WILL NEED TO REDIRECT TO drawing.html, FOR THE MOMENT IT JUST TAKES TO contact.html
-            ctx.render("contact.html", model);
+            ctx.sessionAttribute("carport", tmpCarport);
+            ctx.redirect("/drawing");
         }
         catch (NullPointerException | NumberFormatException e)
         {
             ctx.sessionAttribute("carportErrorLabel", "Du skal udfylde alle nødvendige felter");
             ctx.redirect("/carport");
         }
-        catch (DatabaseException | IllegalArgumentException e)
+        catch (IllegalArgumentException e)
         {
             ctx.sessionAttribute("carportErrorLabel", e.getMessage());
             ctx.redirect("/carport");
         }
-
     }
 }
-

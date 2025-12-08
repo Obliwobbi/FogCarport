@@ -2,7 +2,6 @@ package app.persistence;
 
 import app.entities.Material;
 import app.exceptions.DatabaseException;
-import org.jetbrains.annotations.Nullable;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -61,7 +60,6 @@ public class MaterialMapper
         return null;
     }
 
-    @Nullable
     private Material getMaterial(PreparedStatement ps) throws SQLException
     {
         try (ResultSet rs = ps.executeQuery())

@@ -1,5 +1,5 @@
 -- ============================================
--- Fog Carport Database Schema (Without BOM)
+-- Fog Carport Database Schema
 -- ============================================
 
 -- Drop tables in reverse order of dependencies to avoid foreign key conflicts
@@ -21,8 +21,7 @@ CREATE TABLE employees
     employee_id SERIAL PRIMARY KEY,
     name        VARCHAR(100)        NOT NULL,
     email       VARCHAR(100) UNIQUE NOT NULL,
-    phone       VARCHAR(20),
-    is_admin    BOOLEAN DEFAULT FALSE
+    phone       VARCHAR(20)
 );
 
 -- Customers Table
@@ -31,7 +30,7 @@ CREATE TABLE customers
     customer_id  SERIAL PRIMARY KEY,
     firstname    VARCHAR(100)        NOT NULL,
     lastname     VARCHAR(100)        NOT NULL,
-    email        VARCHAR(100) UNIQUE NOT NULL,
+    email        VARCHAR(100)        NOT NULL,
     phone        VARCHAR(20),
     street       VARCHAR(100),
     house_number VARCHAR(10),
@@ -70,24 +69,25 @@ CREATE TABLE carports
 CREATE TABLE drawings
 (
     drawing_id   SERIAL PRIMARY KEY,
-    drawing_data TEXT NOT NULL,
-    accepted     BOOLEAN DEFAULT FALSE
+    drawing_data TEXT NOT NULL
 );
 
--- Orders Table (now includes total_price from BOM)
+-- Orders Table
 CREATE TABLE orders
 (
     order_id      SERIAL PRIMARY KEY,
     order_date    TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
     status        VARCHAR(50)              NOT NULL DEFAULT 'NY ORDRE',
-    delivery_date TIMESTAMP WITH TIME ZONE,
+    delivery_date TIMESTAMP WITH TIME ZONE DEFAULT (NOW() + INTERVAL '1 year'),
     drawing_id    INT,
     carport_id    INT                      NOT NULL,
     customer_id   INT                      NOT NULL,
     total_price   DECIMAL(12, 2)           NOT NULL DEFAULT 0.00,
+    employee_id   INT,
     CONSTRAINT fk_drawing FOREIGN KEY (drawing_id) REFERENCES drawings (drawing_id) ON DELETE SET NULL,
     CONSTRAINT fk_carport FOREIGN KEY (carport_id) REFERENCES carports (carport_id) ON DELETE CASCADE,
-    CONSTRAINT fk_customer FOREIGN KEY (customer_id) REFERENCES customers (customer_id) ON DELETE CASCADE
+    CONSTRAINT fk_customer FOREIGN KEY (customer_id) REFERENCES customers (customer_id) ON DELETE CASCADE,
+    CONSTRAINT fk_employee FOREIGN KEY (employee_id) REFERENCES employees (employee_id) ON DELETE CASCADE
 );
 
 -- Materials Lines Table (now references orders directly)
@@ -126,26 +126,44 @@ CREATE INDEX idx_materials_name ON materials (name);
 -- ============================================
 
 -- Insert sample employees
-INSERT INTO employees (name, email, phone, is_admin)
-VALUES ('Admin User', 'admin@fogcarport.dk', '+45 12345678', TRUE),
-       ('Sales Person', 'sales@fogcarport.dk', '+45 23456789', FALSE);
+INSERT INTO employees (name, email, phone)
+VALUES ('Jesper Person', 'jp@fogcarport.dk', '+45 23456789'),
+       ('Toby Person', 'tp@fogcarport.dk', '+45 23456790');
 
 -- Insert sample materials
 INSERT INTO materials (name, description, unit, unit_type, material_length, material_width, material_height, price)
-VALUES ('Brædt 25x200', '25x200 mm. trykimp. Brædt', 1, 'stk', 540.00, 20.00, 2.50, 300.00),
-       ('Brædt 25x125', '25x125 mm. trykimp. Brædt', 1, 'stk', 360.00, 12.50, 2.50, 200.00),
-       ('Lægte 38x73', '38x73 mm. Lægte ubh.', 1, 'stk', 420.00, 7.30, 3.80, 150.00),
-       ('Reglar 45x95', '45x95 mm. Reglar ub.', 1, 'stk', 480.00, 9.50, 4.50, 250.00),
-       ('Stolpe 97x97', '97x97 mm. trykimp. Stolpe', 1, 'stk', 300.00, 9.70, 9.70, 400.00),
-       ('Bundskruer', 'Plastmo bundskruer 200 stk.', 200, 'pakke', NULL, NULL, NULL, 150.00),
-       ('Hulbånd', 'Hulbånd 1x20 mm. 10 meter', 1, 'rulle', 1000.00, 2.00, 0.10, 75.00),
-       ('Universal højre', 'Universal 190 mm højre', 1, 'stk', 19.00, 4.00, 0.50, 15.00),
-       ('Universal venstre', 'Universal 190 mm venstre', 1, 'stk', 19.00, 4.00, 0.50, 15.00),
-       ('Skruer 4.5x60', '4,5 x 60 mm. skruer 200 stk.', 200, 'pakke', NULL, NULL, NULL, 120.00),
-       ('Beslagskruer', '4,0 x 50 mm. beslagskruer 250 stk.', 250, 'pakke', NULL, NULL, NULL, 100.00),
-       ('Bræddebolt', 'Bræddebolt 10 x 120 mm.', 1, 'stk', 12.00, 1.00, 1.00, 5.00),
-       ('Firkantskiver', 'Firkantskiver 40x40x11mm', 1, 'stk', NULL, 4.00, 1.10, 3.00),
-       ('Tagplade', 'Plastmo Ecolite blåtonet', 1, 'stk', 600.00, 109.00, 0.50, 450.00);
+VALUES ('25x200 mm trykimpr. Brædt', 'Understernbrædder', 1, 'stk', 360, 20, 2.5, 79.00),
+       ('25x200 mm trykimpr. Brædt', 'Understernbrædder', 1, 'stk', 540, 20, 2.5, 118.00),
+       ('25x125 mm trykimpr. Brædt', 'Oversternbrædder', 1, 'stk', 360, 12.5, 2.5, 48.00),
+       ('25x125 mm trykimpr. Brædt', 'Oversternbrædder', 1, 'stk', 540, 12.5, 2.5, 72.00),
+       ('38x73 mm Lægte ubeh.', 'Z til bagside af dør', 1, 'stk', 420, 7.3, 3.8, 29.00),
+       ('45x95 mm Reglar ubh.', 'Løsholter til skur gavle', 1, 'stk', 270, 9.5, 4.5, 32.00),
+       ('45x95 mm Reglar ubh.', 'Løsholter til skur sider', 1, 'stk', 240, 9.5, 4.5, 28.00),
+       ('45x195 mm Spærtræ ubh.', 'Remme i sider – sadles ned i stolper', 1, 'stk', 600, 19.5, 4.5, 115.00),
+       ('45x195 mm Spærtræ ubh.', 'Remme i sider – skur del, deles', 1, 'stk', 480, 19.5, 4.5, 96.00),
+       ('45x195 mm Spærtræ ubh.', 'Spær, monteres på rem', 1, 'stk', 600, 19.5, 4.5, 115.00),
+       ('45x195 mm Spærtræ ubh.', 'Spær, monteres på rem', 1, 'stk', 480, 19.5, 4.5, 96.00),
+       ('97x97 mm trykimpr. Stolpe', 'Stolper nedgraves 90 cm', 1, 'stk', 300, 9.7, 9.7, 129.00),
+       ('19x100 mm trykimpr. Brædt', 'Beklædning af skur 1 på 2', 1, 'stk', 210, 10, 1.9, 18.00),
+       ('19x100 mm trykimpr. Brædt', 'Vandbrædt på stern', 1, 'stk', 540, 10, 1.9, 54.00),
+       ('19x100 mm trykimpr. Brædt', 'Vandbrædt på stern', 1, 'stk', 360, 10, 1.9, 36.00),
+       ('Plastmo Ecolite blåtonet', 'Tagplader monteres på spær', 1, 'stk', 600, NULL, NULL, 159.00),
+       ('Plastmo Ecolite blåtonet', 'Tagplader monteres på spær', 1, 'stk', 360, NULL, NULL, 109.00),
+
+-- HARDWARE / BESLAG / SKRUER
+       ('Plastmo bundskruer', 'Skruer til tagplader', 200, 'pakke(r)', NULL, NULL, NULL, 129.00),
+       ('Hulbånd 1x20 mm', 'Til vindkryds på spær', 1, 'rulle(r)', NULL, NULL, NULL, 49.00),
+       ('Universal beslag højre 190 mm', 'Til montering af spær på rem', 1, 'stk', NULL, NULL, NULL, 12.00),
+       ('Universal beslag venstre 190 mm', 'Til montering af spær på rem', 1, 'stk', NULL, NULL, NULL, 12.00),
+       ('Bræddebolt 10x120 mm', 'Til montering af rem på stolper', 1, 'stk', NULL, NULL, NULL, 4.50),
+       ('Firkantskiver 40x40x11 mm', 'Til montering af rem på stolper', 1, 'stk', NULL, NULL, NULL, 1.50),
+       ('Beslagskruer 4.0x50 mm', 'Til montering af universalbeslag + hulbånd', 250, 'pakke(r)', NULL, NULL, NULL, 39.00),
+       ('Skruer 4.5x50 mm', 'Til montering af inderste beklædning', 300, 'pakke(r)', NULL, NULL, NULL, 49.00),
+       ('Skruer 4.5x60 mm', 'Til montering af stern & vandbrædt', 200, 'pakke(r)', NULL, NULL, NULL, 45.00),
+       ('Skruer 4.5x70 mm', 'Til montering af yderste beklædning', 400, 'pakke(r)', NULL, NULL, NULL, 59.00),
+       ('Stalddørsgreb 50x75 mm', 'Lås til skurdør', 1, 'sæt', NULL, NULL, NULL, 89.00),
+       ('T-hængsel 390 mm', 'Til skurdør', 1, 'stk', NULL, NULL, NULL, 35.00),
+       ('Vinkelbeslag 3 mm', 'Til montering af løsholter i skur', 1, 'stk', NULL, NULL, NULL, 5.00);
 
 -- Insert test customers
 INSERT INTO customers (firstname, lastname, email, phone, street, house_number, zipcode, city)
@@ -161,78 +179,145 @@ VALUES (600, 780, 210, FALSE, NULL, NULL, 'Standard carport uden skur'),
        (600, 600, 210, TRUE, 300, 210, 'Carport med skur til haveredskaber'),
        (780, 600, 240, TRUE, 300, 240, 'Stor carport med skur'),
        (600, 780, 210, FALSE, NULL, NULL, 'Ønsker sort carport'),
-       (780, 780, 240, TRUE, 400, 240, 'Ekstra stort skur til værktøj');
+       (600, 780, 240, TRUE, 510, 210, 'Ekstra stort skur til værktøj');
 
 -- Insert test drawings
-INSERT INTO drawings (drawing_data, accepted)
-VALUES ('SVG drawing data for standard carport 600x780...', TRUE),
-       ('SVG drawing data for carport with shed 600x600...', TRUE),
-       ('SVG drawing data for large carport 780x600...', TRUE),
-       ('SVG drawing data for black carport 600x780...', FALSE),
-       ('SVG drawing data for extra large shed 780x780...', TRUE);
+INSERT INTO drawings (drawing_data)
+VALUES ('SVG drawing data for standard carport 600x780...'),
+       ('SVG drawing data for carport with shed 600x600...'),
+       ('SVG drawing data for large carport 780x600...'),
+       ('SVG drawing data for black carport 600x780...'),
+       ('SVG drawing data for extra large shed 780x780...');
 
 -- Insert test orders with all 5 status types
-INSERT INTO orders (order_date, status, delivery_date, drawing_id, carport_id, customer_id, total_price)
+INSERT INTO orders (order_date, status, delivery_date, drawing_id, carport_id, customer_id, total_price, employee_id)
 VALUES
-    -- NY ORDRE: Brand new order, just created
-    ('2024-01-20 09:00:00', 'NY ORDRE', '2024-02-20 10:00:00', 4, 4, 4, 18000.00),
+    -- NY ORDRE (Order 1)
+    ('2024-01-20 09:00:00', 'NY ORDRE', '2024-02-20 10:00:00', 4, 4, 4, 0.00, NULL),
 
-    -- AFVENTER ACCEPT: Waiting for customer approval
-    ('2024-01-15 10:30:00', 'AFVENTER ACCEPT', '2024-02-15 10:00:00', 1, 1, 1, 15000.00),
+    -- AFVENTER ACCEPT (Order 2)
+    ('2024-01-15 10:30:00', 'AFVENTER ACCEPT', '2024-02-15 10:00:00', 1, 1, 1, 0.00, 1),
 
-    -- BETALT: Customer has paid, ready for production
-    ('2024-01-10 14:20:00', 'BETALT', '2024-02-10 12:00:00', 2, 2, 2, 22000.00),
+    -- BETALT (Order 3)
+    ('2024-01-10 14:20:00', 'BETALT', '2024-02-10 12:00:00', 2, 2, 2, 8143.00, 2),
 
-    -- AFSENDT: Order has been shipped
-    ('2024-01-05 09:15:00', 'AFSENDT', '2024-02-01 08:00:00', 3, 3, 3, 28000.00),
+    -- AFSENDT (Order 4)
+    ('2024-01-05 09:15:00', 'AFSENDT', '2024-02-01 08:00:00', 3, 3, 3, 8407.00, 2),
 
-    -- AFSLUTTET: Order completed and delivered
-    ('2023-12-20 11:00:00', 'AFSLUTTET', '2024-01-20 14:00:00', 5, 5, 5, 32000.00);
+    -- AFSLUTTET (Order 5)
+    ('2023-12-20 11:00:00', 'AFSLUTTET', '2024-01-20 14:00:00', 5, 5, 5, 12269.00, 1);
 
--- Insert material lines directly for orders
 INSERT INTO materials_lines (order_id, material_id, material_name, unit_type, quantity, unit_price, line_price)
 VALUES
-    -- Order 2 (AFVENTER ACCEPT) - total: 15000.00
-    (2, 1, 'Brædt 25x200', 'stk', 10, 300.00, 3000.00),
-    (2, 4, 'Reglar 45x95', 'stk', 8, 250.00, 2000.00),
-    (2, 5, 'Stolpe 97x97', 'stk', 4, 400.00, 1600.00),
-    (2, 14, 'Tagplade', 'stk', 15, 450.00, 6750.00),
-    (2, 6, 'Bundskruer', 'pakke', 2, 150.00, 300.00),
-    (2, 10, 'Skruer 4.5x60', 'pakke', 3, 120.00, 360.00),
+    -- ORDER 2
+    (2, 12, '97x97 mm trykimpr. Stolpe', 'stk', 6, 129.00, 774.00),
+    (2, 9, '45x195 mm Spærtræ ubh.', 'stk', 4, 96.00, 384.00),
+    (2, 22, 'Bræddebolt 10x120 mm', 'stk', 16, 4.50, 72.00),
+    (2, 23, 'Firkantskiver 40x40x11 mm', 'stk', 16, 1.50, 24.00),
+    (2, 11, '45x195 mm Spærtræ ubh.', 'stk', 15, 96.00, 1440.00),
+    (2, 20, 'Universal beslag højre 190 mm', 'stk', 15, 12.00, 180.00),
+    (2, 21, 'Universal beslag venstre 190 mm', 'stk', 15, 12.00, 180.00),
+    (2, 19, 'Hulbånd 1x20 mm', 'rulle(r)', 2, 49.00, 98.00),
+    (2, 2, '25x200 mm trykimpr. Brædt', 'stk', 2, 118.00, 236.00),
+    (2, 4, '25x125 mm trykimpr. Brædt', 'stk', 2, 72.00, 144.00),
+    (2, 14, '19x100 mm trykimpr. Brædt', 'stk', 2, 54.00, 108.00),
+    (2, 1, '25x200 mm trykimpr. Brædt', 'stk', 2, 79.00, 158.00),
+    (2, 3, '25x125 mm trykimpr. Brædt', 'stk', 2, 48.00, 96.00),
+    (2, 15, '19x100 mm trykimpr. Brædt', 'stk', 2, 36.00, 72.00),
+    (2, 1, '25x200 mm trykimpr. Brædt', 'stk', 4, 79.00, 316.00),
+    (2, 3, '25x125 mm trykimpr. Brædt', 'stk', 2, 48.00, 96.00),
+    (2, 15, '19x100 mm trykimpr. Brædt', 'stk', 2, 36.00, 72.00),
+    (2, 16, 'Plastmo Ecolite blåtonet', 'stk', 6, 159.00, 954.00),
+    (2, 17, 'Plastmo Ecolite blåtonet', 'stk', 6, 109.00, 654.00),
+    (2, 18, 'Plastmo bundskruer', 'pakke(r)', 3, 129.00, 387.00),
+    (2, 24, 'Beslagskruer 4.0x50 mm', 'pakke(r)', 1, 39.00, 39.00),
 
-    -- Order 3 (BETALT) - total: 22000.00
-    (3, 1, 'Brædt 25x200', 'stk', 12, 300.00, 3600.00),
-    (3, 2, 'Brædt 25x125', 'stk', 10, 200.00, 2000.00),
-    (3, 4, 'Reglar 45x95', 'stk', 12, 250.00, 3000.00),
-    (3, 5, 'Stolpe 97x97', 'stk', 6, 400.00, 2400.00),
-    (3, 14, 'Tagplade', 'stk', 20, 450.00, 9000.00),
-    (3, 6, 'Bundskruer', 'pakke', 3, 150.00, 450.00),
-    (3, 10, 'Skruer 4.5x60', 'pakke', 5, 120.00, 600.00),
+    -- ORDER 3
+    (3, 12, '97x97 mm trykimpr. Stolpe', 'stk', 10, 129.00, 1290.00),
+    (3, 8, '45x195 mm Spærtræ ubh.', 'stk', 2, 115.00, 230.00),
+    (3, 22, 'Bræddebolt 10x120 mm', 'stk', 20, 4.50, 90.00),
+    (3, 23, 'Firkantskiver 40x40x11 mm', 'stk', 20, 1.50, 30.00),
+    (3, 11, '45x195 mm Spærtræ ubh.', 'stk', 12, 96.00, 1152.00),
+    (3, 20, 'Universal beslag højre 190 mm', 'stk', 12, 12.00, 144.00),
+    (3, 21, 'Universal beslag venstre 190 mm', 'stk', 12, 12.00, 144.00),
+    (3, 19, 'Hulbånd 1x20 mm', 'rulle(r)', 2, 49.00, 98.00),
+    (3, 1, '25x200 mm trykimpr. Brædt', 'stk', 4, 79.00, 316.00),
+    (3, 3, '25x125 mm trykimpr. Brædt', 'stk', 4, 48.00, 192.00),
+    (3, 15, '19x100 mm trykimpr. Brædt', 'stk', 4, 36.00, 144.00),
+    (3, 1, '25x200 mm trykimpr. Brædt', 'stk', 4, 79.00, 316.00),
+    (3, 3, '25x125 mm trykimpr. Brædt', 'stk', 2, 48.00, 96.00),
+    (3, 15, '19x100 mm trykimpr. Brædt', 'stk', 2, 36.00, 72.00),
+    (3, 18, 'Plastmo bundskruer', 'pakke(r)', 3, 129.00, 387.00),
+    (3, 7, '45x95 mm Reglar ubh.', 'stk', 12, 28.00, 336.00),
+    (3, 30, 'Vinkelbeslag 3 mm', 'stk', 24, 5.00, 120.00),
+    (3, 13, '19x100 mm trykimpr. Brædt', 'stk', 138, 18.00, 2484.00),
+    (3, 25, 'Skruer 4.5x50 mm', 'pakke(r)', 2, 49.00, 98.00),
+    (3, 27, 'Skruer 4.5x70 mm', 'pakke(r)', 3, 59.00, 177.00),
+    (3, 5, '38x73 mm Lægte ubeh.', 'stk', 1, 29.00, 29.00),
+    (3, 28, 'Stalddørsgreb 50x75 mm', 'sæt', 1, 89.00, 89.00),
+    (3, 29, 'T-hængsel 390 mm', 'stk', 2, 35.00, 70.00),
+    (3, 24, 'Beslagskruer 4.0x50 mm', 'pakke(r)', 1, 39.00, 39.00),
 
-    -- Order 4 (AFSENDT) - total: 28000.00
-    (4, 1, 'Brædt 25x200', 'stk', 15, 300.00, 4500.00),
-    (4, 2, 'Brædt 25x125', 'stk', 12, 200.00, 2400.00),
-    (4, 4, 'Reglar 45x95', 'stk', 15, 250.00, 3750.00),
-    (4, 5, 'Stolpe 97x97', 'stk', 8, 400.00, 3200.00),
-    (4, 14, 'Tagplade', 'stk', 25, 450.00, 11250.00),
-    (4, 10, 'Skruer 4.5x60', 'pakke', 4, 120.00, 480.00),
-    (4, 6, 'Bundskruer', 'pakke', 4, 150.00, 600.00),
-    (4, 7, 'Hulbånd', 'rulle', 3, 75.00, 225.00),
+    -- ORDER 4
+    (4, 12, '97x97 mm trykimpr. Stolpe', 'stk', 10, 129.00, 1290.00),
+    (4, 8, '45x195 mm Spærtræ ubh.', 'stk', 2, 115.00, 230.00),
+    (4, 22, 'Bræddebolt 10x120 mm', 'stk', 20, 4.50, 90.00),
+    (4, 23, 'Firkantskiver 40x40x11 mm', 'stk', 20, 1.50, 30.00),
+    (4, 11, '45x195 mm Spærtræ ubh.', 'stk', 12, 96.00, 1152.00),
+    (4, 20, 'Universal beslag højre 190 mm', 'stk', 12, 12.00, 144.00),
+    (4, 21, 'Universal beslag venstre 190 mm', 'stk', 12, 12.00, 144.00),
+    (4, 19, 'Hulbånd 1x20 mm', 'rulle(r)', 2, 49.00, 98.00),
+    (4, 1, '25x200 mm trykimpr. Brædt', 'stk', 4, 79.00, 316.00),
+    (4, 3, '25x125 mm trykimpr. Brædt', 'stk', 4, 48.00, 192.00),
+    (4, 15, '19x100 mm trykimpr. Brædt', 'stk', 4, 36.00, 144.00),
+    (4, 2, '25x200 mm trykimpr. Brædt', 'stk', 2, 118.00, 236.00),
+    (4, 4, '25x125 mm trykimpr. Brædt', 'stk', 1, 72.00, 72.00),
+    (4, 14, '19x100 mm trykimpr. Brædt', 'stk', 1, 54.00, 54.00),
+    (4, 1, '25x200 mm trykimpr. Brædt', 'stk', 2, 79.00, 158.00),
+    (4, 3, '25x125 mm trykimpr. Brædt', 'stk', 1, 48.00, 48.00),
+    (4, 15, '19x100 mm trykimpr. Brædt', 'stk', 1, 36.00, 36.00),
+    (4, 18, 'Plastmo bundskruer', 'pakke(r)', 3, 129.00, 387.00),
+    (4, 7, '45x95 mm Reglar ubh.', 'stk', 12, 28.00, 336.00),
+    (4, 30, 'Vinkelbeslag 3 mm', 'stk', 24, 5.00, 120.00),
+    (4, 13, '19x100 mm trykimpr. Brædt', 'stk', 146, 18.00, 2628.00),
+    (4, 25, 'Skruer 4.5x50 mm', 'pakke(r)', 2, 49.00, 98.00),
+    (4, 27, 'Skruer 4.5x70 mm', 'pakke(r)', 3, 59.00, 177.00),
+    (4, 5, '38x73 mm Lægte ubeh.', 'stk', 1, 29.00, 29.00),
+    (4, 28, 'Stalddørsgreb 50x75 mm', 'sæt', 1, 89.00, 89.00),
+    (4, 29, 'T-hængsel 390 mm', 'stk', 2, 35.00, 70.00),
+    (4, 24, 'Beslagskruer 4.0x50 mm', 'pakke(r)', 1, 39.00, 39.00),
 
-    -- Order 1 (NY ORDRE) - total: 18000.00
-    (1, 1, 'Brædt 25x200', 'stk', 11, 300.00, 3300.00),
-    (1, 4, 'Reglar 45x95', 'stk', 10, 250.00, 2500.00),
-    (1, 5, 'Stolpe 97x97', 'stk', 5, 400.00, 2000.00),
-    (1, 14, 'Tagplade', 'stk', 18, 450.00, 8100.00),
-    (1, 6, 'Bundskruer', 'pakke', 3, 150.00, 450.00),
-    (1, 10, 'Skruer 4.5x60', 'pakke', 5, 120.00, 600.00),
+    -- ORDER 5
+    (5, 12, '97x97 mm trykimpr. Stolpe', 'stk', 12, 129.00, 1548.00),
+    (5, 8, '45x195 mm Spærtræ ubh.', 'stk', 1, 115.00, 115.00),
+    (5, 9, '45x195 mm Spærtræ ubh.', 'stk', 3, 96.00, 288.00),
+    (5, 22, 'Bræddebolt 10x120 mm', 'stk', 28, 4.50, 126.00),
+    (5, 23, 'Firkantskiver 40x40x11 mm', 'stk', 28, 1.50, 42.00),
+    (5, 11, '45x195 mm Spærtræ ubh.', 'stk', 15, 96.00, 1440.00),
+    (5, 20, 'Universal beslag højre 190 mm', 'stk', 15, 12.00, 180.00),
+    (5, 21, 'Universal beslag venstre 190 mm', 'stk', 15, 12.00, 180.00),
+    (5, 19, 'Hulbånd 1x20 mm', 'rulle(r)', 2, 49.00, 98.00),
+    (5, 2, '25x200 mm trykimpr. Brædt', 'stk', 2, 118.00, 236.00),
+    (5, 4, '25x125 mm trykimpr. Brædt', 'stk', 2, 72.00, 144.00),
+    (5, 14, '19x100 mm trykimpr. Brædt', 'stk', 2, 54.00, 108.00),
+    (5, 1, '25x200 mm trykimpr. Brædt', 'stk', 2, 79.00, 158.00),
+    (5, 3, '25x125 mm trykimpr. Brædt', 'stk', 2, 48.00, 96.00),
+    (5, 15, '19x100 mm trykimpr. Brædt', 'stk', 2, 36.00, 72.00),
+    (5, 1, '25x200 mm trykimpr. Brædt', 'stk', 4, 79.00, 316.00),
+    (5, 3, '25x125 mm trykimpr. Brædt', 'stk', 2, 48.00, 96.00),
+    (5, 15, '19x100 mm trykimpr. Brædt', 'stk', 2, 36.00, 72.00),
+    (5, 16, 'Plastmo Ecolite blåtonet', 'stk', 6, 159.00, 954.00),
+    (5, 17, 'Plastmo Ecolite blåtonet', 'stk', 6, 109.00, 654.00),
+    (5, 18, 'Plastmo bundskruer', 'pakke(r)', 3, 129.00, 387.00),
+    (5, 6, '45x95 mm Reglar ubh.', 'stk', 12, 32.00, 384.00),
+    (5, 7, '45x95 mm Reglar ubh.', 'stk', 4, 28.00, 112.00),
+    (5, 30, 'Vinkelbeslag 3 mm', 'stk', 32, 5.00, 160.00),
+    (5, 13, '19x100 mm trykimpr. Brædt', 'stk', 203, 18.00, 3654.00),
+    (5, 25, 'Skruer 4.5x50 mm', 'pakke(r)', 3, 49.00, 147.00),
+    (5, 27, 'Skruer 4.5x70 mm', 'pakke(r)', 4, 59.00, 236.00),
+    (5, 5, '38x73 mm Lægte ubeh.', 'stk', 1, 29.00, 29.00),
+    (5, 28, 'Stalddørsgreb 50x75 mm', 'sæt', 1, 89.00, 89.00),
+    (5, 29, 'T-hængsel 390 mm', 'stk', 2, 35.00, 70.00),
+    (5, 24, 'Beslagskruer 4.0x50 mm', 'pakke(r)', 2, 39.00, 78.00);
 
-    -- Order 5 (AFSLUTTET) - total: 32000.00
-    (5, 1, 'Brædt 25x200', 'stk', 18, 300.00, 5400.00),
-    (5, 2, 'Brædt 25x125', 'stk', 15, 200.00, 3000.00),
-    (5, 3, 'Lægte 38x73', 'stk', 20, 150.00, 3000.00),
-    (5, 4, 'Reglar 45x95', 'stk', 18, 250.00, 4500.00),
-    (5, 5, 'Stolpe 97x97', 'stk', 10, 400.00, 4000.00),
-    (5, 14, 'Tagplade', 'stk', 30, 450.00, 13500.00),
-    (5, 6, 'Bundskruer', 'pakke', 5, 150.00, 750.00),
-    (5, 10, 'Skruer 4.5x60', 'pakke', 6, 120.00, 720.00);
+

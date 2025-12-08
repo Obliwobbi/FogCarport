@@ -6,8 +6,7 @@ import app.exceptions.DatabaseException;
 import app.persistence.*;
 
 import java.time.LocalDateTime;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class OrderServiceImpl implements OrderService
@@ -18,12 +17,13 @@ public class OrderServiceImpl implements OrderService
     private CustomerMapper customerMapper;
     private MaterialsLinesMapper materialsLinesMapper;
 
-    public OrderServiceImpl(OrderMapper orderMapper, CarportMapper carportMapper, DrawingMapper drawingMapper, CustomerMapper customerMapper)
+    public OrderServiceImpl(OrderMapper orderMapper, CarportMapper carportMapper, DrawingMapper drawingMapper, CustomerMapper customerMapper, MaterialsLinesMapper materialsLinesMapper)
     {
         this.orderMapper = orderMapper;
         this.carportMapper = carportMapper;
         this.drawingMapper = drawingMapper;
         this.customerMapper = customerMapper;
+        this.materialsLinesMapper = materialsLinesMapper;
     }
 
     @Override
@@ -51,15 +51,16 @@ public class OrderServiceImpl implements OrderService
     }
 
     @Override
-    public Order createOrder(LocalDateTime orderDate, String status, LocalDateTime deliveryDate, Integer drawingId, int carportId, int customerId) throws DatabaseException
+    public int createOrder(int drawingId, int carportId, int customerId) throws DatabaseException
     {
-        return orderMapper.createOrder(orderDate, status, deliveryDate, drawingId, carportId, customerId);
+        Order order = orderMapper.createOrder(drawingId, carportId, customerId);
+        return order != null ? order.getOrderId() : -1;
     }
 
     @Override
-    public void deleteOrder(int orderId) throws DatabaseException
+    public boolean deleteOrder(int orderId) throws DatabaseException
     {
-        orderMapper.deleteOrder(orderId);
+        return orderMapper.deleteOrder(orderId);
     }
 
     @Override
@@ -75,9 +76,27 @@ public class OrderServiceImpl implements OrderService
     }
 
     @Override
+    public void updateCustomerInfo(Customer customer) throws DatabaseException
+    {
+        customerMapper.updateCustomerInfo(customer);
+    }
+
+    @Override
     public void updateCarport(Carport carport) throws DatabaseException
     {
         carportMapper.updateCarport(carport);
+    }
+
+    @Override
+    public void updateOrderTotalPrice(int orderId) throws DatabaseException
+    {
+        List<MaterialsLine> lines = getOrderwithDetails(orderId).getMaterialsLines();
+        double totalPrice = 0;
+        for(MaterialsLine materialsLine : lines)
+        {
+            totalPrice += materialsLine.getLinePrice();
+        }
+        orderMapper.updateOrderTotalPrice(orderId, totalPrice);
     }
 
     @Override
@@ -89,5 +108,9 @@ public class OrderServiceImpl implements OrderService
                 .collect(Collectors.toList());
     }
 
+    public List<OrderWithDetailsDTO> getOrdersByStatusDTO(String status) throws DatabaseException
+    {
+        return orderMapper.getAllOrdersByStatus(status);
+    }
 }
 

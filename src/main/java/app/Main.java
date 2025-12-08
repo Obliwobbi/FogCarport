@@ -38,19 +38,30 @@ public class Main
         OrderMapper orderMapper = new OrderMapper(connectionPool);
         DrawingMapper drawingMapper = new DrawingMapper(connectionPool);
         CustomerMapper customerMapper = new CustomerMapper(connectionPool);
+        MaterialMapper materialMapper = new MaterialMapper(connectionPool);
         MaterialsLinesMapper materialsLinesMapper = new MaterialsLinesMapper(connectionPool);
 
-        HomeController homeController = new HomeController();
-
+        CalculatorService calculatorService = new CalculatorServiceImpl();
         CarportService carportService = new CarportServiceImpl(carportMapper);
-        CarportController carportController = new CarportController(carportService);
+        DrawingService drawingService = new DrawingServiceImpl(drawingMapper);
+        CustomerService customerService = new CustomerServiceImpl(customerMapper);
+        OrderDetailsService orderDetailsService = new OrderDetailsServiceImpl(calculatorService,materialsLinesMapper,materialMapper);
 
-        OrderService orderService = new OrderServiceImpl(orderMapper,carportMapper, drawingMapper,customerMapper);
-        OrderController orderController = new OrderController(orderService);
+
+        HomeController homeController = new HomeController();
+        CarportController carportController = new CarportController(carportService);
+        DrawingController drawingController = new DrawingController(drawingService, calculatorService);
+        OrderService orderService = new OrderServiceImpl(orderMapper, carportMapper, drawingMapper, customerMapper, materialsLinesMapper);
+        ContactController contactController = new ContactController(customerService, orderService, drawingService,carportService);
+        OrderController orderController = new OrderController(orderService,orderDetailsService);
+
+
 
         // Routing
         homeController.addRoutes(app);
         carportController.addRoutes(app);
+        drawingController.addRoutes(app);
         orderController.addRoutes(app);
+        contactController.addRoutes(app);
     }
 }

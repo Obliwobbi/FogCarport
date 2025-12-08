@@ -13,17 +13,22 @@ public interface OrderService
 
     List<Order> getAllOrders() throws DatabaseException;
 
-    Order createOrder(LocalDateTime orderDate, String status, LocalDateTime deliveryDate, Integer drawingId, int carportId, int customerId) throws DatabaseException;
+    int createOrder(int drawingId, int carportId, int customerId) throws DatabaseException;
 
-    void deleteOrder(int orderId) throws DatabaseException;
+    boolean deleteOrder(int orderId) throws DatabaseException;
 
     void updateOrderStatus(int orderId, String status) throws DatabaseException;
 
     void updateOrderDeliveryDate(int orderId, LocalDateTime deliveryDate) throws DatabaseException;
 
+    void updateCustomerInfo(Customer customer) throws DatabaseException;
+
     void updateCarport(Carport carport) throws DatabaseException;
+
+    void updateOrderTotalPrice(int orderId) throws DatabaseException;
 
     List<Order> getOrdersByStatus(String status) throws DatabaseException;
 
+    List<OrderWithDetailsDTO> getOrdersByStatusDTO(String status) throws DatabaseException;
 }
 

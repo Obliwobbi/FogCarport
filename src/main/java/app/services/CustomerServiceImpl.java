@@ -26,9 +26,9 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public Customer findCustomerById(long id)
+    public Customer findCustomerById(int id) throws DatabaseException
     {
-        return null;
+        return customerMapper.getCustomerByID(id);
     }
 
     @Override
@@ -41,5 +41,11 @@ public class CustomerServiceImpl implements CustomerService {
     public Customer findCustomerByPhone(String phone)
     {
         return null;
+    }
+
+    @Override
+    public void deleteCustomer(int customerId) throws DatabaseException
+    {
+        customerMapper.deleteCustomer(customerId);
     }
 }

@@ -90,8 +90,7 @@ class MaterialsLinesMapperTest
                     stmt.execute("""
                                 CREATE TABLE test.drawings (
                                     drawing_id SERIAL PRIMARY KEY,
-                                    drawing_data TEXT NOT NULL,
-                                    accepted BOOLEAN DEFAULT FALSE
+                                    drawing_data TEXT NOT NULL
                                 )
                             """);
 
@@ -166,17 +165,17 @@ class MaterialsLinesMapperTest
                 // Insert test materials
                 stmt.execute("""
                         INSERT INTO test.materials (id, name, description, unit, unit_type, material_length, material_width, material_height, price)
-                        VALUES (1, 'Brædt 25x200', '25x200 mm. trykimp. Brædt', 1, 'stk', 540.00, 20.00, 2.50, 300.00)
+                        VALUES (1, '25x200 mm trykimpr. Brædt', 'Understernbrædder', 1, 'stk', 360.00, 20.00, 2.50, 79.00)
                         """);
 
                 stmt.execute("""
                         INSERT INTO test.materials (id, name, description, unit, unit_type, material_length, material_width, material_height, price)
-                        VALUES (2, 'Skruer 4.5x60', '4,5 x 60 mm. skruer 200 stk.', 200, 'pakke', NULL, NULL, NULL, 120.00)
+                        VALUES (2, '25x200 mm trykimpr. Brædt', 'Understernbrædder', 1, 'stk', 540.00, 20.00, 2.50, 118.00)
                         """);
 
                 stmt.execute("""
                         INSERT INTO test.materials (id, name, description, unit, unit_type, material_length, material_width, material_height, price)
-                        VALUES (3, 'Bundskruer', 'Plastmo bundskruer 200 stk.', 200, 'pakke', NULL, NULL, NULL, 150.00)
+                        VALUES (3, 'Plastmo bundskruer', 'Skruer til tagplader', 200, 'pakke(r)', NULL, NULL, NULL, 129.00)
                         """);
 
                 // Insert test carports
@@ -187,35 +186,35 @@ class MaterialsLinesMapperTest
 
                 // Insert test drawings
                 stmt.execute("""
-                        INSERT INTO test.drawings (drawing_id, drawing_data, accepted)
-                        VALUES (1, 'SVG drawing data for carport 1...', FALSE)
+                        INSERT INTO test.drawings (drawing_id, drawing_data)
+                        VALUES (1, 'SVG drawing data for standard carport 600x780...')
                         """);
 
                 // Insert test orders
                 stmt.execute("""
                         INSERT INTO test.orders (order_id, order_date, status, delivery_date, drawing_id, carport_id, customer_id, total_price)
-                        VALUES (1, '2024-01-15 10:30:00', 'NY ORDRE', '2024-02-15 10:00:00', 1, 1, 1, 1200.00)
+                        VALUES (1, '2024-01-15 10:30:00', 'AFVENTER ACCEPT', '2024-02-15 10:00:00', 1, 1, 1, 0.00)
                         """);
 
                 stmt.execute("""
                         INSERT INTO test.orders (order_id, order_date, status, delivery_date, drawing_id, carport_id, customer_id, total_price)
-                        VALUES (2, '2024-01-10 14:20:00', 'GODKENDT', '2024-02-10 12:00:00', 1, 1, 1, 450.00)
+                        VALUES (2, '2024-01-10 14:20:00', 'BETALT', '2024-02-10 12:00:00', 1, 1, 1, 6484.00)
                         """);
 
                 // Insert test materials lines
                 stmt.execute("""
                         INSERT INTO test.materials_lines (line_id, order_id, material_id, material_name, unit_type, quantity, unit_price, line_price)
-                        VALUES (1, 1, 1, 'Brædt 25x200', 'stk', 4, 300.00, 1200.00)
+                        VALUES (1, 1, 1, '25x200 mm trykimpr. Brædt', 'stk', 4, 79.00, 316.00)
                         """);
 
                 stmt.execute("""
                         INSERT INTO test.materials_lines (line_id, order_id, material_id, material_name, unit_type, quantity, unit_price, line_price)
-                        VALUES (2, 2, 2, 'Skruer 4.5x60', 'pakke', 2, 120.00, 240.00)
+                        VALUES (2, 2, 2, '25x200 mm trykimpr. Brædt', 'stk', 2, 118.00, 236.00)
                         """);
 
                 stmt.execute("""
                         INSERT INTO test.materials_lines (line_id, order_id, material_id, material_name, unit_type, quantity, unit_price, line_price)
-                        VALUES (3, 2, 3, 'Bundskruer', 'pakke', 1, 150.00, 150.00)
+                        VALUES (3, 2, 3, 'Plastmo bundskruer', 'pakke(r)', 1, 129.00, 129.00)
                         """);
 
                 // Reset sequences
@@ -238,8 +237,8 @@ class MaterialsLinesMapperTest
     {
         // Arrange
         int orderId = 1;
-        Material material = new Material(2, "Skruer 4.5x60", "4,5 x 60 mm. skruer 200 stk.", 200, "pakke", 0, 0, 0, 120.00);
-        MaterialsLine line = new MaterialsLine(0, 10, 1200.00, material);
+        Material material = new Material(2, "25x200 mm trykimpr. Brædt", "Understernbrædder", 1, "stk", 540.00, 20.00, 2.50, 118.00);
+        MaterialsLine line = new MaterialsLine(0, 10, 118.0, 1180.00, material);
 
         // Act
         materialsLinesMapper.createMaterialLine(orderId, line);
@@ -264,10 +263,38 @@ class MaterialsLinesMapperTest
     @Test
     void updateMaterialLineName() throws DatabaseException
     {
+        OrderMapper orderMapper = new OrderMapper(connectionPool);
+        Order order = orderMapper.getOrderById(2);
+        assertNotNull(order);
+
+        MaterialsLinesMapper materialsLinesMapper = new MaterialsLinesMapper(connectionPool);
+        List<MaterialsLine> materialsLinesList = materialsLinesMapper.getMaterialLinesByOrderId(order.getOrderId());
+        MaterialsLine materialsLine = materialsLinesList.get(0);
+
+        String newName = "Nyt test navn";
+
+        assertTrue(materialsLinesMapper.updateMaterialLineName(order.getOrderId(), materialsLine, newName));
+        String testNewName = materialsLinesMapper.getMaterialLineName(order.getOrderId(), materialsLine);
+
+        assertEquals(newName, testNewName);
     }
 
     @Test
     void deleteMaterialLine() throws DatabaseException
     {
+        OrderMapper orderMapper = new OrderMapper(connectionPool);
+        Order order = orderMapper.getOrderById(2);
+        assertNotNull(order);
+
+        MaterialsLinesMapper materialsLinesMapper = new MaterialsLinesMapper(connectionPool);
+
+        List<MaterialsLine> materialsLinesList = materialsLinesMapper.getMaterialLinesByOrderId(order.getOrderId());
+        MaterialsLine materialsLine = materialsLinesList.get(0);
+
+        assertTrue(materialsLinesMapper.deleteMaterialLine(materialsLine));
+
+        materialsLinesList = materialsLinesMapper.getMaterialLinesByOrderId(order.getOrderId());
+
+        assertEquals(1, materialsLinesList.size());
     }
 }

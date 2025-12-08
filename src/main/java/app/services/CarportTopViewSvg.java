@@ -1,0 +1,316 @@
+package app.services;
+
+import app.entities.Carport;
+
+import java.util.Locale;
+
+public class CarportTopViewSvg
+{
+    private Carport carport;
+    private SvgService svgService;
+    private final CalculatorService calculatorService;
+
+    private double TOP_PLATE_OFFSET;
+    private double MAX_OVERHANG;
+    private double POST_OFFSET_Y_TOP;
+    private double POST_OFFSET_Y_BOTTOM;
+
+    public CarportTopViewSvg(Carport carport, CalculatorService calculatorService, SvgService svgService)
+    {
+        this.carport = carport;
+        this.calculatorService = calculatorService;
+        this.svgService = svgService;
+
+        setDynamicMeasurements();
+
+        addFasciaBoard();
+        addTopPlate();
+        addCeilingJoist();
+        addPosts();
+        addPerforatedStrips();
+        addShedOutline();
+    }
+
+    private void setDynamicMeasurements()
+    {
+        double carportWidth = carport.getWidth();
+
+        MAX_OVERHANG = (carportWidth >= 330) ? 70 : 35;  //smaller overhang on smaller carports to give space for car
+        TOP_PLATE_OFFSET = (carportWidth >= 330) ? 35 : 15; //aligns Top Plate with Posts
+
+        POST_OFFSET_Y_TOP = TOP_PLATE_OFFSET - 2.5;
+        POST_OFFSET_Y_BOTTOM = TOP_PLATE_OFFSET + 2.5;
+    }
+
+    private void addFasciaBoard()
+    {
+        double carportWidth = carport.getWidth();
+        double carportLength = carport.getLength();
+
+        svgService.addRectangle(0, 0, carportWidth, carportLength, Constants.STYLE);
+    }
+
+    private void addTopPlate()
+    {
+        double width = carport.getWidth();
+        double length = carport.getLength();
+
+        svgService.addRectangle(0, TOP_PLATE_OFFSET, Constants.TOP_PLATE_WIDTH, length, Constants.STYLE);
+        svgService.addRectangle(0, width - TOP_PLATE_OFFSET, Constants.TOP_PLATE_WIDTH, length, Constants.STYLE);
+    }
+
+    private void addCeilingJoist()
+    {
+        double carportWidth = carport.getWidth();
+        double carportLength = carport.getLength();
+
+        int joists = calculatorService.sumHashMapValues(calculatorService.calculateCeilingJoist(carport));
+
+        double spaceBetween = (carportLength / (joists - 1)); //joist-1 is amount of gaps needed for equal spacing
+        for (double i = 0; i < joists; i++)
+        {
+            double x = i * spaceBetween;
+            svgService.addRectangle(x, 0, carportWidth, Constants.TOP_PLATE_WIDTH, Constants.STYLE);
+        }
+    }
+
+    private void addPosts()
+    {
+        double carportWidth = carport.getWidth();
+        double carportLength = carport.getLength();
+        double shedWidth = carport.getShedWidth();
+        double shedLength = carport.getShedLength();
+
+        double maxOverHangLength = 150; //able to most post supporting TopPlate to align with shed Corner
+        boolean isFullWidth = shedWidth >= (carportWidth - MAX_OVERHANG);
+        boolean isFullLength = shedLength >= (carportLength - maxOverHangLength);
+
+        double postAlignedWithLowerYTopPlate = carportWidth - POST_OFFSET_Y_BOTTOM;
+        double shedOuterCornerPostXPosition = carportLength - Constants.POST_OFFSET_X_WITH_SHED;
+        double shedInnerCornerPostXPosition = carportLength - Constants.POST_OFFSET_X_WITH_SHED - shedLength;
+
+        if (carport.isWithShed())
+        {
+            if (!isFullLength)
+            {
+                double frontPost = (carportLength > (Constants.MAX_LENGTH_BETWEEN_POST + Constants.POST_OFFSET_X_WITH_SHED)) ? Constants.POST_OFFSET_X_LARGE : Constants.POST_OFFSET_X_SMALL;
+                svgService.addRectangle(frontPost, POST_OFFSET_Y_TOP, Constants.POST_SIZE, Constants.POST_SIZE, Constants.STYLE); // FRONT UPPER LEFT
+            }
+
+            if (isFullWidth)
+            {
+                svgService.addRectangle(Constants.POST_OFFSET_X_LARGE, postAlignedWithLowerYTopPlate, Constants.POST_SIZE, Constants.POST_SIZE, Constants.STYLE); //FRONT LOWER LEFT
+            }
+
+            //Always build a shed from upper right corner
+            svgService.addRectangle(shedInnerCornerPostXPosition, POST_OFFSET_Y_TOP, Constants.POST_SIZE, Constants.POST_SIZE, Constants.STYLE); // UPPER SHED LEFT CORNER
+            svgService.addRectangle(shedOuterCornerPostXPosition, POST_OFFSET_Y_TOP, Constants.POST_SIZE, Constants.POST_SIZE, Constants.STYLE); // UPPER SHED RIGHT CORNER
+
+            double lowerYPosition = (isFullWidth) ? postAlignedWithLowerYTopPlate : shedWidth + POST_OFFSET_Y_TOP;
+
+            svgService.addRectangle(shedInnerCornerPostXPosition, lowerYPosition, Constants.POST_SIZE, Constants.POST_SIZE, Constants.STYLE); // LOWER SHED LEFT CORNER
+            svgService.addRectangle(shedOuterCornerPostXPosition, lowerYPosition, Constants.POST_SIZE, Constants.POST_SIZE, Constants.STYLE); // LOWER SHED RIGHT CORNER
+
+            if (shedWidth > Constants.MAX_LENGTH_BLOCKING) //POST FOR BETWEEN SHED CORNER ON WIDTH/Y IF NEEDED
+            {
+                double middlePostOfShed = (isFullWidth) ? (POST_OFFSET_Y_TOP + (lowerYPosition)) / 2 : (POST_OFFSET_Y_TOP + shedWidth + POST_OFFSET_Y_BOTTOM) / 2;
+
+                svgService.addRectangle(shedOuterCornerPostXPosition, middlePostOfShed, Constants.POST_SIZE, Constants.POST_SIZE, Constants.STYLE); // MIDDLE SHED RIGHT
+                svgService.addRectangle(shedInnerCornerPostXPosition, middlePostOfShed, Constants.POST_SIZE, Constants.POST_SIZE, Constants.STYLE); // MIDDLE SHED LEFT
+            }
+
+            if (shedLength > Constants.MAX_LENGTH_BLOCKING) //POST FOR BETWEEN SHED CORNER ON WIDTH/X IF NEEDED
+            {
+                int numberOfSegments = (int) Math.ceil(shedLength / Constants.MAX_LENGTH_BLOCKING);
+
+                double spaceBetweenPosts = shedLength / numberOfSegments;
+
+                // Add intermediate posts (numberOfSegments - 1 posts between the corners)
+                for (int i = 1; i < numberOfSegments; i++)
+                {
+                    double postX = shedInnerCornerPostXPosition + (i * spaceBetweenPosts);
+
+                    svgService.addRectangle(postX, POST_OFFSET_Y_TOP, Constants.POST_SIZE, Constants.POST_SIZE, Constants.STYLE);
+                    svgService.addRectangle(postX, lowerYPosition, Constants.POST_SIZE, Constants.POST_SIZE, Constants.STYLE);
+                }
+            }
+
+            double spaceBetweenShedInnerPostAndFirstCarportPost = shedInnerCornerPostXPosition - Constants.POST_OFFSET_X_LARGE;
+            if (spaceBetweenShedInnerPostAndFirstCarportPost > Constants.MAX_LENGTH_BLOCKING)
+            {
+                double middlePostUnderTopPlatesX = Constants.POST_OFFSET_X_LARGE + (spaceBetweenShedInnerPostAndFirstCarportPost / 2);
+                svgService.addRectangle(middlePostUnderTopPlatesX, POST_OFFSET_Y_TOP, Constants.POST_SIZE, Constants.POST_SIZE, Constants.STYLE); // UPPER POST BETWEEN FRONT AND SHED CORNER
+
+                if (isFullWidth)
+                {
+                    svgService.addRectangle(middlePostUnderTopPlatesX, postAlignedWithLowerYTopPlate, Constants.POST_SIZE, Constants.POST_SIZE, Constants.STYLE); // LOWER POST BETWEEN FRONT AND SHED CORNER
+                }
+            }
+
+            if (!isFullWidth)
+            {
+                int stnCarportLengthMedium = 350;
+                int stnCarportLengthMediumLarge = 450;
+                int stnCarportLengthLarge = 510;
+
+                if (carportLength > stnCarportLengthLarge)
+                {
+                    int numberOfSegments = Math.max((int) Math.ceil(carportLength / Constants.MAX_LENGTH_BETWEEN_POST), 3);
+                    double spaceBetweenPosts = (carportLength - Constants.POST_OFFSET_EDGE_BUFFER) / (2);
+
+                    for (int i = 0; i < numberOfSegments; i++)
+                    {
+                        double postX = Constants.POST_OFFSET_X_LARGE + (i * spaceBetweenPosts);
+                        svgService.addRectangle(postX, postAlignedWithLowerYTopPlate, Constants.POST_SIZE, Constants.POST_SIZE, Constants.STYLE); // ALL POSTS UNDER LOWER TOP PLATE SHED !FULLWIDTH
+                    }
+                }
+                else if (carportLength >= stnCarportLengthMediumLarge)
+                {
+                    svgService.addRectangle(Constants.POST_OFFSET_X_LARGE, postAlignedWithLowerYTopPlate, Constants.POST_SIZE, Constants.POST_SIZE, Constants.STYLE); // LOWER LEFT
+                    svgService.addRectangle(carportLength - Constants.POST_OFFSET_X_LARGE, postAlignedWithLowerYTopPlate, Constants.POST_SIZE, Constants.POST_SIZE, Constants.STYLE); // LOWER RIGHT
+                }
+                else if (carportLength > stnCarportLengthMedium)
+                {
+                    svgService.addRectangle(Constants.POST_OFFSET_X_LARGE, postAlignedWithLowerYTopPlate, Constants.POST_SIZE, Constants.POST_SIZE, Constants.STYLE); // LOWER LEFT
+                    svgService.addRectangle(carportLength - Constants.POST_OFFSET_X_WITH_SHED, postAlignedWithLowerYTopPlate, Constants.POST_SIZE, Constants.POST_SIZE, Constants.STYLE); // LOWER RIGHT
+                }
+                else
+                {
+                    svgService.addRectangle(Constants.POST_OFFSET_X_SMALL, postAlignedWithLowerYTopPlate, Constants.POST_SIZE, Constants.POST_SIZE, Constants.STYLE); // LOWER LEFT
+                    svgService.addRectangle(carportLength - Constants.POST_OFFSET_X_WITH_SHED, postAlignedWithLowerYTopPlate, Constants.POST_SIZE, Constants.POST_SIZE, Constants.STYLE); // LOWER RIGHT
+                }
+            }
+        }
+        else // NO SHED
+        {
+            if (carport.getLength() <= Constants.MAX_LENGTH_CARPORT_FOR_POST_SPACING)
+            {
+                svgService.addRectangle(Constants.POST_OFFSET_X_SMALL, POST_OFFSET_Y_TOP, Constants.POST_SIZE, Constants.POST_SIZE, Constants.STYLE); // UPPER LEFT
+                svgService.addRectangle(carportLength - Constants.POST_OFFSET_X_SMALL, POST_OFFSET_Y_TOP, Constants.POST_SIZE, Constants.POST_SIZE, Constants.STYLE); // UPPER RIGHT
+                svgService.addRectangle(Constants.POST_OFFSET_X_SMALL, postAlignedWithLowerYTopPlate, Constants.POST_SIZE, Constants.POST_SIZE, Constants.STYLE); // LOWER LEFT
+                svgService.addRectangle(carportLength - Constants.POST_OFFSET_X_SMALL, postAlignedWithLowerYTopPlate, Constants.POST_SIZE, Constants.POST_SIZE, Constants.STYLE); // LOWER RIGHT
+            }
+            if (carport.getLength() > Constants.MAX_LENGTH_CARPORT_FOR_POST_SPACING)
+            {
+                double posts = (double) calculatorService.calculatePosts(carport) / 2;
+                double spaceBetween = (carportLength - Constants.POST_OFFSET_EDGE_BUFFER) / (posts - 1); // Calculate spacing: posts - 1 gives number of gaps
+
+                for (int i = 0; i < posts; i++)
+                {
+                    double x = Constants.POST_OFFSET_X_LARGE + (i * spaceBetween);
+                    svgService.addRectangle(x, POST_OFFSET_Y_TOP, Constants.POST_SIZE, Constants.POST_SIZE, Constants.STYLE); // UPPER POSTS UNDER TOP PLATE
+                    svgService.addRectangle(x, postAlignedWithLowerYTopPlate, Constants.POST_SIZE, Constants.POST_SIZE, Constants.STYLE); // LOWER POSTS UNDER TOP PLATE
+                }
+            }
+        }
+    }
+
+    private void addPerforatedStrips()
+    {
+        int joists = calculatorService.sumHashMapValues(calculatorService.calculateCeilingJoist(carport));
+
+        double startX = (carport.getLength() / (joists - 1)); //joist-1 is amount of gaps needed for equal spacing
+        double endJoist = Math.min(10, joists - 2);
+
+        double endX = endJoist * startX;
+
+        svgService.addLine(startX, TOP_PLATE_OFFSET, endX, carport.getWidth() - TOP_PLATE_OFFSET, Constants.DASHED_LINE); //uses TOP-PLATE_OFFSET due to needing to be connected to the ceilingjoist atop that;
+        svgService.addLine(startX, carport.getWidth() - TOP_PLATE_OFFSET, endX, TOP_PLATE_OFFSET, Constants.DASHED_LINE);
+    }
+
+    private void addShedOutline()
+    {
+        if (!carport.isWithShed())
+        {
+            return;
+        }
+
+        double carportWidth = carport.getWidth();
+        double carportLength = carport.getLength();
+        double shedWidth = carport.getShedWidth();
+        double shedLength = carport.getShedLength();
+
+        boolean isFullWidth = shedWidth >= (carportWidth - MAX_OVERHANG);
+
+        // Position lines on OUTER edge of posts
+        double shedOuterCornerPostX = carportLength - Constants.POST_OFFSET_X_WITH_SHED + Constants.POST_SIZE;
+        double shedInnerCornerPostX = carportLength - Constants.POST_OFFSET_X_WITH_SHED - shedLength;
+        double upperY = POST_OFFSET_Y_TOP;
+        double lowerY = (isFullWidth) ? (carportWidth - POST_OFFSET_Y_BOTTOM + Constants.POST_SIZE) : (shedWidth + POST_OFFSET_Y_TOP + Constants.POST_SIZE);
+
+        double lineOffset = 2; // Distance between the two dashed lines
+
+        // Top line (double-dashed)
+        svgService.addLine(shedInnerCornerPostX, upperY, shedOuterCornerPostX, upperY, Constants.SHED_STYLE_ONE);
+        svgService.addLine(shedInnerCornerPostX, upperY - lineOffset, shedOuterCornerPostX, upperY - lineOffset, Constants.SHED_STYLE_TWO);
+
+        // Bottom line (double-dashed)
+        svgService.addLine(shedInnerCornerPostX, lowerY, shedOuterCornerPostX, lowerY, Constants.SHED_STYLE_ONE);
+        svgService.addLine(shedInnerCornerPostX, lowerY + lineOffset, shedOuterCornerPostX, lowerY + lineOffset, Constants.SHED_STYLE_TWO);
+
+        // Left line (double-dashed)
+        svgService.addLine(shedInnerCornerPostX, upperY, shedInnerCornerPostX, lowerY, Constants.SHED_STYLE_ONE);
+        svgService.addLine(shedInnerCornerPostX - lineOffset, upperY, shedInnerCornerPostX - lineOffset, lowerY, Constants.SHED_STYLE_TWO);
+
+        // Right line (double-dashed)
+        svgService.addLine(shedOuterCornerPostX, upperY, shedOuterCornerPostX, lowerY, Constants.SHED_STYLE_ONE);
+        svgService.addLine(shedOuterCornerPostX + lineOffset, upperY, shedOuterCornerPostX + lineOffset, lowerY, Constants.SHED_STYLE_TWO);
+    }
+
+    public String createMeasuredCarportSvg()
+    {
+        double carportWidth = carport.getWidth();
+        double carportLength = carport.getLength();
+
+        double leftMargin = 50;
+        double topMargin = 50;
+        double bottomMargin = 40;
+        double rightMargin = 50;
+
+        double totalWidth = leftMargin + carportLength + rightMargin;
+        double totalHeight = topMargin + carportWidth + bottomMargin;
+        double minOverhang = 30; //15 each side
+
+        SvgServiceImpl outerSvg = new SvgServiceImpl(0, 0, String.format(Locale.US, "0 0 %.1f %.1f", totalWidth, totalHeight), "100%", "auto");
+        SvgServiceImpl innerSvg = new SvgServiceImpl((int) leftMargin, (int) topMargin, String.format(Locale.US, "0 0 %.1f %.1f", carportLength + 5, carportWidth), String.format(Locale.US, "%.1f", carportLength), String.format(Locale.US, "%.1f", carportWidth));
+
+        innerSvg.addSvg((SvgServiceImpl) svgService);
+        outerSvg.addSvg(innerSvg);
+
+        // Width measurement (left side) with arrows
+        outerSvg.addArrow(20, 52.5, 20, 32.5 + carportWidth, Constants.STYLE + Constants.ARROW);
+        outerSvg.addText(12, (int) (topMargin + carportWidth / 2), 270, String.format(Locale.US, "%.0f cm", carportWidth));
+
+        // Length measurement (bottom) with arrows
+        outerSvg.addArrow(leftMargin, topMargin + carportWidth + 10, leftMargin + carportLength, topMargin + carportWidth + 10, Constants.STYLE + Constants.ARROW);
+        outerSvg.addText((int) (leftMargin + carportLength / 2), (int) (topMargin + carportWidth + 35), 0, String.format(Locale.US, "%.0f cm", carportLength));
+
+        // Post spacing measurement on width (left side)
+        double postSpacingOnWidth = (carportWidth < 340) ? carportWidth - minOverhang : carportWidth - (2 * TOP_PLATE_OFFSET);
+        outerSvg.addArrow(40, topMargin + TOP_PLATE_OFFSET, 40, 40 + carportWidth - TOP_PLATE_OFFSET, Constants.STYLE + Constants.ARROW);
+        outerSvg.addText(35, (int) (topMargin + carportWidth / 2), 270, String.format(Locale.US, "%.0f cm", postSpacingOnWidth));
+
+
+        // Ceiling joist spacing measurements (top)
+        int joists = calculatorService.sumHashMapValues(calculatorService.calculateCeilingJoist(carport));
+        double joistSpacing = carportLength / (joists - 1);
+
+        for (int i = 0; i < joists - 1; i++)
+        {
+            double x1 = leftMargin + (i * joistSpacing);
+            double x2 = leftMargin + ((i + 1) * joistSpacing);
+            double y = topMargin - 8;
+
+            outerSvg.addArrow(x1, y, x2, y, Constants.STYLE + Constants.ARROW);
+            outerSvg.addText((int) ((x1 + x2) / 2), (int) (y - 10), 0, String.format(Locale.US, "%.02f", joistSpacing / 100));
+        }
+
+        return outerSvg.toString();
+    }
+
+    @Override
+    public String toString()
+    {
+        return svgService.toString();
+    }
+}

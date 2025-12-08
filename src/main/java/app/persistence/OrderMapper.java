@@ -1,5 +1,6 @@
 package app.persistence;
 
+import app.dto.OrderWithDetailsDTO;
 import app.entities.*;
 import app.exceptions.DatabaseException;
 
@@ -19,20 +20,17 @@ public class OrderMapper
         this.materialsLinesMapper = new MaterialsLinesMapper(connectionPool);
     }
 
-    public Order createOrder(LocalDateTime orderDate, String status, LocalDateTime deliveryDate, Integer drawingId, int carportId, int customerId) throws DatabaseException
+    public Order createOrder(int drawingId, int carportId, int customerId) throws DatabaseException
     {
-        String sql = "INSERT INTO orders (order_date, status, delivery_date, drawing_id, carport_id, customer_id)" +
-                "VALUES (?,?,?,?,?,?)";
+        String sql = "INSERT INTO orders (drawing_id, carport_id, customer_id)" +
+                "VALUES (?,?,?)";
 
         try (Connection connection = connectionPool.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS))
         {
-            ps.setTimestamp(1, Timestamp.valueOf(orderDate));
-            ps.setString(2, status);
-            ps.setTimestamp(3, Timestamp.valueOf(deliveryDate));
-            ps.setInt(4, drawingId);
-            ps.setInt(5, carportId);
-            ps.setInt(6, customerId);
+            ps.setInt(1, drawingId);
+            ps.setInt(2, carportId);
+            ps.setInt(3, customerId);
 
             int rowsAffected = ps.executeUpdate();
 
@@ -48,7 +46,7 @@ public class OrderMapper
                 int orderId = rs.getInt(1);
                 List<MaterialsLine> lines = new ArrayList<>();
 
-                Order order = new Order(orderId, orderDate, status, deliveryDate, drawingId, carportId, lines, customerId);
+                Order order = new Order(orderId, drawingId, carportId, lines, customerId);
 
                 lines = order.getMaterialLines();
 
@@ -65,9 +63,9 @@ public class OrderMapper
 
         }
         catch (SQLException e)
-            {
-                throw new DatabaseException("Databasefejl ved oprettelse af ordre " + e.getMessage());
-            }
+        {
+            throw new DatabaseException("Databasefejl ved oprettelse af ordre " + e.getMessage());
+        }
         return null;
     }
 
@@ -163,6 +161,24 @@ public class OrderMapper
         return false;
     }
 
+    public void updateOrderTotalPrice(int orderId, double totalPrice) throws DatabaseException
+    {
+        String sql = "UPDATE orders SET total_price = ? WHERE order_id = ?";
+
+        try (Connection connection = connectionPool.getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql))
+        {
+            ps.setDouble(1, totalPrice);
+            ps.setInt(2, orderId);
+            ps.executeUpdate();
+        }
+        catch (SQLException e)
+        {
+            throw new DatabaseException("Fejl ved opdatering af total pris: " + e.getMessage());
+        }
+    }
+
+
     public boolean updateOrderDeliveryDate(int orderId, LocalDateTime deliveryDate) throws DatabaseException
     {
         String sql = "UPDATE orders SET delivery_date = ? WHERE order_id = ?";
@@ -208,6 +224,109 @@ public class OrderMapper
             throw new DatabaseException("Fejl ved sletning af order med id: " + orderId);
         }
         return false;
+    }
+
+    public List<OrderWithDetailsDTO> getAllOrdersByStatus(String status) throws DatabaseException
+    {
+        String sql = """
+                SELECT
+                    o.order_id, o.order_date, o.status, o.delivery_date,
+                    c.carport_id, c.width, c.length, c.height, c.with_shed,
+                    c.shed_width, c.shed_length, c.customer_wishes,
+                    cu.customer_id, cu.firstname, cu.lastname, cu.email, cu.phone,
+                    cu.street, cu.house_number, cu.zipcode, cu.city,
+                    d.drawing_id, d.drawing_data
+                FROM orders o
+                JOIN carports c ON o.carport_id = c.carport_id
+                JOIN customers cu ON o.customer_id = cu.customer_id
+                LEFT JOIN drawings d ON o.drawing_id = d.drawing_id
+                WHERE o.status = ?
+                ORDER BY o.order_date
+                """;
+
+        List<OrderWithDetailsDTO> orders = new ArrayList<>();
+
+        try (Connection connection = connectionPool.getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql))
+        {
+
+            ps.setString(1, status);
+
+            try (ResultSet rs = ps.executeQuery())
+            {
+                while (rs.next())
+                {
+                    int orderId = rs.getInt("order_id");
+
+                    Carport carport;
+                    boolean withShed = rs.getBoolean("with_shed");
+                    if (withShed)
+                    {
+                        carport = new Carport(
+                                rs.getInt("carport_id"),
+                                rs.getDouble("width"),
+                                rs.getDouble("length"),
+                                rs.getDouble("height"),
+                                withShed,
+                                rs.getDouble("shed_width"),
+                                rs.getDouble("shed_length"),
+                                rs.getString("customer_wishes")
+                        );
+                    }
+                    else
+                    {
+                        carport = new Carport(
+                                rs.getInt("carport_id"),
+                                rs.getDouble("width"),
+                                rs.getDouble("length"),
+                                rs.getDouble("height"),
+                                withShed,
+                                rs.getString("customer_wishes")
+                        );
+                    }
+
+                    Customer customer = new Customer(
+                            rs.getInt("customer_id"),
+                            rs.getString("firstname"),
+                            rs.getString("lastname"),
+                            rs.getString("email"),
+                            rs.getString("phone"),
+                            rs.getString("street"),
+                            rs.getString("house_number"),
+                            rs.getInt("zipcode"),
+                            rs.getString("city")
+                    );
+
+                    Drawing drawing = null;
+                    int drawingId = rs.getInt("drawing_id");
+                    if (!rs.wasNull())
+                    {
+                        drawing = new Drawing(
+                                drawingId,
+                                rs.getString("drawing_data"));
+                    }
+
+                    List<MaterialsLine> materialLines = materialsLinesMapper.getMaterialLinesByOrderId(orderId);
+
+                    orders.add(new OrderWithDetailsDTO(
+                            orderId,
+                            rs.getTimestamp("order_date").toLocalDateTime(),
+                            rs.getString("status"),
+                            rs.getTimestamp("delivery_date").toLocalDateTime(),
+                            drawing,
+                            materialLines,
+                            carport,
+                            customer
+                    ));
+                }
+            }
+        }
+        catch (SQLException e)
+        {
+            throw new DatabaseException("Fejl ved hentning af ordre: " + e.getMessage());
+        }
+
+        return orders;
     }
 }
 

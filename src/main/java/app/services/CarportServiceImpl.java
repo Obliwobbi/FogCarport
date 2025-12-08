@@ -7,6 +7,9 @@ import app.persistence.CarportMapper;
 public class CarportServiceImpl implements CarportService
 {
     private CarportMapper carportMapper;
+    double SMALL_MEDIUM_CARPORT = 330;
+    double OVERHANG_SMALL = 30;
+    double OVERHANG_LARGE = 70;
 
     public CarportServiceImpl(CarportMapper carportMapper)
     {
@@ -20,9 +23,9 @@ public class CarportServiceImpl implements CarportService
     }
 
     @Override
-    public Carport createCarport(double width, double length, double height, boolean withShed, double shedWidth, double shedLength, String customerWishes) throws DatabaseException
+    public Carport createCarport(Carport carport) throws DatabaseException
     {
-        return carportMapper.createCarport(width,length,height,withShed,shedWidth,shedLength,customerWishes);
+        return carportMapper.createCarport(carport.getWidth(), carport.getLength(), carport.getHeight(), carport.isWithShed(), carport.getShedWidth(), carport.getShedLength(), carport.getCustomerWishes());
     }
 
     @Override
@@ -40,18 +43,46 @@ public class CarportServiceImpl implements CarportService
     @Override
     public double validateShedMeasurement(double carportMeasurement, double shedMeasurement)
     {
-        return Math.min(carportMeasurement, shedMeasurement);
+        double deadZone = 40;
+
+        //creates dead zone so if a shed is to close to the edge it resizes shed to match carport width
+        double maxShedSize = (carportMeasurement <= SMALL_MEDIUM_CARPORT) ? carportMeasurement - OVERHANG_SMALL : carportMeasurement - (OVERHANG_SMALL + deadZone);
+        double minShedSize = (carportMeasurement <= SMALL_MEDIUM_CARPORT) ? carportMeasurement - OVERHANG_LARGE : carportMeasurement - (OVERHANG_LARGE + deadZone);
+
+        if (shedMeasurement > maxShedSize)
+        {
+            return maxShedSize;
+        }
+        else if (shedMeasurement > minShedSize)
+        {
+            return maxShedSize;
+        }
+        else
+        {
+            return shedMeasurement;
+        }
     }
 
     @Override
     public boolean validateShedTotalSize(double carportLength, double carportWidth, double shedLength, double shedWidth)
     {
-        double remainingCarportLength = carportLength - shedLength;
-        double remainingCarportWidth = carportWidth - shedWidth;
+        double postOffset = (carportWidth >= SMALL_MEDIUM_CARPORT) ? OVERHANG_LARGE / 2 : OVERHANG_SMALL / 2;
+        double usableCarportWidth = carportWidth - (2 * postOffset);
 
-        if(remainingCarportLength < 240 || remainingCarportWidth < 240)
+        double remainingCarportLength = carportLength - shedLength;
+        double remainingCarportWidth = usableCarportWidth - shedWidth;
+
+        double minCarSpace = 240;
+
+        // Check if space IN FRONT of shed can fit 240x240
+        boolean hasSpaceInFront = remainingCarportLength >= minCarSpace && usableCarportWidth >= minCarSpace;
+
+        // Check if space BESIDE shed can fit 240x240
+        boolean hasSpaceBeside = remainingCarportWidth >= minCarSpace && carportLength >= minCarSpace;
+
+        if (!hasSpaceInFront && !hasSpaceBeside)
         {
-            throw new IllegalArgumentException("Der er ikke plads til bilen, med nuværende skur mål, Minimum 240x240 til carport");
+            throw new IllegalArgumentException("Der er ikke plads til bilen med nuværende skur mål. Minimum 240x240 cm til carport.");
         }
         return true;
     }

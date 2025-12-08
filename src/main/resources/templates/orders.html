@@ -2,19 +2,279 @@
 <html lang="da" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8"/>
-    <title>FogCarport</title>
+    <title>Alle Ordre - FogCarport</title>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <link rel="stylesheet" href="/css/stylesheet.css" th:href="@{/css/stylesheet.css}"/>
-    <link rel="stylesheet" href="/css/orders.css" th:href="@{/css/orders.css}"/>
 </head>
 <body>
 
+<div th:replace="~{fragments :: headerFragment}"></div>
+
 <main>
-    <section class="orders-body">
-        <h1>This is orders.html</h1>
+    <section class="body-style">
+        <div class="details-header center-text">
+            <h1>Alle Ordre</h1>
+        </div>
+
+        <!-- NYE ORDRE -->
+        <div class="details-section">
+            <h2>Nye Ordre</h2>
+            <div th:if="${newOrders != null and !newOrders.isEmpty()}" class="orders-table">
+            <table>
+                <thead>
+                <tr>
+                    <th>Ordre Id</th>
+                    <th>Kunde</th>
+                    <th>Email</th>
+                    <th>Ordre dato</th>
+                    <th>Leverings dato</th>
+                    <th>Total pris</th>
+                    <th>Status</th>
+                    <th>Handlinger</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="order : ${newOrders}">
+                    <td th:text="${order.orderId}"></td>
+                    <td th:text="${order.customer.firstName + ' ' + order.customer.lastName}"></td>
+                    <td th:text="${order.customer.email}"></td>
+                    <td th:text="${#temporals.format(order.orderDate, 'dd-MM-yyyy HH:mm')}"></td>
+                    <td th:text="'Ikke afsendt'"></td>
+                    <td th:text="'Ikke udregnet'"></td>
+                    <td>
+                        <span class="status">Ny ordre</span>
+                    </td>
+                    <td class="action-buttons">
+                        <a th:href="@{/orders/details/{id}(id=${order.orderId})}"
+                           class="action-btn view-btn" title="Se detaljer">
+                            <img th:src="@{/images/view-w.svg}" alt="Se detaljer"/>
+                        </a>
+
+
+                        <form method="post" th:action="@{/orders/delete/{id}(id=${order.orderId})}"
+                              onsubmit="return confirm('Er du sikker på du vil slette ordren?')">
+                            <button type="submit" class="action-btn delete-btn" title="Slet ordre">
+                                <img th:src="@{/images/delete-w.svg}" alt="Slet"/>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <p th:if="${newOrders == null or newOrders.isEmpty()}">
+            Ingen nye ordre
+        </p>
+        </div>
+
+        <!-- AFVENTER ACCEPT -->
+        <div class="details-section">
+        <h2>Afventer accept fra kunde</h2>
+        <div th:if="${pendingOrders != null and !pendingOrders.isEmpty()}" class="orders-table">
+            <table>
+                <thead>
+                <tr>
+                    <th>Ordre Id</th>
+                    <th>Kunde</th>
+                    <th>Email</th>
+                    <th>Ordre dato</th>
+                    <th>Leverings dato</th>
+                    <th>Total pris</th>
+                    <th>Status</th>
+                    <th>Handlinger</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="order : ${pendingOrders}">
+                    <td th:text="${order.orderId}"></td>
+                    <td th:text="${order.customer.firstName + ' ' + order.customer.lastName}"></td>
+                    <td th:text="${order.customer.email}"></td>
+                    <td th:text="${#temporals.format(order.orderDate, 'dd-MM-yyyy HH:mm')}"></td>
+                    <td th:text="'Ikke afsendt'"></td>
+                    <td th:text="${order.totalPrice + ' kr.'}"></td>
+                    <td>
+                        <span class="status">Afventer accept</span>
+                    </td>
+                    <td class="action-buttons">
+                        <a th:href="@{/orders/details/{id}(id=${order.orderId})}"
+                           class="action-btn view-btn" title="Se detaljer">
+                            <img th:src="@{/images/view-w.svg}" alt="Se detaljer"/>
+                        </a>
+
+
+                        <form method="post" th:action="@{/orders/delete/{id}(id=${order.orderId})}"
+                              onsubmit="return confirm('Er du sikker på du vil slette ordren?')">
+                            <button type="submit" class="action-btn delete-btn" title="Slet ordre">
+                                <img th:src="@{/images/delete-w.svg}" alt="Slet"/>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <p th:if="${pendingOrders == null or pendingOrders.isEmpty()}">
+            Ingen uaccepterede ordre
+        </p>
+        </div>
+
+        <!-- BETALT -->
+        <div class="details-section">
+        <h2>Betalte ordre</h2>
+        <div th:if="${paidOrders != null and !paidOrders.isEmpty()}" class="orders-table">
+            <table>
+                <thead>
+                <tr>
+                    <th>Ordre Id</th>
+                    <th>Kunde</th>
+                    <th>Email</th>
+                    <th>Ordre dato</th>
+                    <th>Leverings dato</th>
+                    <th>Total pris</th>
+                    <th>Status</th>
+                    <th>Handlinger</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="order : ${paidOrders}">
+                    <td th:text="${order.orderId}"></td>
+                    <td th:text="${order.customer.firstName + ' ' + order.customer.lastName}"></td>
+                    <td th:text="${order.customer.email}"></td>
+                    <td th:text="${#temporals.format(order.orderDate, 'dd-MM-yyyy HH:mm')}"></td>
+                    <td th:text="'Ikke afsendt'"></td>
+                    <td th:text="${order.totalPrice + ' kr.'}"></td>
+                    <td>
+                        <span class="status">Betalt</span>
+                    </td>
+                    <td class="action-buttons">
+                        <a th:href="@{/orders/details/{id}(id=${order.orderId})}"
+                           class="action-btn view-btn" title="Se detaljer">
+                            <img th:src="@{/images/view-w.svg}" alt="Se detaljer"/>
+                        </a>
+
+
+                        <form method="post" th:action="@{/orders/delete/{id}(id=${order.orderId})}"
+                              onsubmit="return confirm('Er du sikker på du vil slette ordren?')">
+                            <button type="submit" class="action-btn delete-btn" title="Slet ordre">
+                                <img th:src="@{/images/delete-w.svg}" alt="Slet"/>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <p th:if="${paidOrders == null or paidOrders.isEmpty()}">
+            Ingen betalte ordrer
+        </p>
+        </div>
+
+        <!-- AFSENDT -->
+        <div class="details-section">
+        <h2>Afsendte ordre</h2>
+        <div th:if="${inTransitOrders != null and !inTransitOrders.isEmpty()}" class="orders-table">
+            <table>
+                <thead>
+                <tr>
+                    <th>Ordre Id</th>
+                    <th>Kunde</th>
+                    <th>Email</th>
+                    <th>Ordre dato</th>
+                    <th>Leverings dato</th>
+                    <th>Total pris</th>
+                    <th>Status</th>
+                    <th>Handlinger</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="order : ${inTransitOrders}">
+                    <td th:text="${order.orderId}"></td>
+                    <td th:text="${order.customer.firstName + ' ' + order.customer.lastName}"></td>
+                    <td th:text="${order.customer.email}"></td>
+                    <td th:text="${#temporals.format(order.orderDate, 'dd-MM-yyyy HH:mm')}"></td>
+                    <td th:text="${#temporals.format(order.deliveryDate, 'dd-MM-yyyy')}"></td>
+                    <td th:text="${order.totalPrice + ' kr.'}"></td>
+                    <td>
+                        <span class="status">Afsendt</span>
+                    </td>
+                    <td class="action-buttons">
+                        <a th:href="@{/orders/details/{id}(id=${order.orderId})}"
+                           class="action-btn view-btn" title="Se detaljer">
+                            <img th:src="@{/images/view-w.svg}" alt="Se detaljer"/>
+                        </a>
+
+
+                        <form method="post" th:action="@{/orders/delete/{id}(id=${order.orderId})}"
+                              onsubmit="return confirm('Er du sikker på du vil slette ordren?')">
+                            <button type="submit" class="action-btn delete-btn" title="Slet ordre">
+                                <img th:src="@{/images/delete-w.svg}" alt="Slet"/>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <p th:if="${inTransitOrders == null or inTransitOrders.isEmpty()}">
+            Ingen afsendte ordre
+        </p>
+        </div>
+
+        <!-- AFSLUTTET -->
+        <div class="details-section">
+        <h2>Afsluttede ordre</h2>
+        <div th:if="${doneOrders != null and !doneOrders.isEmpty()}" class="orders-table">
+            <table>
+                <thead>
+                <tr>
+                    <th>Ordre Id</th>
+                    <th>Kunde</th>
+                    <th>Email</th>
+                    <th>Ordre dato</th>
+                    <th>Leverings dato</th>
+                    <th>Total pris</th>
+                    <th>Status</th>
+                    <th>Handlinger</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="order : ${doneOrders}">
+                    <td th:text="${order.orderId}"></td>
+                    <td th:text="${order.customer.firstName + ' ' + order.customer.lastName}"></td>
+                    <td th:text="${order.customer.email}"></td>
+                    <td th:text="${#temporals.format(order.orderDate, 'dd-MM-yyyy HH:mm')}"></td>
+                    <td th:text="${#temporals.format(order.deliveryDate, 'dd-MM-yyyy')}"></td>
+                    <td th:text="${order.totalPrice + ' kr.'}"></td>
+                    <td>
+                        <span class="status">Afsluttet</span>
+                    </td>
+                    <td class="action-buttons">
+                        <a th:href="@{/orders/details/{id}(id=${order.orderId})}"
+                           class="action-btn view-btn" title="Se detaljer">
+                            <img th:src="@{/images/view-w.svg}" alt="Se detaljer"/>
+                        </a>
+
+
+                        <form method="post" th:action="@{/orders/delete/{id}(id=${order.orderId})}"
+                              onsubmit="return confirm('Er du sikker på du vil slette ordren?')">
+                            <button type="submit" class="action-btn delete-btn" title="Slet ordre">
+                                <img th:src="@{/images/delete-w.svg}" alt="Slet"/>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <p th:if="${doneOrders == null or doneOrders.isEmpty()}">
+            Ingen afsluttede ordre
+        </p>
+        </div>
+
     </section>
 </main>
 
+<div th:replace="~{fragments :: footerFragment}"></div>
 
 </body>
 </html>
