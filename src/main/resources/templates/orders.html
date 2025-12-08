@@ -40,7 +40,8 @@
                     <td th:text="${order.customer.email}"></td>
                     <td th:text="${#temporals.format(order.orderDate, 'dd-MM-yyyy HH:mm')}"></td>
                     <td th:text="'Ikke afsendt'"></td>
-                    <td th:text="'Ikke udregnet'"></td>
+                    <td th:if="${order.totalPrice <= 0.0 || order.totalPrice == null}" th:text="'Ikke udregnet'"></td>
+                    <td th:if="${order.totalPrice > 0.0}" th:text="${order.totalPrice + ' kr.'}"></td>
                     <td>
                         <span class="status">Ny ordre</span>
                     </td>
