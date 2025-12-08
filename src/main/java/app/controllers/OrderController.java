@@ -254,7 +254,6 @@ public class OrderController
             OrderWithDetailsDTO order = orderService.getOrderwithDetails(orderId);
 
             orderDetailsService.regenerateMaterialList(orderId, order.getCarport());
-            //TODO: insert order total price so it is set on material list creation (db is not updated yet)
 
             ctx.redirect("/orders/details/" + orderId + "?success=carport");
         }
