@@ -64,7 +64,5 @@ public class CarportController
             ctx.sessionAttribute("carportErrorLabel", e.getMessage());
             ctx.redirect("/carport");
         }
-
     }
 }
-
