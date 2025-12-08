@@ -17,12 +17,13 @@ public class OrderServiceImpl implements OrderService
     private CustomerMapper customerMapper;
     private MaterialsLinesMapper materialsLinesMapper;
 
-    public OrderServiceImpl(OrderMapper orderMapper, CarportMapper carportMapper, DrawingMapper drawingMapper, CustomerMapper customerMapper)
+    public OrderServiceImpl(OrderMapper orderMapper, CarportMapper carportMapper, DrawingMapper drawingMapper, CustomerMapper customerMapper, MaterialsLinesMapper materialsLinesMapper)
     {
         this.orderMapper = orderMapper;
         this.carportMapper = carportMapper;
         this.drawingMapper = drawingMapper;
         this.customerMapper = customerMapper;
+        this.materialsLinesMapper = materialsLinesMapper;
     }
 
     @Override
@@ -75,9 +76,27 @@ public class OrderServiceImpl implements OrderService
     }
 
     @Override
+    public void updateCustomerInfo(Customer customer) throws DatabaseException
+    {
+        customerMapper.updateCustomerInfo(customer);
+    }
+
+    @Override
     public void updateCarport(Carport carport) throws DatabaseException
     {
         carportMapper.updateCarport(carport);
+    }
+
+    @Override
+    public void updateOrderTotalPrice(int orderId) throws DatabaseException
+    {
+        List<MaterialsLine> lines = getOrderwithDetails(orderId).getMaterialsLines();
+        double totalPrice = 0;
+        for(MaterialsLine materialsLine : lines)
+        {
+            totalPrice += materialsLine.getLinePrice();
+        }
+        orderMapper.updateOrderTotalPrice(orderId, totalPrice);
     }
 
     @Override

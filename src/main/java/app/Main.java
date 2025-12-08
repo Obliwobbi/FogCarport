@@ -46,11 +46,12 @@ public class Main
         DrawingService drawingService = new DrawingServiceImpl(drawingMapper);
         CustomerService customerService = new CustomerServiceImpl(customerMapper);
         OrderDetailsService orderDetailsService = new OrderDetailsServiceImpl(calculatorService,materialsLinesMapper,materialMapper);
-        OrderService orderService = new OrderServiceImpl(orderMapper, carportMapper, drawingMapper, customerMapper);
+
 
         HomeController homeController = new HomeController();
         CarportController carportController = new CarportController(carportService);
         DrawingController drawingController = new DrawingController(drawingService, calculatorService);
+        OrderService orderService = new OrderServiceImpl(orderMapper, carportMapper, drawingMapper, customerMapper, materialsLinesMapper);
         ContactController contactController = new ContactController(customerService, orderService, drawingService,carportService);
         OrderController orderController = new OrderController(orderService,orderDetailsService);
 
@@ -62,6 +63,5 @@ public class Main
         drawingController.addRoutes(app);
         orderController.addRoutes(app);
         contactController.addRoutes(app);
-
     }
 }

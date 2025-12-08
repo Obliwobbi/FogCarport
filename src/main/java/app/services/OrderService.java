@@ -21,7 +21,11 @@ public interface OrderService
 
     void updateOrderDeliveryDate(int orderId, LocalDateTime deliveryDate) throws DatabaseException;
 
+    void updateCustomerInfo(Customer customer) throws DatabaseException;
+
     void updateCarport(Carport carport) throws DatabaseException;
+
+    void updateOrderTotalPrice(int orderId) throws DatabaseException;
 
     List<Order> getOrdersByStatus(String status) throws DatabaseException;
 
