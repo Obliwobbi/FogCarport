@@ -47,7 +47,7 @@ public class ContactController
             customer = customerService.registerNewCustomer(
                     ctx.formParam("firstname"),
                     ctx.formParam("lastname"),
-                    ctx.formParam("email"),
+                    customerService.validateEmail(ctx.formParam("email")),
                     ctx.formParam("phonenumber"),
                     ctx.formParam("street"),
                     ctx.formParam("housenumber"),
@@ -92,7 +92,7 @@ public class ContactController
         {
             orderFailure(drawing, carport, customer);
             clearCustomerSession(ctx);
-            ctx.attribute("errorMessage", e.getMessage() + "fejl ved indlæsning af kunde info");
+            ctx.attribute("errorMessage", "Der opstod en uventet fejl, prøv igen");
             ctx.render("contact.html");
         }
         catch (IllegalArgumentException e)
