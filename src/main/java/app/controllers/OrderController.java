@@ -3,6 +3,7 @@ package app.controllers;
 import app.dto.OrderWithDetailsDTO;
 import app.entities.Carport;
 import app.entities.Customer;
+import app.entities.Employee;
 import app.entities.MaterialsLine;
 import app.exceptions.DatabaseException;
 import app.services.EmployeeService;
@@ -60,8 +61,10 @@ public class OrderController
                 return;
             }
             List<MaterialsLine> materialsLines = order.getMaterialsLines();
+            List<Employee> employees = employeeService.getAllEmployees();
 
             ctx.attribute("order", order);
+            ctx.attribute("employees", employees);
             ctx.attribute("materialsLines", materialsLines);
             ctx.attribute("hasMaterialsList", materialsLines != null && !materialsLines.isEmpty());
             ctx.attribute("editSection", editSection);
