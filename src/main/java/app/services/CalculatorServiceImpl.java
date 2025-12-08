@@ -6,34 +6,7 @@ import java.util.HashMap;
 
 public class CalculatorServiceImpl implements CalculatorService
 {
-    int MAX_LENGTH_BLOCKING = 270; //270 is max length between allowed for Blockings for Sideboards, src: documentation provided by product owner
-    int MAX_LENGTH_BETWEEN_POST = 310; // 310 is max length allowed between posts under Top Plate, src: documentation provided by product owner
-
-    double TOP_PLATE_SHORT = 480.0; // 480 is the shortest Top Plate in database
-    double TOP_PLATE_LONG = 600.0; //600 is the of the longest Top Plate in database
-    int MIN_OVERHANG = 30; //the 30cm is to account for necessary overhang on sides of the shed, from documentation provided by product owner
-
-    double CEILING_JOIST_WIDTH = 4.5;
-    double CEILING_JOIST_SHORT = 480.0;
-    double CEILING_JOIST_LONG = 600.0;
-
-    int MAX_LENGTH_BTWN_CEILING_JOIST = 60; // src: documentation provided by product owner
-
-    double FASCIA_BOARD_SHORT = 360.0; //shortest FasciaBoard in database
-    double FASCIA_BOARD_LONG = 540.0; //longest FasciaBoard in database
-
-    double BLOCKING_SHORT = 240.0;
-    double BLOCKING_LONG = 270.0;
-
-    double ROOF_PLATE_SHORT = 360.0; // 360 is the shortest roof Plate in database
-    double ROOF_PLATE_LONG = 600.0; // 600 is the longest Top Plate in database
-    int BACKSIDE_OVERHANG = 5; //5 cm overhang on backside of carport for running of water, src: documentation provided by product owner
-    int ROOF_PLATE_SCREWS_M2 = 12; //documentation says 12 screws pr squaremeter of roofplate
-
-    double POST_OFFSET_LONG = 100;
-    double MAX_LENGTH_CARPORT_NO_SHED_FEWER_SUPPORTS = 510; // for no shed, corner posts  can start 1 meter in from both ends. needs 1 in middle of each side to account for no more than 310 between posts
-    double MAX_OVERHANG;
-
+    private double MAX_OVERHANG;
 
     @Override
     public int calculatePosts(Carport carport)
@@ -52,29 +25,29 @@ public class CalculatorServiceImpl implements CalculatorService
 
         if (withShed)
         {
-            result += (isFullWidth || shedLength > MAX_LENGTH_BLOCKING ) ? 3 : 4; //door and corners of shed, partial width sheds need 1 more corner
+            result += (isFullWidth || shedLength > Constants.MAX_LENGTH_BLOCKING ) ? 3 : 4; //door and corners of shed, partial width sheds need 1 more corner
 
-            if (shedWidth > MAX_LENGTH_BLOCKING)
+            if (shedWidth > Constants.MAX_LENGTH_BLOCKING)
             {
-                result += (shedWidth - MAX_LENGTH_BLOCKING > MAX_LENGTH_BLOCKING ? 4 : 2);
+                result += (shedWidth - Constants.MAX_LENGTH_BLOCKING > Constants.MAX_LENGTH_BLOCKING ? 4 : 2);
 
             }
-            if (shedLength > MAX_LENGTH_BLOCKING)
+            if (shedLength > Constants.MAX_LENGTH_BLOCKING)
             {
-                result += (shedLength - MAX_LENGTH_BLOCKING > MAX_LENGTH_BLOCKING ? 6 : 2);
+                result += (shedLength - Constants.MAX_LENGTH_BLOCKING > Constants.MAX_LENGTH_BLOCKING ? 6 : 2);
 
             }
 
-            double remainingLength = (carportLength - POST_OFFSET_LONG) - shedLength; //Calculation of remaining length between shed and corner post due to max length of Top plate(Rem træ).
+            double remainingLength = (carportLength - Constants.POST_OFFSET_LONG) - shedLength; //Calculation of remaining length between shed and corner post due to max length of Top plate(Rem træ).
 
-            if (remainingLength > MAX_LENGTH_BETWEEN_POST)
+            if (remainingLength > Constants.MAX_LENGTH_BETWEEN_POST)
             {
                 result += 2;
             }
         }
         else
         {
-            if (carportLength > MAX_LENGTH_CARPORT_NO_SHED_FEWER_SUPPORTS)
+            if (carportLength > Constants.MAX_LENGTH_CARPORT_NO_SHED_FEWER_SUPPORTS)
             {
                 result += 2;
             }
@@ -94,41 +67,41 @@ public class CalculatorServiceImpl implements CalculatorService
 
         if (!withShed)
         {
-            if (carportLength <= TOP_PLATE_SHORT)
+            if (carportLength <= Constants.TOP_PLATE_SHORT)
             {
-                result.put(TOP_PLATE_SHORT, 2);
+                result.put(Constants.TOP_PLATE_SHORT, 2);
             }
-            else if (carportLength > TOP_PLATE_SHORT && carportLength <= TOP_PLATE_LONG)
+            else if (carportLength > Constants.TOP_PLATE_SHORT && carportLength <= Constants.TOP_PLATE_LONG)
             {
-                result.put(TOP_PLATE_LONG, 2);
+                result.put(Constants.TOP_PLATE_LONG, 2);
             }
             else
             {
-                result.put(TOP_PLATE_SHORT, 4);
+                result.put(Constants.TOP_PLATE_SHORT, 4);
             }
         }
         else
         {
-            boolean isFullWidth = shedWidth >= (carportWidth - MIN_OVERHANG);
+            boolean isFullWidth = shedWidth >= (carportWidth - Constants.MIN_OVERHANG);
 
-            if (carportLength <= TOP_PLATE_SHORT)
+            if (carportLength <= Constants.TOP_PLATE_SHORT)
             {
-                result.put(TOP_PLATE_SHORT, 2);
+                result.put(Constants.TOP_PLATE_SHORT, 2);
             }
-            else if (carportLength <= TOP_PLATE_LONG)
+            else if (carportLength <= Constants.TOP_PLATE_LONG)
             {
-                result.put(TOP_PLATE_LONG, 2);
+                result.put(Constants.TOP_PLATE_LONG, 2);
             }
             else if (isFullWidth)
             {
-                result.put(TOP_PLATE_LONG, 2);
-                result.put(TOP_PLATE_SHORT, 1);
+                result.put(Constants.TOP_PLATE_LONG, 2);
+                result.put(Constants.TOP_PLATE_SHORT, 1);
             }
             else
             {
                 // Partial-width shed: asymmetrical placement
-                result.put(TOP_PLATE_LONG, 1);
-                result.put(TOP_PLATE_SHORT, 3);
+                result.put(Constants.TOP_PLATE_LONG, 1);
+                result.put(Constants.TOP_PLATE_SHORT, 3);
             }
         }
         return result;
@@ -142,9 +115,9 @@ public class CalculatorServiceImpl implements CalculatorService
 
         HashMap<Double, Integer> result = new HashMap<>();
         int count = 2; //one for each for the ends.
-        double ceilingJoistLength = (carportWidth <= CEILING_JOIST_SHORT) ? CEILING_JOIST_SHORT : CEILING_JOIST_LONG;
+        double ceilingJoistLength = (carportWidth <= Constants.CEILING_JOIST_SHORT) ? Constants.CEILING_JOIST_SHORT : Constants.CEILING_JOIST_LONG;
 
-        count += (int) Math.ceil((carportLength - (CEILING_JOIST_WIDTH * 2)) / MAX_LENGTH_BTWN_CEILING_JOIST); //rounds up always to ensure there is no more than 60 cm between rafters
+        count += (int) Math.ceil((carportLength - (Constants.CEILING_JOIST_WIDTH * 2)) / Constants.MAX_LENGTH_BTWN_CEILING_JOIST); //rounds up always to ensure there is no more than 60 cm between rafters
         result.put(ceilingJoistLength, count);
 
         return result;
@@ -159,11 +132,11 @@ public class CalculatorServiceImpl implements CalculatorService
         int shortFasciaCount = 0;
         int longFasciaCount = 0;
 
-        if (carportLength <= FASCIA_BOARD_SHORT)
+        if (carportLength <= Constants.FASCIA_BOARD_SHORT)
         {
             shortFasciaCount += 2;
         }
-        else if (carportLength > FASCIA_BOARD_SHORT && carportLength <= FASCIA_BOARD_LONG)
+        else if (carportLength > Constants.FASCIA_BOARD_SHORT && carportLength <= Constants.FASCIA_BOARD_LONG)
         {
             longFasciaCount += 2;
         }
@@ -179,11 +152,11 @@ public class CalculatorServiceImpl implements CalculatorService
 
         if (shortFasciaCount != 0)
         {
-            result.put(FASCIA_BOARD_SHORT, shortFasciaCount);
+            result.put(Constants.FASCIA_BOARD_SHORT, shortFasciaCount);
         }
         if (longFasciaCount != 0)
         {
-            result.put(FASCIA_BOARD_LONG, longFasciaCount);
+            result.put(Constants.FASCIA_BOARD_LONG, longFasciaCount);
         }
 
         return result;
@@ -198,11 +171,11 @@ public class CalculatorServiceImpl implements CalculatorService
         int shortFasciaCount = 0;
         int longFasciaCount = 0;
 
-        if (carportWidth <= FASCIA_BOARD_SHORT)
+        if (carportWidth <= Constants.FASCIA_BOARD_SHORT)
         {
             shortFasciaCount += 2;
         }
-        else if (carportWidth > FASCIA_BOARD_SHORT && carportWidth <= FASCIA_BOARD_LONG)
+        else if (carportWidth > Constants.FASCIA_BOARD_SHORT && carportWidth <= Constants.FASCIA_BOARD_LONG)
         {
             longFasciaCount += 2;
         }
@@ -218,11 +191,11 @@ public class CalculatorServiceImpl implements CalculatorService
 
         if (shortFasciaCount != 0)
         {
-            result.put(FASCIA_BOARD_SHORT, shortFasciaCount);
+            result.put(Constants.FASCIA_BOARD_SHORT, shortFasciaCount);
         }
         if (longFasciaCount != 0)
         {
-            result.put(FASCIA_BOARD_LONG, longFasciaCount);
+            result.put(Constants.FASCIA_BOARD_LONG, longFasciaCount);
         }
 
         return result;
@@ -238,9 +211,9 @@ public class CalculatorServiceImpl implements CalculatorService
         int shortBlockingCount = 0;
         int longBlockingCount = 0;
 
-        if (shedWidth > MAX_LENGTH_BLOCKING)
+        if (shedWidth > Constants.MAX_LENGTH_BLOCKING)
         {
-            if (shedWidth / 2 > BLOCKING_SHORT)
+            if (shedWidth / 2 > Constants.BLOCKING_SHORT)
             {
                 //If length between posts on shed width is larger than the short board, we use the long one
                 longBlockingCount += 12; //according to documentation provided, there needs to be 3 blockings between each post if over 240
@@ -255,9 +228,9 @@ public class CalculatorServiceImpl implements CalculatorService
             shortBlockingCount += 4;
         }
 
-        if (shedLength > MAX_LENGTH_BLOCKING)
+        if (shedLength > Constants.MAX_LENGTH_BLOCKING)
         {
-            if (shedLength / 2 > BLOCKING_SHORT)
+            if (shedLength / 2 > Constants.BLOCKING_SHORT)
             {
                 longBlockingCount += 12;
             }
@@ -273,11 +246,11 @@ public class CalculatorServiceImpl implements CalculatorService
 
         if (shortBlockingCount != 0)
         {
-            result.put(BLOCKING_SHORT, shortBlockingCount);
+            result.put(Constants.BLOCKING_SHORT, shortBlockingCount);
         }
         if (longBlockingCount != 0)
         {
-            result.put(BLOCKING_LONG, longBlockingCount);
+            result.put(Constants.BLOCKING_LONG, longBlockingCount);
         }
 
         return result;
@@ -306,25 +279,25 @@ public class CalculatorServiceImpl implements CalculatorService
         HashMap<Double, Integer> result = new HashMap<>();
         int count = (int) Math.ceil(carportWidth / 100); //each plate is 109, and need overlay, so accounting for waste rounds up, src: documentation provided by product owner
 
-        if (carportLength <= (ROOF_PLATE_SHORT - BACKSIDE_OVERHANG))
+        if (carportLength <= (Constants.ROOF_PLATE_SHORT - Constants.BACKSIDE_OVERHANG))
         {
-            result.put(ROOF_PLATE_SHORT, count);
+            result.put(Constants.ROOF_PLATE_SHORT, count);
         }
 
-        if (carportLength > ROOF_PLATE_SHORT && carportLength <= (ROOF_PLATE_LONG - BACKSIDE_OVERHANG))
+        if (carportLength > Constants.ROOF_PLATE_SHORT && carportLength <= (Constants.ROOF_PLATE_LONG - Constants.BACKSIDE_OVERHANG))
         {
-            result.put(ROOF_PLATE_LONG, count);
+            result.put(Constants.ROOF_PLATE_LONG, count);
         }
 
-        if (carportLength > ROOF_PLATE_LONG && carportLength <= 700 - BACKSIDE_OVERHANG) // 700 is cut off for carport length, due to 20cm overlay from plates according to documentation provided by product owner
+        if (carportLength > Constants.ROOF_PLATE_LONG && carportLength <= 700 - Constants.BACKSIDE_OVERHANG) // 700 is cut off for carport length, due to 20cm overlay from plates according to documentation provided by product owner
         {
-            result.put(ROOF_PLATE_SHORT, (count * 2)); //needs double amount because of 2 rows and overlay
+            result.put(Constants.ROOF_PLATE_SHORT, (count * 2)); //needs double amount because of 2 rows and overlay
         }
 
         if (carportLength > 700)
         {
-            result.put(ROOF_PLATE_LONG, count);
-            result.put(ROOF_PLATE_SHORT, count);
+            result.put(Constants.ROOF_PLATE_LONG, count);
+            result.put(Constants.ROOF_PLATE_SHORT, count);
         }
 
         return result;
@@ -337,7 +310,7 @@ public class CalculatorServiceImpl implements CalculatorService
         double carportLength = carport.getLength();
 
         //Insert return in helper method to calculate packs
-        return (int) Math.ceil((((carportWidth / 100) * (carportLength / 100)) * ROOF_PLATE_SCREWS_M2));
+        return (int) Math.ceil((((carportWidth / 100) * (carportLength / 100)) * Constants.ROOF_PLATE_SCREWS_M2));
     }
 
     @Override
@@ -345,7 +318,7 @@ public class CalculatorServiceImpl implements CalculatorService
     {
         int result = posts * 2; //documentation says 2 bolts for each posts
 
-        if (topPlates.containsKey(TOP_PLATE_SHORT) && topPlates.containsKey(TOP_PLATE_LONG)) // for joins need 2 additional bolt, if hastmap has both lengths there is a join
+        if (topPlates.containsKey(Constants.TOP_PLATE_SHORT) && topPlates.containsKey(Constants.TOP_PLATE_LONG)) // for joins need 2 additional bolt, if hastmap has both lengths there is a join
         {
             result += 4;
         }
