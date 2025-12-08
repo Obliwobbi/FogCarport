@@ -44,10 +44,12 @@ public class ContactController
 
         try
         {
+            String email = customerService.validateEmail(ctx.formParam("email"));
+
             customer = customerService.registerNewCustomer(
                     ctx.formParam("firstname"),
                     ctx.formParam("lastname"),
-                    customerService.validateEmail(ctx.formParam("email")),
+                    email,
                     ctx.formParam("phonenumber"),
                     ctx.formParam("street"),
                     ctx.formParam("housenumber"),
