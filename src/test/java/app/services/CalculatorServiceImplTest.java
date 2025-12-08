@@ -304,8 +304,6 @@ class CalculatorServiceImplTest
     }
 
 
-
-
     // ************************ TESTING OF: SHED BLOCKING ************************
 
     @DisplayName("Shed Blocking: Delivered Material: Length: 780cm, Width: 600 carport, Length: 530cm, Width: 210cm shed.")
@@ -441,7 +439,7 @@ class CalculatorServiceImplTest
         Carport carport = new Carport(1, 480, 240, 225, false, "");
         int screws = materialListService.calculateRoofPlateScrews(carport);
 
-        assertEquals(139,screws);
+        assertEquals(139, screws);
     }
 
     // ************************ TESTING OF: PERFORATED STRIPS ************************
