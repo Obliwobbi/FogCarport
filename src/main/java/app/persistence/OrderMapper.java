@@ -163,6 +163,34 @@ public class OrderMapper
         return false;
     }
 
+    public boolean updateOrderEmployee(int orderId, int employeeId) throws DatabaseException
+    {
+        String sql = """
+                UPDATE orders
+                SET employee_id = ?
+                WHERE order_id = ?
+                """;
+
+        try (Connection connection = connectionPool.getConnection();
+            PreparedStatement ps = connection.prepareStatement(sql))
+        {
+            ps.setInt(1, employeeId);
+            ps.setInt(2,orderId);
+            ps.executeUpdate();
+
+            int rowsAffected = ps.executeUpdate();
+            if (rowsAffected == 1)
+            {
+                return true;
+            }
+        }
+        catch (SQLException e)
+        {
+            throw new DatabaseException("Fejl ved opdatering af medarbejder id" + e.getMessage());
+        }
+        return false;
+    }
+
     public void updateOrderTotalPrice(int orderId, double totalPrice) throws DatabaseException
     {
         String sql = "UPDATE orders SET total_price = ? WHERE order_id = ?";
