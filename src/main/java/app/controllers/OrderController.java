@@ -97,12 +97,20 @@ public class OrderController
             String deliveryDateString = ctx.formParam("deliveryDate");
             LocalDate deliveryDate = (deliveryDateString != null && !deliveryDateString.isEmpty())
                     ? LocalDate.parse(deliveryDateString) : null;
+            String employeeIdString = ctx.formParam("employeeId");
+
 
             orderService.updateOrderStatus(orderId, status);
             if (deliveryDate != null)
             {
                 orderService.updateOrderDeliveryDate(orderId, deliveryDate.atStartOfDay().plusHours(12));
             }
+            if (employeeIdString != null && !employeeIdString.isEmpty())
+            {
+                int employeeId = Integer.parseInt(employeeIdString);
+                orderService.updateOrderEmployee(orderId, employeeId);
+            }
+
             ctx.redirect("/orders/details/" + orderId + "?success=order");
         }
         catch (DatabaseException e)
