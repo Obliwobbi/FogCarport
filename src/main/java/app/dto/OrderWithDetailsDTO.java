@@ -20,6 +20,7 @@ public class OrderWithDetailsDTO {
     private List<MaterialsLine> materialsLines;
     private Carport carport;
     private Customer customer;
+    private Employee employee;
 
     public double getTotalPrice() {
         if (materialsLines == null || materialsLines.isEmpty()) {
