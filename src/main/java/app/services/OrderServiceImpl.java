@@ -74,6 +74,12 @@ public class OrderServiceImpl implements OrderService
     }
 
     @Override
+    public void updateOrderEmployee(int orderId, int employeeId) throws DatabaseException
+    {
+        orderMapper.updateOrderEmployee(orderId,employeeId);
+    }
+
+    @Override
     public void updateOrderDeliveryDate(int orderId, LocalDateTime deliveryDate) throws DatabaseException
     {
         orderMapper.updateOrderDeliveryDate(orderId, deliveryDate);
