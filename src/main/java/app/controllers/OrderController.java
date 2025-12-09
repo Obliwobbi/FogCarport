@@ -3,6 +3,7 @@ package app.controllers;
 import app.dto.OrderWithDetailsDTO;
 import app.entities.Carport;
 import app.entities.Customer;
+import app.entities.Employee;
 import app.entities.MaterialsLine;
 import app.exceptions.DatabaseException;
 import app.services.OrderDetailsService;
@@ -57,8 +58,10 @@ public class OrderController
                 return;
             }
             List<MaterialsLine> materialsLines = order.getMaterialsLines();
+            List<Employee> employees = orderService.getAllEmployees();
 
             ctx.attribute("order", order);
+            ctx.attribute("employees", employees);
             ctx.attribute("materialsLines", materialsLines);
             ctx.attribute("hasMaterialsList", materialsLines != null && !materialsLines.isEmpty());
             ctx.attribute("editSection", editSection);
@@ -91,12 +94,24 @@ public class OrderController
             String deliveryDateString = ctx.formParam("deliveryDate");
             LocalDate deliveryDate = (deliveryDateString != null && !deliveryDateString.isEmpty())
                     ? LocalDate.parse(deliveryDateString) : null;
+            String employeeIdString = ctx.formParam("employeeId");
+
 
             orderService.updateOrderStatus(orderId, status);
             if (deliveryDate != null)
             {
                 orderService.updateOrderDeliveryDate(orderId, deliveryDate.atStartOfDay().plusHours(12));
             }
+            if (employeeIdString != null && !employeeIdString.isEmpty())
+            {
+                int employeeId = Integer.parseInt(employeeIdString);
+                orderService.updateOrderEmployee(orderId, employeeId);
+            }
+            else
+            {
+                orderService.updateOrderEmployee(orderId, 0);
+            }
+
             ctx.redirect("/orders/details/" + orderId + "?success=order");
         }
         catch (DatabaseException e)
