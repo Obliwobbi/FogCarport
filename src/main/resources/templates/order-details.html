@@ -336,7 +336,7 @@
                            th:href="@{/orders/details/{id}(id=${order.orderId})}"
                            class="edit-button cancel-button">Annuller</a>
                         <form method="post" th:action="@{/orders/details/{id}/regenerate-stykliste(id=${order.orderId})}" class="inline-form">
-                            <button type="submit" class="edit-button regenerate-button">Generer Ny Stykliste</button>
+                            <button type="submit" class="edit-button-a regenerate-button">Generer Ny Stykliste</button>
                         </form>
                     </div>
                 </div>

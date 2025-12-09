@@ -180,7 +180,7 @@ main {
 .buttons a {
     background: var(--color-fogblue);
     color: var(--color-text-light);
-    border: solid 2px black;
+    border: none;
     border-radius: 4px;
     text-decoration: none;
     padding: .5rem;
@@ -191,19 +191,34 @@ main {
 .button {
     background: var(--color-fogblue);
     color: var(--color-text-light);
-    border: solid 2px black;
+    border: none;
     border-radius: 4px;
     text-decoration: none;
     padding: .5rem;
     margin-top: .5rem;
     width: 150px;
     text-align: center;
+    font: var(--font-small);
+}
+.button-a {
+    background: var(--color-fogblue);
+    color: var(--color-text-light);
+    border: none;
+    border-radius: 4px;
+    text-decoration: none;
+    padding: .5rem;
+    margin-top: .5rem;
+    width: 150px;
+    text-align: center;
+    font: var(--font-small);
 }
 
-.button:hover {
+.button:hover, .button-a:hover {
     opacity: 0.8;
     cursor: pointer;
 }
+
+
 
 .center-text {
     text-align: center;
@@ -335,6 +350,14 @@ main {
     height: auto;
     align-items: center;
     margin-bottom: 1rem;
+}
+
+.button-align{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
 }
 
 /*CONTACT*/
@@ -534,7 +557,20 @@ main {
     display: inline-block;
 }
 
-.edit-button:hover {
+.edit-button-a {
+    background: var(--color-fogblue);
+    color: var(--color-text-light);
+    border: none;
+    border-radius: 4px;
+    padding: 0.55rem 0.8rem;
+    font-size: var(--font-small);
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+
+}
+
+.edit-button:hover, .edit-button-a:hover {
     opacity: 0.8;
 }
 
@@ -543,7 +579,7 @@ main {
 }
 
 .regenerate-button {
-    background: #dc3545;
+    background: forestgreen;
 }
 
 .inline-form {
