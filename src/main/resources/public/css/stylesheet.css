@@ -527,7 +527,8 @@ main {
 .section-header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    flex-direction: row;
+    align-items: flex-end;
     margin-bottom: 1rem;
     padding-bottom: 0.5rem;
     border-bottom: 2px solid var(--color-fogblue-light);
@@ -854,11 +855,29 @@ main {
     background: #c0392b;
 }
 
-/* Responsive */
+.row{
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+}
+
+/* ========================================
+   MOBILE RESPONSIVE STYLES
+   ======================================== */
+
+/* Tablet and below (768px) */
 @media (max-width: 768px) {
+    /* Main Layout */
+    main {
+        padding: clamp(0.5rem, 2vh, 2rem) 5vw clamp(0.5rem, 2vh, 2rem);
+    }
+
+    /* Order Details Grid */
     .details-body {
         grid-template-columns: 1fr;
         grid-template-rows: auto;
+        gap: 1rem;
+        padding: 1rem;
     }
 
     .details-section.materials-section {
@@ -875,30 +894,446 @@ main {
         padding: 1rem;
     }
 
-    .materials-table th,
-    .materials-table td {
-        padding: 0.5rem;
-        font-size: var(--font-small);
+    /* Orders Table - Hide less critical columns */
+    .orders-table th:nth-child(3), /* Email */
+    .orders-table td:nth-child(3),
+    .orders-table th:nth-child(4), /* Ordre dato */
+    .orders-table td:nth-child(4),
+    .orders-table th:nth-child(5), /* Leverings dato */
+    .orders-table td:nth-child(5),
+    .orders-table th:nth-child(6), /* Total pris */
+    .orders-table td:nth-child(6) {
+        display: none;
+    }
+
+    /* Adjust remaining column widths for mobile */
+    .orders-table th:nth-child(1),
+    .orders-table td:nth-child(1) {
+        width: 15%;
+    }
+
+    .orders-table th:nth-child(2),
+    .orders-table td:nth-child(2) {
+        width: 35%;
+    }
+
+    .orders-table th:nth-child(7),
+    .orders-table td:nth-child(7) {
+        width: 20%;
+    }
+
+    .orders-table th:nth-child(8),
+    .orders-table td:nth-child(8) {
+        width: 30%;
     }
 
     .orders-table th,
     .orders-table td {
-        padding: 0.5rem;
+        padding: 0.5rem 0.3rem;
         font-size: var(--font-small);
     }
 
+    /* Materials Table */
+    .materials-table {
+        font-size: var(--font-small);
+    }
+
+    .materials-table th,
+    .materials-table td {
+        padding: 0.5rem 0.4rem;
+        font-size: var(--font-small);
+    }
+
+    /* Action Buttons */
     .action-buttons {
-        flex-wrap: wrap;
+        gap: 0.3rem;
     }
 
     .action-btn {
-        width: 30px;
-        height: 30px;
+        width: 32px;
+        height: 32px;
     }
 
     .action-btn img {
-        width: 14px;
-        height: 14px;
+        width: 16px;
+        height: 16px;
+    }
+
+    /* Carport Form */
+    .carport-form {
+        width: 80%;
+    }
+
+    .carport-form label {
+        width: 90%;
+    }
+
+    .carport-form select {
+        width: 90%;
+    }
+
+    .shed-fields-align {
+        width: 90%;
+    }
+
+    .customer-wishes {
+        width: 90%;
+    }
+
+    /* Contact Form */
+    .contact-form {
+        width: 80%;
+    }
+
+    .contact-form label {
+        width: 90%;
+    }
+
+    .contact-form input {
+        width: 90%;
+    }
+
+    /* Drawing */
+    .carport-svg-topview {
+        width: 90%;
+    }
+
+    /* Buttons */
+    .buttons {
+        flex-wrap: wrap;
+    }
+
+    .button, .button-a {
+        width: 130px;
+        font-size: var(--font-small);
+    }
+
+    /* Edit Buttons */
+    .edit-button, .edit-button-a {
+        font-size: var(--font-xsmall);
+    }
+
+    /* Section Headers */
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    .section-header-actions {
+        width: 100%;
+        justify-content: flex-start;
+    }
+}
+
+/* Mobile phones (480px and below) */
+@media (max-width: 480px) {
+    /* Main Layout */
+    main {
+        padding: 0.5rem 3vw 0.5rem;
+    }
+
+
+
+    /* Typography adjustments */
+    h1 {
+        font-size: var(--font-h3);
+    }
+
+    h2 {
+        font-size: var(--font-h4);
+    }
+
+    /* Header */
+    header {
+        height: 5vh;
+        min-height: 60px;
+    }
+
+    /* Body Style */
+    .body-style {
+        padding: 0.5rem;
+    }
+
+    .details-body {
+        padding: 0.5rem;
+    }
+
+    .details-section {
+        padding: 0.75rem;
+    }
+
+    /* Orders Table - Card-based layout */
+    .orders-table table {
+        display: block;
+    }
+
+    .orders-table thead {
+        display: none;
+    }
+
+    .orders-table tbody {
+        display: block;
+    }
+
+    .orders-table tr {
+        display: flex;
+        flex-direction: column;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+        padding: 0.75rem;
+        background: white;
+    }
+
+    .orders-table tr::after {
+        display: none;
+    }
+
+    .orders-table td {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.4rem 0;
+        border-bottom: 1px solid #f0f0f0;
+        width: 100% !important;
+    }
+
+    .orders-table td:last-child {
+        border-bottom: none;
+    }
+
+    .orders-table td::before {
+        content: attr(data-label);
+        font-weight: var(--fw-semibold);
+        color: var(--color-fogblue-dark);
+        margin-right: 1rem;
+    }
+
+    /* Show all columns on mobile card layout */
+    .orders-table th:nth-child(3),
+    .orders-table td:nth-child(3),
+    .orders-table th:nth-child(4),
+    .orders-table td:nth-child(4),
+    .orders-table th:nth-child(5),
+    .orders-table td:nth-child(5),
+    .orders-table th:nth-child(6),
+    .orders-table td:nth-child(6) {
+        display: flex;
+    }
+
+    .orders-table .action-buttons {
+        justify-content: flex-end;
+        padding-top: 0.5rem;
+    }
+
+    /* Materials Table - Card layout */
+    .materials-table table {
+        display: block;
+    }
+
+    .materials-table thead {
+        display: none;
+    }
+
+    .materials-table tbody {
+        display: block;
+    }
+
+    .materials-table tr {
+        display: block;
+        margin-bottom: 1rem;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        background: white;
+        padding: 0.75rem;
+    }
+
+    .materials-table td {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.4rem 0;
+        border-bottom: 1px solid #f0f0f0;
+        text-align: right;
+    }
+
+    .materials-table td:last-child {
+        border-bottom: none;
+    }
+
+    .materials-table td::before {
+        content: attr(data-label);
+        float: left;
+        font-weight: var(--fw-semibold);
+        color: var(--color-fogblue-dark);
+        text-align: left;
+    }
+
+    .materials-table tfoot {
+        display: block;
+        margin-top: 1rem;
+    }
+
+    .materials-table tfoot tr {
+        display: flex;
+        justify-content: space-between;
+        border: 2px solid var(--color-fogblue);
+        padding: 0.75rem;
+    }
+
+    .materials-table tfoot td {
+        display: inline;
+        font-size: var(--font-h6);
+        font-weight: var(--fw-bold);
+        padding: 0;
+        border: none;
+    }
+
+    .materials-table tfoot td::before {
+        content: none;
+    }
+
+    .materials-table tfoot td:first-child {
+        text-align: left;
+    }
+
+    .materials-table tfoot td:last-child {
+        text-align: right;
+    }
+
+    .total-row{
+        color:var(--color-text-dark);
+    }
+
+    /* Action Buttons - Stack vertically */
+    .action-buttons {
+        flex-direction: row;
+        gap: 0.5rem;
+        width: 100%;
+        justify-content: flex-end;
+    }
+
+    .action-btn {
+        width: 40px;
+        height: 40px;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .action-btn img {
+        width: 18px;
+        height: 18px;
+    }
+
+    /* Carport Form */
+    .carport-form {
+        width: 95%;
+    }
+
+    .carport-form label,
+    .carport-form select {
+        width: 100%;
+    }
+
+    .shed-fields-align {
+        width: 100%;
+    }
+
+    .shed-fields-align p {
+        font-size: var(--font-small);
+    }
+
+    .customer-wishes {
+        width: 100%;
+    }
+
+    .shed-length-tooltip,
+    .shed-width-tooltip {
+        width: 80%;
+        font-size: var(--font-small);
+    }
+
+    /* Contact Form */
+    .contact-form {
+        width: 95%;
+    }
+
+    .contact-form label,
+    .contact-form input {
+        width: 100%;
+    }
+
+    /* Drawing */
+    .carport-svg-topview {
+        width: 100%;
+    }
+
+    .button-align {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    /* Buttons */
+    .buttons {
+        flex-direction: column;
+        width: 100%;
+        align-items: center;
+    }
+
+    .buttons a,
+    .button,
+    .button-a {
+        width: 100%;
+        max-width: 200px;
+    }
+
+    /* Index */
+    .index-logo {
+        width: 180px;
+        height: 180px;
+    }
+
+    /* Success Page */
+    .success-container {
+        padding: 0.5rem;
+    }
+
+    .success-header h1 {
+        font-size: var(--font-h3);
+    }
+
+    .info-box-content {
+        padding: 1rem;
+    }
+
+    .home-button {
+        width: 100%;
+        max-width: 250px;
+    }
+
+    /* Edit Forms */
+    .edit-actions {
+        flex-direction: column;
+    }
+
+    .edit-actions .button,
+    .edit-actions .save-button,
+    .edit-actions .cancel-button {
+        width: 100%;
+    }
+
+    /* Footer */
+    footer {
+        padding: 1rem 0.5rem;
+    }
+
+    footer nav {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    footer img {
+        width: 40px;
+        height: 40px;
     }
 }
 

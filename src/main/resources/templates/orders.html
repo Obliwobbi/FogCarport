@@ -35,17 +35,17 @@
                 </thead>
                 <tbody>
                 <tr th:each="order : ${newOrders}">
-                    <td th:text="${order.orderId}"></td>
-                    <td th:text="${order.customer.firstName + ' ' + order.customer.lastName}"></td>
-                    <td th:text="${order.customer.email}"></td>
-                    <td th:text="${#temporals.format(order.orderDate, 'dd-MM-yyyy HH:mm')}"></td>
-                    <td th:text="'Ikke afsendt'"></td>
-                    <td th:if="${order.totalPrice <= 0.0 || order.totalPrice == null}" th:text="'Ikke udregnet'"></td>
-                    <td th:if="${order.totalPrice > 0.0}" th:text="${order.totalPrice + ' kr.'}"></td>
-                    <td>
+                    <td data-label="Ordre Id" th:text="${order.orderId}"></td>
+                    <td data-label="Kunde" th:text="${order.customer.firstName + ' ' + order.customer.lastName}"></td>
+                    <td data-label="Email" th:text="${order.customer.email}"></td>
+                    <td data-label="Ordre dato" th:text="${#temporals.format(order.orderDate, 'dd-MM-yyyy HH:mm')}"></td>
+                    <td data-label="Leverings dato" th:text="'Ikke afsendt'"></td>
+                    <td data-label="Total pris" th:if="${order.totalPrice <= 0.0 || order.totalPrice == null}" th:text="'Ikke udregnet'"></td>
+                    <td data-label="Total pris" th:if="${order.totalPrice > 0.0}" th:text="${order.totalPrice + ' kr.'}"></td>
+                    <td data-label="Status">
                         <span class="status">Ny ordre</span>
                     </td>
-                    <td class="action-buttons">
+                    <td data-label="Handlinger" class="action-buttons">
                         <a th:href="@{/orders/details/{id}(id=${order.orderId})}"
                            class="action-btn view-btn" title="Se detaljer">
                             <img th:src="@{/images/view-w.svg}" alt="Se detaljer"/>
@@ -87,16 +87,16 @@
                 </thead>
                 <tbody>
                 <tr th:each="order : ${pendingOrders}">
-                    <td th:text="${order.orderId}"></td>
-                    <td th:text="${order.customer.firstName + ' ' + order.customer.lastName}"></td>
-                    <td th:text="${order.customer.email}"></td>
-                    <td th:text="${#temporals.format(order.orderDate, 'dd-MM-yyyy HH:mm')}"></td>
-                    <td th:text="'Ikke afsendt'"></td>
-                    <td th:text="${order.totalPrice + ' kr.'}"></td>
-                    <td>
+                    <td data-label="Ordre Id" th:text="${order.orderId}"></td>
+                    <td data-label="Kunde" th:text="${order.customer.firstName + ' ' + order.customer.lastName}"></td>
+                    <td data-label="Email" th:text="${order.customer.email}"></td>
+                    <td data-label="Ordre dato" th:text="${#temporals.format(order.orderDate, 'dd-MM-yyyy HH:mm')}"></td>
+                    <td data-label="Leverings dato" th:text="'Ikke afsendt'"></td>
+                    <td data-label="Total pris" th:text="${order.totalPrice + ' kr.'}"></td>
+                    <td data-label="Status">
                         <span class="status">Afventer accept</span>
                     </td>
-                    <td class="action-buttons">
+                    <td data-label="Handlinger" class="action-buttons">
                         <a th:href="@{/orders/details/{id}(id=${order.orderId})}"
                            class="action-btn view-btn" title="Se detaljer">
                             <img th:src="@{/images/view-w.svg}" alt="Se detaljer"/>
@@ -138,16 +138,16 @@
                 </thead>
                 <tbody>
                 <tr th:each="order : ${paidOrders}">
-                    <td th:text="${order.orderId}"></td>
-                    <td th:text="${order.customer.firstName + ' ' + order.customer.lastName}"></td>
-                    <td th:text="${order.customer.email}"></td>
-                    <td th:text="${#temporals.format(order.orderDate, 'dd-MM-yyyy HH:mm')}"></td>
-                    <td th:text="'Ikke afsendt'"></td>
-                    <td th:text="${order.totalPrice + ' kr.'}"></td>
-                    <td>
+                    <td data-label="Ordre Id" th:text="${order.orderId}"></td>
+                    <td data-label="Kunde" th:text="${order.customer.firstName + ' ' + order.customer.lastName}"></td>
+                    <td data-label="Email" th:text="${order.customer.email}"></td>
+                    <td data-label="Ordre dato" th:text="${#temporals.format(order.orderDate, 'dd-MM-yyyy HH:mm')}"></td>
+                    <td data-label="Leverings dato" th:text="'Ikke afsendt'"></td>
+                    <td data-label="Total pris" th:text="${order.totalPrice + ' kr.'}"></td>
+                    <td data-label="Status">
                         <span class="status">Betalt</span>
                     </td>
-                    <td class="action-buttons">
+                    <td data-label="Handlinger" class="action-buttons">
                         <a th:href="@{/orders/details/{id}(id=${order.orderId})}"
                            class="action-btn view-btn" title="Se detaljer">
                             <img th:src="@{/images/view-w.svg}" alt="Se detaljer"/>
@@ -189,16 +189,16 @@
                 </thead>
                 <tbody>
                 <tr th:each="order : ${inTransitOrders}">
-                    <td th:text="${order.orderId}"></td>
-                    <td th:text="${order.customer.firstName + ' ' + order.customer.lastName}"></td>
-                    <td th:text="${order.customer.email}"></td>
-                    <td th:text="${#temporals.format(order.orderDate, 'dd-MM-yyyy HH:mm')}"></td>
-                    <td th:text="${#temporals.format(order.deliveryDate, 'dd-MM-yyyy')}"></td>
-                    <td th:text="${order.totalPrice + ' kr.'}"></td>
-                    <td>
+                    <td data-label="Ordre Id" th:text="${order.orderId}"></td>
+                    <td data-label="Kunde" th:text="${order.customer.firstName + ' ' + order.customer.lastName}"></td>
+                    <td data-label="Email" th:text="${order.customer.email}"></td>
+                    <td data-label="Ordre dato" th:text="${#temporals.format(order.orderDate, 'dd-MM-yyyy HH:mm')}"></td>
+                    <td data-label="Leverings dato" th:text="${#temporals.format(order.deliveryDate, 'dd-MM-yyyy')}"></td>
+                    <td data-label="Total pris" th:text="${order.totalPrice + ' kr.'}"></td>
+                    <td data-label="Status">
                         <span class="status">Afsendt</span>
                     </td>
-                    <td class="action-buttons">
+                    <td data-label="Handlinger" class="action-buttons">
                         <a th:href="@{/orders/details/{id}(id=${order.orderId})}"
                            class="action-btn view-btn" title="Se detaljer">
                             <img th:src="@{/images/view-w.svg}" alt="Se detaljer"/>
@@ -240,16 +240,16 @@
                 </thead>
                 <tbody>
                 <tr th:each="order : ${doneOrders}">
-                    <td th:text="${order.orderId}"></td>
-                    <td th:text="${order.customer.firstName + ' ' + order.customer.lastName}"></td>
-                    <td th:text="${order.customer.email}"></td>
-                    <td th:text="${#temporals.format(order.orderDate, 'dd-MM-yyyy HH:mm')}"></td>
-                    <td th:text="${#temporals.format(order.deliveryDate, 'dd-MM-yyyy')}"></td>
-                    <td th:text="${order.totalPrice + ' kr.'}"></td>
-                    <td>
+                    <td data-label="Ordre Id" th:text="${order.orderId}"></td>
+                    <td data-label="Kunde" th:text="${order.customer.firstName + ' ' + order.customer.lastName}"></td>
+                    <td data-label="Email" th:text="${order.customer.email}"></td>
+                    <td data-label="Ordre dato" th:text="${#temporals.format(order.orderDate, 'dd-MM-yyyy HH:mm')}"></td>
+                    <td data-label="Leverings dato" th:text="${#temporals.format(order.deliveryDate, 'dd-MM-yyyy')}"></td>
+                    <td data-label="Total pris" th:text="${order.totalPrice + ' kr.'}"></td>
+                    <td data-label="Status">
                         <span class="status">Afsluttet</span>
                     </td>
-                    <td class="action-buttons">
+                    <td data-label="Handlinger" class="action-buttons">
                         <a th:href="@{/orders/details/{id}(id=${order.orderId})}"
                            class="action-btn view-btn" title="Se detaljer">
                             <img th:src="@{/images/view-w.svg}" alt="Se detaljer"/>
