@@ -36,6 +36,7 @@ class MaterialsLinesMapperTest
                 try (Statement stmt = testConnection.createStatement())
                 {
                     stmt.execute("DROP TABLE IF EXISTS test.materials_lines CASCADE");
+                    stmt.execute("DROP TABLE IF EXISTS test.employees CASCADE");
                     stmt.execute("DROP TABLE IF EXISTS test.orders CASCADE");
                     stmt.execute("DROP TABLE IF EXISTS test.drawings CASCADE");
                     stmt.execute("DROP TABLE IF EXISTS test.carports CASCADE");
@@ -55,6 +56,15 @@ class MaterialsLinesMapperTest
                                     zipcode INT,
                                     city VARCHAR(100)
                                 )
+                            """);
+
+                    stmt.execute("""
+                            CREATE TABLE test.employees (
+                                employee_id SERIAL PRIMARY KEY,
+                                name        VARCHAR(100)        NOT NULL,
+                                email       VARCHAR(100) UNIQUE NOT NULL,
+                                phone       VARCHAR(20)
+                            );
                             """);
 
                     // Create Materials Table
@@ -105,9 +115,11 @@ class MaterialsLinesMapperTest
                                     carport_id INT NOT NULL,
                                     customer_id INT NOT NULL,
                                     total_price DECIMAL(12, 2) NOT NULL DEFAULT 0.00,
+                                    employee_id INT,
                                     CONSTRAINT fk_drawing FOREIGN KEY (drawing_id) REFERENCES test.drawings(drawing_id) ON DELETE SET NULL,
                                     CONSTRAINT fk_carport FOREIGN KEY (carport_id) REFERENCES test.carports(carport_id) ON DELETE CASCADE,
-                                    CONSTRAINT fk_customer FOREIGN KEY (customer_id) REFERENCES test.customers(customer_id) ON DELETE CASCADE
+                                    CONSTRAINT fk_customer FOREIGN KEY (customer_id) REFERENCES test.customers(customer_id) ON DELETE CASCADE,
+                                    CONSTRAINT fk_employee FOREIGN KEY (employee_id) REFERENCES test.employees(employee_id) ON DELETE CASCADE
                                 )
                             """);
 
@@ -151,10 +163,21 @@ class MaterialsLinesMapperTest
                 // Delete in reverse order of dependencies
                 stmt.execute("DELETE FROM test.materials_lines");
                 stmt.execute("DELETE FROM test.orders");
+                stmt.execute("DELETE FROM test.employees");
                 stmt.execute("DELETE FROM test.drawings");
                 stmt.execute("DELETE FROM test.carports");
                 stmt.execute("DELETE FROM test.materials");
                 stmt.execute("DELETE FROM test.customers");
+
+
+                stmt.execute("ALTER SEQUENCE test.employees_employee_id_seq RESTART WITH 1");
+
+                // Insert test Employees
+                stmt.execute("""
+                            INSERT INTO test.employees (name, email, phone)
+                            VALUES ('Jesper Person', 'jp@fogcarport.dk','+45 23456789'),
+                                   ('Toby Person', 'tp@fogcarport.dk','+45 23456790')
+                        """);
 
                 // Insert test customers
                 stmt.execute("""
@@ -192,13 +215,13 @@ class MaterialsLinesMapperTest
 
                 // Insert test orders
                 stmt.execute("""
-                        INSERT INTO test.orders (order_id, order_date, status, delivery_date, drawing_id, carport_id, customer_id, total_price)
-                        VALUES (1, '2024-01-15 10:30:00', 'AFVENTER ACCEPT', '2024-02-15 10:00:00', 1, 1, 1, 0.00)
+                        INSERT INTO test.orders (order_id, order_date, status, delivery_date, drawing_id, carport_id, customer_id, total_price, employee_id)
+                        VALUES (1, '2024-01-15 10:30:00', 'AFVENTER ACCEPT', '2024-02-15 10:00:00', 1, 1, 1, 0.00,1)
                         """);
 
                 stmt.execute("""
-                        INSERT INTO test.orders (order_id, order_date, status, delivery_date, drawing_id, carport_id, customer_id, total_price)
-                        VALUES (2, '2024-01-10 14:20:00', 'BETALT', '2024-02-10 12:00:00', 1, 1, 1, 6484.00)
+                        INSERT INTO test.orders (order_id, order_date, status, delivery_date, drawing_id, carport_id, customer_id, total_price, employee_id)
+                        VALUES (2, '2024-01-10 14:20:00', 'BETALT', '2024-02-10 12:00:00', 1, 1, 1, 6484.00,2)
                         """);
 
                 // Insert test materials lines
@@ -219,6 +242,7 @@ class MaterialsLinesMapperTest
 
                 // Reset sequences
                 stmt.execute("SELECT setval('test.customers_customer_id_seq', 1, true)");
+                stmt.execute("SELECT setval('test.employees_employee_id_seq', 3, true)");
                 stmt.execute("SELECT setval('test.materials_id_seq', 3, true)");
                 stmt.execute("SELECT setval('test.carports_carport_id_seq', 1, true)");
                 stmt.execute("SELECT setval('test.drawings_drawing_id_seq', 1, true)");

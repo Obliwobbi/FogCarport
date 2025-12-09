@@ -192,8 +192,8 @@ class OrderMapperTest
                                (3, 'Plastmo bundskruer', 'Skruer til tagplader', 200, 'pakke(r)', NULL, NULL, NULL, 129.00)
                     """);
 
-            stmt.execute("SELECT setval('test.customers_customer_id_seq', 2, true)");
-            stmt.execute("SELECT setval('test.customers_customer_id_seq', 3, true)");
+            stmt.execute("SELECT setval('test.customers_customer_id_seq', 4, true)");
+            stmt.execute("SELECT setval('test.employees_employee_id_seq', 3, true)");
             stmt.execute("SELECT setval('test.carports_carport_id_seq', 3, true)");
             stmt.execute("SELECT setval('test.drawings_drawing_id_seq', 3, true)");
             stmt.execute("SELECT setval('test.materials_id_seq', 3, true)");
