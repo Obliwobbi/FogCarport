@@ -46,14 +46,14 @@ public class Main
         CarportService carportService = new CarportServiceImpl(carportMapper);
         DrawingService drawingService = new DrawingServiceImpl(drawingMapper);
         CustomerService customerService = new CustomerServiceImpl(customerMapper);
-        OrderDetailsService orderDetailsService = new OrderDetailsServiceImpl(calculatorService,materialsLinesMapper,materialMapper);
-        OrderService orderService = new OrderServiceImpl(orderMapper, carportMapper, drawingMapper, customerMapper, materialsLinesMapper);
+        OrderDetailsService orderDetailsService = new OrderDetailsServiceImpl(calculatorService, materialsLinesMapper, materialMapper);
+        OrderService orderService = new OrderServiceImpl(orderMapper, carportMapper, drawingMapper, customerMapper, employeeMapper, materialsLinesMapper);
 
         HomeController homeController = new HomeController();
         CarportController carportController = new CarportController(carportService);
         DrawingController drawingController = new DrawingController(drawingService, calculatorService, orderService);
-        ContactController contactController = new ContactController(customerService, orderService, drawingService,carportService);
-        OrderController orderController = new OrderController(orderService,orderDetailsService);
+        ContactController contactController = new ContactController(customerService, orderService, drawingService, carportService);
+        OrderController orderController = new OrderController(orderService, orderDetailsService);
 
         // Routing
         homeController.addRoutes(app);
