@@ -36,13 +36,14 @@ public class OrderServiceImpl implements OrderService
         Carport carport = carportMapper.getCarportById(order.getCarportId());
         Customer customer = customerMapper.getCustomerByID(order.getCustomerId());
         Employee employee = employeeMapper.getEmployeeById(order.getEmployeeId());
+        List<MaterialsLine> materialsLines = materialsLinesMapper.getMaterialLinesByOrderId(orderId);
 
         return new OrderWithDetailsDTO(orderId,
                 order.getOrderDate(),
                 order.getStatus(),
                 order.getDeliveryDate(),
                 drawing,
-                order.getMaterialLines(),
+                materialsLines,
                 carport,
                 customer,
                 employee);
@@ -113,12 +114,7 @@ public class OrderServiceImpl implements OrderService
     @Override
     public void updateOrderTotalPrice(int orderId) throws DatabaseException
     {
-        List<MaterialsLine> lines = getOrderwithDetails(orderId).getMaterialsLines();
-        double totalPrice = 0;
-        for(MaterialsLine materialsLine : lines)
-        {
-            totalPrice += materialsLine.getLinePrice();
-        }
+        double totalPrice = getOrderwithDetails(orderId).getTotalPrice();
         orderMapper.updateOrderTotalPrice(orderId, totalPrice);
     }
 
