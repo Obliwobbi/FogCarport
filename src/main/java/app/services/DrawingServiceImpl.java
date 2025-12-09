@@ -33,6 +33,12 @@ public class DrawingServiceImpl implements DrawingService
     }
 
     @Override
+    public void updateDrawing(Drawing drawing) throws DatabaseException
+    {
+        drawingMapper.updateDrawing(drawing);
+    }
+
+    @Override
     public void deleteDrawing(int drawingId) throws DatabaseException
     {
         drawingMapper.deleteDrawing(drawingId);

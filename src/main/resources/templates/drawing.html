@@ -5,7 +5,6 @@
     <title>2D Tegning - FogCarport</title>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <link rel="stylesheet" href="/css/stylesheet.css" th:href="@{/css/stylesheet.css}"/>
-    <link rel="stylesheet" href="/css/drawing.css" th:href="@{/css/drawing.css}"/>
 
 </head>
 <body>
@@ -22,9 +21,19 @@
         </div>
 
         <p th:if="${session.drawingErrorLabel != null}" th:text="${session.drawingErrorLabel}"></p>
-        <div class="buttons">
-            <a class="customer-button" href="carport.html" th:href="@{/carport}">Ret Mål</a>
-            <a class="employee-button" href="contact.html" th:href="@{/contact}">Indhent Tilbud</a>
+
+        <!-- Order view buttons -->
+        <div th:if="${isOrderView}">
+            <a th:href="@{/orders/details/{id}(id=${orderId})}" class="button">Tilbage til ordre</a>
+            <form method="post" th:action="@{/orders/details/{id}/regenerate-drawing(id=${orderId})}" style="display: inline;">
+                <button type="submit" class="button regenerate-button">Generer ny tegning</button>
+            </form>
+        </div>
+
+        <!-- Carport view buttons -->
+        <div th:unless="${isOrderView}">
+            <a th:href="@{/carport}" class="button">Tilbage til Carport</a>
+            <a th:href="@{/order-information}" class="button">Fortsæt til bestilling</a>
         </div>
     </section>
 
