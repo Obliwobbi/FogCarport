@@ -44,6 +44,10 @@
                         <strong>Leverings Dato:</strong>
                         <span th:text="${order.deliveryDate != null ? #temporals.format(order.deliveryDate, 'dd-MM-yyyy') : 'Ikke planlagt'}"></span>
                     </div>
+                    <div class="info-item">
+                        <strong>Ansvarlig Medarbejder:</strong>
+                        <span th:text="${order.employee != null ? order.employee.name : 'Ingen tildelt'}"></span>
+                    </div>
                 </div>
 
                 <!-- Edit Mode -->
@@ -63,6 +67,17 @@
                         <div class="info-item">
                             <label for="deliveryDate"><strong>Leverings Dato:</strong></label>
                             <input type="date" id="deliveryDate" name="deliveryDate" th:value="${order.deliveryDate}"/>
+                        </div>
+                        <div class="info-item">
+                            <label for="employeeId"><strong>Ansvarlig Medarbejder:</strong></label>
+                            <select id="employeeId" name="employeeId">
+                                <option value="">Ingen tildelt</option>
+                                <option th:each="emp : ${employees}"
+                                        th:value="${emp.employeeId}"
+                                        th:text="${emp.name}"
+                                        th:selected="${order.employee != null and order.employee.employeeId == emp.employeeId}">
+                                </option>
+                            </select>
                         </div>
                     </div>
                     <div class="edit-actions">

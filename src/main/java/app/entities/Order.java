@@ -18,6 +18,7 @@ public class Order
     private int carportId;
     private List<MaterialsLine> materialLines;
     private int customerId;
+    private int employeeId;
 
     public Order(int drawingId, int carportId, int customerId)
     {

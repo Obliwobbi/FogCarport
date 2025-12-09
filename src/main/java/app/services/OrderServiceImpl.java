@@ -15,14 +15,16 @@ public class OrderServiceImpl implements OrderService
     private CarportMapper carportMapper;
     private DrawingMapper drawingMapper;
     private CustomerMapper customerMapper;
+    private EmployeeMapper employeeMapper;
     private MaterialsLinesMapper materialsLinesMapper;
 
-    public OrderServiceImpl(OrderMapper orderMapper, CarportMapper carportMapper, DrawingMapper drawingMapper, CustomerMapper customerMapper, MaterialsLinesMapper materialsLinesMapper)
+    public OrderServiceImpl(OrderMapper orderMapper, CarportMapper carportMapper, DrawingMapper drawingMapper, CustomerMapper customerMapper, EmployeeMapper employeeMapper, MaterialsLinesMapper materialsLinesMapper)
     {
         this.orderMapper = orderMapper;
         this.carportMapper = carportMapper;
         this.drawingMapper = drawingMapper;
         this.customerMapper = customerMapper;
+        this.employeeMapper = employeeMapper;
         this.materialsLinesMapper = materialsLinesMapper;
     }
 
@@ -33,6 +35,7 @@ public class OrderServiceImpl implements OrderService
         Drawing drawing = drawingMapper.getDrawingById(order.getDrawingId());
         Carport carport = carportMapper.getCarportById(order.getCarportId());
         Customer customer = customerMapper.getCustomerByID(order.getCustomerId());
+        Employee employee = employeeMapper.getEmployeeById(order.getEmployeeId());
 
         return new OrderWithDetailsDTO(orderId,
                 order.getOrderDate(),
@@ -41,7 +44,8 @@ public class OrderServiceImpl implements OrderService
                 drawing,
                 order.getMaterialLines(),
                 carport,
-                customer);
+                customer,
+                employee);
     }
 
     @Override
@@ -64,9 +68,28 @@ public class OrderServiceImpl implements OrderService
     }
 
     @Override
+    public List<Employee> getAllEmployees() throws DatabaseException
+    {
+        return employeeMapper.getAllEmployees();
+    }
+
+    @Override
     public void updateOrderStatus(int orderId, String status) throws DatabaseException
     {
         orderMapper.updateOrderStatus(orderId, status);
+    }
+
+    @Override
+    public void updateOrderEmployee(int orderId, int employeeId) throws DatabaseException
+    {
+        if(employeeId != 0)
+        {
+            orderMapper.updateOrderEmployee(orderId, employeeId);
+        }
+        else
+        {
+            orderMapper.setOrderEmployeeNull(orderId);
+        }
     }
 
     @Override

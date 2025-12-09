@@ -38,6 +38,7 @@ public class Main
         OrderMapper orderMapper = new OrderMapper(connectionPool);
         DrawingMapper drawingMapper = new DrawingMapper(connectionPool);
         CustomerMapper customerMapper = new CustomerMapper(connectionPool);
+        EmployeeMapper employeeMapper = new EmployeeMapper(connectionPool);
         MaterialMapper materialMapper = new MaterialMapper(connectionPool);
         MaterialsLinesMapper materialsLinesMapper = new MaterialsLinesMapper(connectionPool);
 
