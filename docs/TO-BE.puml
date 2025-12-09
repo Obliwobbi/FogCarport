@@ -15,6 +15,8 @@ repeat
 
 repeat while (Accepter Tegning) is (Nej) not  (Ja)
 
+:Indtaster kontaktoplysninger;
+
 |Carport Shop|
 :Sender forespørgsel til sælger;
 
@@ -29,10 +31,9 @@ repeat while (Accepter Tegning) is (Nej) not  (Ja)
 :Sender styklisten til sælger;
 
 |Sælger|
-:Udarbejder tilbud manuelt;
+:Tilpasser tilbuddet manuelt;
 
 |Carport Shop|
-:Modtager tilbud;
 :Sender tilbud til kunde;
 
 |Kunde|
@@ -41,7 +42,7 @@ repeat while (Accepter Tegning) is (Nej) not  (Ja)
 
 |Sælger|
 :Modtager accept;
-:Opretter ordre manuelt;
+:Opdaterer ordre Status;
 
 |Carport Shop|
 :Sender ordrebekræftelse;
