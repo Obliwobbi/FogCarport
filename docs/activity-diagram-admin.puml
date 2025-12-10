@@ -6,96 +6,59 @@ skinparam activityBorderColor #000000
 skinparam activityBackgroundColor #E8F4F8
 skinparam activityDiamondBorderColor #000000
 skinparam activityDiamondBackgroundColor #FFE4B5
+skinparam noteBorderColor #000000
+skinparam noteBackgroundColor #FFFFCC
 
-|Admin/Employee|
 start
-:Access Orders;
 
-:View **orders.html**\n(Order Management);
-note right
-    Route: GET /orders
-    Shows orders by status:
-    - New Orders
-    - Pending Accept
-    - Paid
-    - In Transit
-    - Completed
-end note
+repeat
+    :View **orders.html**;
+    note left: GET /orders
 
-if (Action?) then (Delete Order)
-    |System|
-    :Delete Order;
-    note right
-        Route: POST /orders/delete/{id}
-    end note
+    if (Delete Order?) then (yes)
+        :Delete Order;
+        note left: POST /orders/delete/{id}
 
-    |Admin/Employee|
-    :Return to **orders.html**;
-    detach
+    else (no)
+        :Select Order;
 
-else (View Order Details)
-    :Select Order;
+        :View **order-details.html**;
+        note left: GET /orders/details/{id}
 
-    :View **order-details.html**\n(Order Details);
-    note right
-        Route: GET /orders/details/{id}
-        Shows complete order info:
-        - Customer details
-        - Carport specifications
-        - Materials list
-        - Order status
-    end note
+        if (Action?) then (Update Data)
+            :Perform Update;
+            note left
+                POST /orders/update
+                POST /customer/update
+                POST /carport/update
+                POST /materials/generate
+                POST /prices/update
+            end note
 
-    if (Action to Perform?) then (Update Data)
-        |System|
-        :Perform Update;
-        note left
-            Available Routes:
-            - POST /orders/update
-            - POST /customer/update
-            - POST /carport/update
-            - POST /materials/generate
-            - POST /prices/update
-        end note
+        elseif (View Drawing) then
+            :View **drawing.html**;
+            note left
+                GET /orders/drawing/{id}
+                POST /drawing/regenerate
+            end note
 
-        |Admin/Employee|
-        :Return to **order-details.html**;
+        else (Done)
+        endif
 
+        if (Send Offer?) then (yes)
+            :Send Offer to Customer;
+            note left
+                POST /orders/send-offer/{id}
+                (Optional action)
+            end note
+        else (no)
+        endif
 
-    elseif (View Drawing) then
-        :View **drawing.html**\n(Order Drawing);
-        note left
-            Route: GET /orders/drawing/{id}
-            Optional: POST /drawing/regenerate
-        end note
-
-        |Admin/Employee|
-        :Return to **order-details.html**;
-
-
-    elseif (Send Offer?) then (optional)
-        |System|
-        :Send Offer to Customer;
-        note right
-            Route: POST /orders/send-offer/{id}
-            Optional: not required to perform
-            Sends offer (email/pdf) to customer and logs the action
-        end note
-
-        |Admin/Employee|
-        :Return to **order-details.html**;
-
-
-    else (Done)
     endif
-endif
 
+repeat while (Continue?) is (yes)
+->no;
 
-if (Continue Managing Orders?) then (yes)
-    :Return to **orders.html**;
-    detach
-else (no)
-    stop
-endif
+stop
 
 @enduml
