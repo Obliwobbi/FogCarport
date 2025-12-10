@@ -22,52 +22,72 @@ note right
     - Completed
 end note
 
-:Select Order;
-
-:View **order-details.html**\n(Order Details);
-note right
-    Route: GET /orders/details/{id}
-    Shows complete order info:
-    - Customer details
-    - Carport specifications
-    - Materials list
-    - Order status
-end note
-
-if (Action to Perform?) then (Update Data)
-    |System|
-    :Perform Update;
-    note right
-        Available Routes:
-        - POST /orders/update
-        - POST /customer/update
-        - POST /carport/update
-        - POST /materials/generate
-        - POST /prices/update
-    end note
-
-    |Admin/Employee|
-    :Return to **order-details.html**;
-
-elseif (View Drawing) then
-    :View **drawing.html**\n(Order Drawing);
-    note right
-        Route: GET /orders/drawing/{id}
-        Optional: POST /drawing/regenerate
-    end note
-
-    |Admin/Employee|
-    :Return to **order-details.html**;
-
-elseif (Delete Order) then
+if (Action?) then (Delete Order)
     |System|
     :Delete Order;
     note right
         Route: POST /orders/delete/{id}
     end note
 
+    |Admin/Employee|
     :Return to **orders.html**;
-    stop
+    detach
+
+else (View Order Details)
+    :Select Order;
+
+    :View **order-details.html**\n(Order Details);
+    note right
+        Route: GET /orders/details/{id}
+        Shows complete order info:
+        - Customer details
+        - Carport specifications
+        - Materials list
+        - Order status
+    end note
+
+    if (Action to Perform?) then (Update Data)
+        |System|
+        :Perform Update;
+        note left
+            Available Routes:
+            - POST /orders/update
+            - POST /customer/update
+            - POST /carport/update
+            - POST /materials/generate
+            - POST /prices/update
+        end note
+
+        |Admin/Employee|
+        :Return to **order-details.html**;
+
+
+    elseif (View Drawing) then
+        :View **drawing.html**\n(Order Drawing);
+        note left
+            Route: GET /orders/drawing/{id}
+            Optional: POST /drawing/regenerate
+        end note
+
+        |Admin/Employee|
+        :Return to **order-details.html**;
+
+
+    elseif (Send Offer?) then (optional)
+        |System|
+        :Send Offer to Customer;
+        note right
+            Route: POST /orders/send-offer/{id}
+            Optional: not required to perform
+            Sends offer (email/pdf) to customer and logs the action
+        end note
+
+        |Admin/Employee|
+        :Return to **order-details.html**;
+
+
+    else (Done)
+    endif
 endif
 
 
@@ -79,4 +99,3 @@ else (no)
 endif
 
 @enduml
-
