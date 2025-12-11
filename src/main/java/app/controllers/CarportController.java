@@ -36,7 +36,7 @@ public class CarportController
             boolean withShed = ctx.formParam("withShed") != null; //returns true if checked else false
 
 
-            String customerWishes = ctx.formParam("customerWishes");
+            String customerWishes = carportService.validateStringInput(ctx.formParam("customerWishes"));
 
             double shedWidth = 0.0;
             double shedLength = 0.0;
