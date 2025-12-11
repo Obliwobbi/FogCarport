@@ -80,4 +80,50 @@ class CarportServiceImplTest
 
         assertTrue(service.validateShedTotalSize(carport.getLength(), carport.getWidth(), carport.getShedLength(), carport.getShedWidth()));
     }
+
+    @DisplayName("validate input, rounds down ")
+    @Test
+    void testValidateMeasurementInput()
+    {
+        CarportServiceImpl service = new CarportServiceImpl(null);
+        double actual = service.validateMeasurementInput(432, 240, 600);
+        double expected = 420;
+
+        assertEquals(expected, actual);
+
+    }
+
+    @DisplayName("validate input, rounds down from near max")
+    @Test
+    void testValidateMeasurementInputThree()
+    {
+        CarportServiceImpl service = new CarportServiceImpl(null);
+        double actual = service.validateMeasurementInput(439.9, 240, 600);
+        double expected = 420;
+
+        assertEquals(expected, actual);
+
+    }
+    @DisplayName("validaye input, input exceeds maximum, round to maximum")
+    @Test
+    void testValidateMeasurementInputOne()
+    {
+        CarportServiceImpl service = new CarportServiceImpl(null);
+        double actual = service.validateMeasurementInput(650, 240, 600);
+        double expected = 600;
+
+        assertEquals(expected, actual);
+
+    }
+    @DisplayName("validate input, Throws illegal argumant")
+    @Test
+    void testValidateMeasurementInputTwo()
+    {
+        CarportServiceImpl service = new CarportServiceImpl(null);
+
+
+        assertThrows(IllegalArgumentException.class,
+                () -> service.validateMeasurementInput(200, 240, 600));
+
+    }
 }

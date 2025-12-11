@@ -86,5 +86,22 @@ public class CarportServiceImpl implements CarportService
         }
         return true;
     }
+
+    @Override
+    public double validateMeasurementInput(double input, double min, double max)
+    {
+        double interval = Constants.CARPORT_MEASUREMENT_INTERVAL;
+
+        if (input < min)
+        {
+            throw new IllegalArgumentException(input + " cm er under minimumsmål: " + min + " cm");
+        }
+
+        int stepsFromMin = (int) ((input - min) / interval);
+
+        double measurement = min + (stepsFromMin * interval);
+
+        return Math.min(measurement,max);
+    }
 }
 
