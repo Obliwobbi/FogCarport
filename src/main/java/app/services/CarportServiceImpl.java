@@ -86,5 +86,38 @@ public class CarportServiceImpl implements CarportService
         }
         return true;
     }
+
+    @Override
+    public double validateMeasurementInput(double input, double min, double max)
+    {
+        double interval = Constants.CARPORT_MEASUREMENT_INTERVAL;
+
+        if (input < min)
+        {
+            throw new IllegalArgumentException(input + " cm er under minimumsmål: " + min + " cm");
+        }
+
+        int stepsFromMin = (int) ((input - min) / interval);
+
+        double measurement = min + (stepsFromMin * interval);
+
+        return Math.min(measurement,max);
+    }
+
+    @Override
+    public String validateStringInput(String input)
+    {
+        if (input == null || input.trim().isEmpty())
+        {
+            return "";
+        }
+
+        if (input.length() > 250)
+        {
+            throw new IllegalArgumentException("Teksten må maksimalt være 250 tegn. Nuværende længde: " + input.length());
+        }
+
+        return input;
+    }
 }
 

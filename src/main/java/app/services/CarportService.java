@@ -16,5 +16,9 @@ public interface CarportService
     double validateShedMeasurement(double carportWidth, double shedWidth);
 
     boolean validateShedTotalSize(double carportLength, double carportWidth, double shedLength, double shedWidth);
+
+    double validateMeasurementInput(double input, double min, double max);
+
+    String validateStringInput(String input);
 }
 

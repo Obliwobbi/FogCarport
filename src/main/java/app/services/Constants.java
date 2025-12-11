@@ -5,6 +5,17 @@ public final class Constants
     private Constants()
     {
     }
+    
+    // Measurement constants
+    public static final double MIN_CARPORT_WIDTH = 240;
+    public static final double MAX_CARPORT_WIDTH = 600;
+    public static final double MIN_CARPORT_LENGTH = 240;
+    public static final double MAX_CARPORT_LENGTH = 780;
+    public static final double MIN_SHED_LENGTH = 120;
+    public static final double MAX_SHED_LENGTH = 690;
+    public static final double MIN_SHED_WIDTH = 120;
+    public static final double MAX_SHED_WIDTH = 510;
+    public static final double CARPORT_MEASUREMENT_INTERVAL = 30;
 
     // Post and spacing constants
     public static final double POST_SIZE = 10.0;
