@@ -368,8 +368,8 @@
                             <thead>
                             <tr>
                                 <th>Materiale</th>
-                                <th>Enhed</th>
                                 <th>Antal</th>
+                                <th>Enhed</th>
                                 <th>Enhedspris</th>
                                 <th>Total</th>
                             </tr>
@@ -377,8 +377,8 @@
                             <tbody>
                             <tr th:each="line : ${materialsLines}">
                                 <td data-label="Materiale" th:text="${line.material.name}"></td>
-                                <td data-label="Enhed" th:text="${line.material.unitType}"></td>
                                 <td data-label="Antal" th:text="${line.quantity}"></td>
+                                <td data-label="Enhed" th:text="${line.material.unitType}"></td>
                                 <td data-label="Enhedspris"
                                     th:text="${#numbers.formatDecimal(line.unitPrice, 1, 2) + ' kr.'}"></td>
                                 <td data-label="Total"
@@ -402,16 +402,16 @@
                                 <thead>
                                 <tr>
                                     <th>Materiale</th>
-                                    <th>Enhed</th>
                                     <th>Antal</th>
+                                    <th>Enhed</th>
                                     <th>Enhedspris</th>
                                 </tr>
                                 </thead>
                                 <tbody>
                                 <tr th:each="line, iterStat : ${materialsLines}">
                                     <td th:text="${line.material.name}"></td>
-                                    <td th:text="${line.material.unitType}"></td>
                                     <td th:text="${line.quantity}"></td>
+                                    <td th:text="${line.material.unitType}"></td>
                                     <td>
                                         <input type="hidden" th:name="'lineIds[' + ${iterStat.index} + ']'"
                                                th:value="${line.lineId}"/>
