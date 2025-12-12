@@ -17,6 +17,14 @@
             <p th:text="'Ordre #' + ${order.orderId}"></p>
         </div>
 
+        <!-- Error/Success Messages -->
+        <div th:if="${errorMessage}" class="message error-message center-text">
+            <p th:text="${errorMessage}"></p>
+        </div>
+        <div th:if="${successMessage}" class="message success-message center-text">
+            <p th:text="${successMessage}"></p>
+        </div>
+
         <div class="details-body">
             <!-- Order Information -->
             <div class="details-section">
@@ -392,6 +400,10 @@
                             </tr>
                             </tfoot>
                         </table>
+                        <form class="offer-buttons" method="post" th:action="@{/orders/send-offer/{id}(id=${order.orderId})}"
+                              onsubmit="return confirm('Er du sikker på du vil sende tilbud på ordren?')">
+                            <button type="submit" class="button">Send Tilbud</button>
+                        </form>
                     </div>
 
                     <!-- Edit Mode -->
@@ -439,13 +451,7 @@
             <a th:href="@{/orders}" class="button">Tilbage til Ordrer</a>
         </div>
 
-        <!-- Error/Success Messages -->
-        <div th:if="${errorMessage}" class="message error-message center-text">
-            <p th:text="${errorMessage}"></p>
-        </div>
-        <div th:if="${successMessage}" class="message success-message center-text">
-            <p th:text="${successMessage}"></p>
-        </div>
+
     </section>
 </main>
 
