@@ -27,7 +27,7 @@ public class EmailServiceImpl implements EmailService
         if ("BETALT".equals(orderDetails.getStatus()) || "AFSENDT".equals(orderDetails.getStatus()) ||
                 "AFSLUTTET".equals(orderDetails.getStatus()))
         {
-            subject = "OrdreBekræftigelse på Fog Carport (Ordre #" + orderId + ")";
+            subject = "Ordre bekræftelse på Fog Carport (Ordre #" + orderId + ")";
         }
         else
         {
