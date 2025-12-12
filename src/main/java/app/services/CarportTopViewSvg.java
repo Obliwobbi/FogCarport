@@ -137,8 +137,9 @@ public class CarportTopViewSvg
 
             double spaceBetweenShedInnerPostAndFirstCarportPost = shedInnerCornerPostXPosition - Constants.POST_OFFSET_X_LARGE;
             if (spaceBetweenShedInnerPostAndFirstCarportPost > Constants.MAX_LENGTH_BLOCKING)
-            {
-                double middlePostUnderTopPlatesX = Constants.POST_OFFSET_X_LARGE + (spaceBetweenShedInnerPostAndFirstCarportPost / 2);
+            {    double spaceBetweenPosts = (carportLength - Constants.POST_OFFSET_EDGE_BUFFER) / 2;
+
+                double middlePostUnderTopPlatesX = (shedLength <= 300 && carportLength > 510) ? (Constants.POST_OFFSET_X_LARGE + spaceBetweenPosts) : Constants.POST_OFFSET_X_LARGE + (spaceBetweenShedInnerPostAndFirstCarportPost / 2); //300 and 510 are for cosmetic reasons so posts are placed at exactly the same places
                 svgService.addRectangle(middlePostUnderTopPlatesX, POST_OFFSET_Y_TOP, Constants.POST_SIZE, Constants.POST_SIZE, Constants.STYLE); // UPPER POST BETWEEN FRONT AND SHED CORNER
 
                 if (isFullWidth)
