@@ -48,19 +48,19 @@ public class EmailServiceImpl implements EmailService
         variables.put("customerAddress", customerAddress);
 
 
-        String orderDate = String.valueOf(orderDetails.getOrderDate());
+        String orderDate = String.valueOf(orderDetails.getOrderDate().toLocalDate());
         String status = orderDetails.getStatus();
-//        String deliveryDate = String.valueOf(orderDetails.getDeliveryDate());
+        String deliveryDate = String.valueOf(orderDetails.getDeliveryDate().toLocalDate());
 
         variables.put("orderId", orderId);
         variables.put("orderDate", orderDate);
-//        variables.put("deliveryDate", deliveryDate);
+        variables.put("deliveryDate", deliveryDate);
         variables.put("status", status);
 
         String carportWidth = String.valueOf(orderDetails.getCarport().getWidth());
         String carportLength = String.valueOf(orderDetails.getCarport().getLength());
         String carportHeight = String.valueOf(orderDetails.getCarport().getHeight());
-        String shedDimensions = orderDetails.getCarport().getShedWidth() + " x " + orderDetails.getCarport().getShedLength();
+        String shedDimensions = orderDetails.getCarport().getShedWidth()  + "cm x " + orderDetails.getCarport().getShedLength() +" cm";
 
         variables.put("carportWidth", carportWidth);
         variables.put("carportLength", carportLength);

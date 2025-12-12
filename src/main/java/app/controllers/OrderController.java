@@ -6,10 +6,13 @@ import app.entities.Customer;
 import app.entities.Employee;
 import app.entities.MaterialsLine;
 import app.exceptions.DatabaseException;
+import app.services.EmailService;
 import app.services.OrderDetailsService;
 import app.services.OrderService;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
+import jakarta.mail.MessagingException;
+import org.jetbrains.annotations.NotNull;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -19,11 +22,13 @@ public class OrderController
 {
     private final OrderService orderService;
     private final OrderDetailsService orderDetailsService;
+    private final EmailService emailService;
 
-    public OrderController(OrderService orderService, OrderDetailsService orderDetailsService)
+    public OrderController(OrderService orderService, OrderDetailsService orderDetailsService, EmailService emailService)
     {
         this.orderService = orderService;
         this.orderDetailsService = orderDetailsService;
+        this.emailService = emailService;
     }
 
     public void addRoutes(Javalin app)
@@ -40,6 +45,26 @@ public class OrderController
 
         app.post("/orders/details/{id}/stykliste", this::generateMaterialList);
         app.post("/orders/details/{id}/regenerate-stykliste", this::regenerateMaterialList);
+
+        app.post("/orders/send-offer/{id}", this::sendOffer);
+    }
+
+    private void sendOffer(Context ctx)
+    {
+        int orderId = Integer.parseInt(ctx.pathParam("id"));
+
+        try
+        {
+            OrderWithDetailsDTO order = orderService.getOrderwithDetails(orderId);
+            emailService.sendCarportOffer(order);
+            ctx.redirect("/orders/details/" + orderId + "?success=email");
+        }
+        catch (DatabaseException | MessagingException e)
+        {
+            ctx.attribute("errorMessage", e.getMessage());
+            ctx.redirect("/orders/details/" + orderId + "?error=" + e.getMessage());
+        }
+
     }
 
     private void showOrderDetails(Context ctx)
