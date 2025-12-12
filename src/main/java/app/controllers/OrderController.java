@@ -71,6 +71,8 @@ public class OrderController
     {
         String orderIdString = ctx.pathParam("id");
         String editSection = ctx.queryParam("edit");
+        String success = ctx.queryParam("success");
+        String error = ctx.queryParam("error");
 
         try
         {
@@ -90,6 +92,32 @@ public class OrderController
             ctx.attribute("materialsLines", materialsLines);
             ctx.attribute("hasMaterialsList", materialsLines != null && !materialsLines.isEmpty());
             ctx.attribute("editSection", editSection);
+
+            if ("email".equals(success))
+            {
+                ctx.attribute("successMessage", "Tilbuddet blev sendt til kunden!");
+            }
+            else if ("order".equals(success))
+            {
+                ctx.attribute("successMessage", "Ordre information opdateret");
+            }
+            else if ("customer".equals(success))
+            {
+                ctx.attribute("successMessage", "Kunde information opdateret");
+            }
+            else if ("carport".equals(success))
+            {
+                ctx.attribute("successMessage", "Carport information opdateret");
+            }
+            else if ("prices".equals(success))
+            {
+                ctx.attribute("successMessage", "Priser opdateret");
+            }
+
+            if ("email".equals(error))
+            {
+                ctx.attribute("errorMessage", "Kunne ikke sende email. Prøv igen.");
+            }
 
             ctx.render("order-details.html");
         }
