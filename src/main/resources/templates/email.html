@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+</head>
+<body>
+<h1 th:text="${title}">Fallback titel</h1>
+<p>Hej <strong th:text="${name}">Bruger</strong>,</p>
+<p th:utext="${message}">Dette er standardbeskeden.</p>
+</body>
+</html>
