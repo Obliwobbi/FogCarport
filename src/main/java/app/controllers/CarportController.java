@@ -2,7 +2,7 @@ package app.controllers;
 
 import app.entities.Carport;
 import app.services.CarportService;
-import app.services.Constants;
+import app.util.Constants;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 

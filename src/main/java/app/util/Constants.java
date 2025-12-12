@@ -1,4 +1,4 @@
-package app.services;
+package app.util;
 
 public final class Constants
 {
