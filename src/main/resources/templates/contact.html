@@ -16,28 +16,28 @@
         <form class="contact-form" th:action="@{/contact/create-order}" method="post">
 
             <label for="firstname">Fornavn</label>
-            <input type="text" id="firstname" name="firstname">
+            <input type="text" id="firstname" name="firstname" placeholder="Johannes" required>
 
             <label for="lastname">Efternavn</label>
-            <input type="text" id="lastname" name="lastname">
+            <input type="text" id="lastname" name="lastname" placeholder="Fog" required>
 
             <label for="email">Email</label>
-            <input type="text" id="email" name="email">
+            <input type="text" id="email" name="email" placeholder="Fogeksempel@mail.dk" required>
 
             <label for="phonenumber">Tlf nummer</label>
-            <input type="text" id="phonenumber" name="phonenumber">
+            <input type="text" id="phonenumber" name="phonenumber" placeholder="47160800" required>
 
             <label for="street">Gade</label>
-            <input type="text" id="street" name="street">
+            <input type="text" id="street" name="street" placeholder="Firskovvej" required>
 
             <label for="housenumber">Husnummer</label>
-            <input type="text" id="housenumber" name="housenumber">
+            <input type="text" id="housenumber" name="housenumber" placeholder="18" required>
 
             <label for="zipcode">Postnr</label>
-            <input type="text" id="zipcode" name="zipcode">
+            <input type="text" id="zipcode" name="zipcode" placeholder="2800" required>
 
             <label for="city">By</label>
-            <input type="text" id="city" name="city">
+            <input type="text" id="city" name="city" placeholder="Lyngby" required>
 
             <p th:if="${errorMessage != null}" th:text="${errorMessage}"></p>
             <button class="button" type="submit">Send</button>
