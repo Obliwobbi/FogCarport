@@ -22,8 +22,17 @@ public class EmailServiceImpl implements EmailService
     {
         int orderId = orderDetails.getOrderId();
         String email = orderDetails.getCustomer().getEmail();
-        String subject = "Tilbud på Fog Carport (Ordre #" + orderId + ")";
+        String subject;
 
+        if ("BETALT".equals(orderDetails.getStatus()) || "AFSENDT".equals(orderDetails.getStatus()) ||
+                "AFSLUTTET".equals(orderDetails.getStatus()))
+        {
+            subject = "OrdreBekræftigelse på Fog Carport (Ordre #" + orderId + ")";
+        }
+        else
+        {
+            subject = "Tilbud på Fog Carport (Ordre #" + orderId + ")";
+        }
         Map<String, Object> variables = setVariables(orderDetails);
 
         String html = sender.renderTemplate("email.html", variables);
@@ -79,6 +88,18 @@ public class EmailServiceImpl implements EmailService
                 "AFSLUTTET".equals(orderDetails.getStatus());
 
         variables.put("hasPaid", hasPaid);
+
+        String emailText;
+        if(hasPaid)
+        {
+            emailText = "Tak for din Bestilling på en af vores carporte. Nedenfor finder du detaljerne for din Ordre.";
+            variables.put("mailText", emailText);
+        }
+        else
+        {
+            emailText = "Tak for din interesse i en af vores carporte. Nedenfor finder du detaljerne for dit tilbud.";
+            variables.put("mailText", emailText);
+        }
 
         if (hasPaid && orderDetails.getMaterialsLines() != null)
         {
