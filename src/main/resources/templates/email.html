@@ -1,11 +1,166 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ordrekvittering</title>
 </head>
-<body>
-<h1 th:text="${title}">Fallback titel</h1>
-<p>Hej <strong th:text="${name}">Bruger</strong>,</p>
-<p th:utext="${message}">Dette er standardbeskeden.</p>
+<body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f4f4f4;">
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #f4f4f4; padding: 20px 0;">
+    <tr>
+        <td align="center">
+            <table width="600" cellpadding="0" cellspacing="0" border="0"
+                   style="background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                <!-- Header -->
+                <tr>
+                    <td style="background-color: #2c3e50; padding: 30px; text-align: center; border-radius: 8px 8px 0 0;">
+                        <h1 style="color: #ffffff; margin: 0; font-size: 28px;">Fog Carport</h1>
+                        <p style="color: #ecf0f1; margin: 5px 0 0 0; font-size: 14px;">Ordrekvittering</p>
+                    </td>
+                </tr>
+
+                <!-- Customer Greeting -->
+                <tr>
+                    <td style="padding: 30px 30px 20px 30px;">
+                        <p style="margin: 0; font-size: 16px; color: #333333;">
+                            Kære <strong th:text="${customerName}">Kunde</strong>,
+                        </p>
+                        <p style="margin: 10px 0 0 0; font-size: 14px; color: #666666;">
+                            Tak for din ordre. Nedenfor finder du detaljerne for din carport-ordre.
+                        </p>
+                    </td>
+                </tr>
+
+                <!-- Order Info -->
+                <tr>
+                    <td style="padding: 0 30px;">
+                        <table width="100%" cellpadding="8" cellspacing="0" border="0"
+                               style="background-color: #f8f9fa; border-radius: 4px;">
+                            <tr>
+                                <td style="padding: 15px;">
+                                    <table width="100%" cellpadding="5" cellspacing="0" border="0">
+                                        <tr>
+                                            <td style="font-size: 14px; color: #666666; width: 40%;">Ordre ID:</td>
+                                            <td style="font-size: 14px; color: #333333; font-weight: bold;"
+                                                th:text="${orderId}">12345
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="font-size: 14px; color: #666666;">Ordredato:</td>
+                                            <td style="font-size: 14px; color: #333333;" th:text="${orderDate}">
+                                                2025-01-12
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="font-size: 14px; color: #666666;">Status:</td>
+                                            <td style="font-size: 14px; color: #27ae60; font-weight: bold;"
+                                                th:text="${status}">AFVENTER
+                                            </td>
+                                        </tr>
+                                        <tr th:if="${deliveryDate}">
+                                            <td style="font-size: 14px; color: #666666;">Leveringsdato:</td>
+                                            <td style="font-size: 14px; color: #333333;" th:text="${deliveryDate}">-
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+
+                <!-- Customer Info -->
+                <tr>
+                    <td style="padding: 20px 30px;">
+                        <h2 style="margin: 0 0 15px 0; font-size: 18px; color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 8px;">
+                            Kundeoplysninger</h2>
+                        <table width="100%" cellpadding="5" cellspacing="0" border="0">
+                            <tr>
+                                <td style="font-size: 14px; color: #666666; width: 30%;">Navn:</td>
+                                <td style="font-size: 14px; color: #333333;" th:text="${customerName}">Jon Doe</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 14px; color: #666666;">E-mail:</td>
+                                <td style="font-size: 14px; color: #333333;" th:text="${customerEmail}">
+                                    jon@example.com
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 14px; color: #666666;">Telefon:</td>
+                                <td style="font-size: 14px; color: #333333;" th:text="${customerPhone}">12345678</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 14px; color: #666666;">Adresse:</td>
+                                <td style="font-size: 14px; color: #333333;" th:text="${customerAddress}">Vejnavn 123,
+                                    1234 By
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+
+                <!-- Carport Specifications -->
+                <tr>
+                    <td style="padding: 20px 30px;">
+                        <h2 style="margin: 0 0 15px 0; font-size: 18px; color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 8px;">
+                            Carport Specifikationer</h2>
+                        <table width="100%" cellpadding="5" cellspacing="0" border="0">
+                            <tr>
+                                <td style="font-size: 14px; color: #666666; width: 30%;">Bredde:</td>
+                                <td style="font-size: 14px; color: #333333;" th:text="${carportWidth} + ' cm'">600 cm
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 14px; color: #666666;">Længde:</td>
+                                <td style="font-size: 14px; color: #333333;" th:text="${carportLength} + ' cm'">780 cm
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 14px; color: #666666;">Højde:</td>
+                                <td style="font-size: 14px; color: #333333;" th:text="${carportHeight} + ' cm'">210 cm
+                                </td>
+                            </tr>
+                            <tr th:if="${hasShed}">
+                                <td style="font-size: 14px; color: #666666;">Skur:</td>
+                                <td style="font-size: 14px; color: #333333;" th:text="${shedDimensions}">Ja - 240x210
+                                    cm
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+
+                <!-- Total Price -->
+                <tr>
+                    <td style="padding: 0 30px 30px 30px;">
+                        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                            <tr>
+                                <td style="text-align: right; padding: 15px; background-color: #27ae60; border-radius: 4px;">
+                                    <span style="font-size: 16px; color: #ffffff; margin-right: 15px;">Total pris:</span>
+                                    <span style="font-size: 24px; color: #ffffff; font-weight: bold;"
+                                          th:text="${totalPrice} + ' kr.'">15.750,00 kr.</span>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+
+                <!-- Footer -->
+                <tr>
+                    <td style="padding: 20px 30px; background-color: #ecf0f1; border-radius: 0 0 8px 8px; text-align: center;">
+                        <p style="margin: 0; font-size: 13px; color: #7f8c8d;">
+                            Har du spørgsmål til din ordre? Kontakt os på
+                            <a href="mailto:info@fogcarport.dk" style="color: #3498db; text-decoration: none;">info@fogcarport.dk</a>
+                        </p>
+                        <p style="margin: 10px 0 0 0; font-size: 12px; color: #95a5a6;">
+                            © 2025 Fog Carport. Alle rettigheder forbeholdes.
+                        </p>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
 </body>
 </html>
+
