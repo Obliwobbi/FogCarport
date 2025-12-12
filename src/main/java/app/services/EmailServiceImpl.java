@@ -60,7 +60,7 @@ public class EmailServiceImpl implements EmailService
         String carportWidth = String.valueOf(orderDetails.getCarport().getWidth());
         String carportLength = String.valueOf(orderDetails.getCarport().getLength());
         String carportHeight = String.valueOf(orderDetails.getCarport().getHeight());
-        String shedDimensions = orderDetails.getCarport().getShedWidth()  + "cm x " + orderDetails.getCarport().getShedLength() +" cm";
+        String shedDimensions = orderDetails.getCarport().getShedWidth() + " cm x " + orderDetails.getCarport().getShedLength() + " cm";
 
         variables.put("carportWidth", carportWidth);
         variables.put("carportLength", carportLength);
@@ -69,14 +69,24 @@ public class EmailServiceImpl implements EmailService
         boolean hasShed = orderDetails.getCarport().isWithShed();
         variables.put("hasShed", hasShed);
 
-        if(hasShed)
+        if (hasShed)
         {
             variables.put("shedDimensions", shedDimensions);
         }
 
+        boolean hasPaid = "BETALT".equals(orderDetails.getStatus()) ||
+                "AFSENDT".equals(orderDetails.getStatus()) ||
+                "AFSLUTTET".equals(orderDetails.getStatus());
+
+        variables.put("hasPaid", hasPaid);
+
+        if (hasPaid && orderDetails.getMaterialsLines() != null)
+        {
+            variables.put("materialsLines", orderDetails.getMaterialsLines());
+        }
+
         String totalPrice = String.valueOf(orderDetails.getTotalPrice());
         variables.put("totalPrice", totalPrice);
-
 
 
         return variables;

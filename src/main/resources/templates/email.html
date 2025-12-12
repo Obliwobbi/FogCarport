@@ -130,6 +130,49 @@
                     </td>
                 </tr>
 
+                <!-- Materials List -->
+                <tr th:if="${hasPaid}">
+                    <td style="padding: 20px 30px;">
+                        <h2 style="margin: 0 0 15px 0; font-size: 18px; color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 8px;">
+                            Stykliste</h2>
+                        <table width="100%" cellpadding="8" cellspacing="0" border="0"
+                               style="border: 1px solid #ddd; border-radius: 4px;">
+                            <thead>
+                            <tr style="background-color: #f8f9fa;">
+                                <th style="padding: 10px; text-align: left; font-size: 13px; color: #666; border-bottom: 2px solid #ddd;">
+                                    Materiale
+                                </th>
+                                <th style="padding: 10px; text-align: center; font-size: 13px; color: #666; border-bottom: 2px solid #ddd;">
+                                    Antal
+                                </th>
+                                <th style="padding: 10px; text-align: right; font-size: 13px; color: #666; border-bottom: 2px solid #ddd;">
+                                    Enhedspris
+                                </th>
+                                <th style="padding: 10px; text-align: right; font-size: 13px; color: #666; border-bottom: 2px solid #ddd;">
+                                    Total
+                                </th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="line : ${materialsLines}">
+                                <td style="padding: 8px; font-size: 14px; color: #333; border-bottom: 1px solid #eee;"
+                                    th:text="${line.material.name}">Material
+                                </td>
+                                <td style="padding: 8px; text-align: center; font-size: 14px; color: #333; border-bottom: 1px solid #eee;"
+                                    th:text="${line.quantity} + ' ' + ${line.material.unitType}">5 stk
+                                </td>
+                                <td style="padding: 8px; text-align: right; font-size: 14px; color: #333; border-bottom: 1px solid #eee;"
+                                    th:text="${#numbers.formatDecimal(line.unitPrice, 1, 2)} + ' kr.'">100,00 kr.
+                                </td>
+                                <td style="padding: 8px; text-align: right; font-size: 14px; color: #333; border-bottom: 1px solid #eee;"
+                                    th:text="${#numbers.formatDecimal(line.linePrice, 1, 2)} + ' kr.'">500,00 kr.
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+
                 <!-- Total Price -->
                 <tr>
                     <td style="padding: 0 30px 30px 30px;">
