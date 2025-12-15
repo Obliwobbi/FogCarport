@@ -48,20 +48,38 @@ public class OrderController
         app.post("/orders/send-offer/{id}", this::sendOffer);
     }
 
-    private void sendOffer(Context ctx)
+    private void showOrders(Context ctx)
     {
-        int orderId = Integer.parseInt(ctx.pathParam("id"));
-
         try
         {
-            OrderWithDetailsDTO order = orderService.getOrderwithDetails(orderId);
-            emailService.sendCarportOffer(order);
-            ctx.redirect("/orders/details/" + orderId + "?success=email");
+            //TODO ENUMS FOR STATUS
+            List<OrderWithDetailsDTO> newOrders = orderService.getOrdersByStatusDTO("NY ORDRE");
+            List<OrderWithDetailsDTO> pendingOrders = orderService.getOrdersByStatusDTO("AFVENTER ACCEPT");
+            List<OrderWithDetailsDTO> paidOrders = orderService.getOrdersByStatusDTO("BETALT");
+            List<OrderWithDetailsDTO> inTransitOrders = orderService.getOrdersByStatusDTO("AFSENDT");
+            List<OrderWithDetailsDTO> doneOrders = orderService.getOrdersByStatusDTO("AFSLUTTET");
+
+            ctx.attribute("newOrders", newOrders);
+            ctx.attribute("pendingOrders", pendingOrders);
+            ctx.attribute("paidOrders", paidOrders);
+            ctx.attribute("inTransitOrders", inTransitOrders);
+            ctx.attribute("doneOrders", doneOrders);
+
+            // Transfer session messages to context attributes and clear them
+            consumeFlash(ctx);
+            ctx.render("orders.html");
         }
-        catch (DatabaseException | MessagingException e)
+        catch (DatabaseException e)
         {
-            ctx.attribute("errorMessage", e.getMessage());
-            ctx.redirect("/orders/details/" + orderId + "?error=" + e.getMessage());
+            ctx.attribute("errorMessage", "Der opstod en fejl ved hentning af ordrer");
+            ctx.attribute("paidOrders", new ArrayList<>());
+            ctx.attribute("inTransitOrders", new ArrayList<>());
+            ctx.attribute("doneOrders", new ArrayList<>());
+            ctx.attribute("newOrders", new ArrayList<>());
+            ctx.attribute("pendingOrders", new ArrayList<>());
+
+            consumeFlash(ctx);
+            ctx.render("orders.html");
         }
     }
 
@@ -69,8 +87,6 @@ public class OrderController
     {
         String orderIdString = ctx.pathParam("id");
         String editSection = ctx.queryParam("edit");
-        String success = ctx.queryParam("success");
-        String error = ctx.queryParam("error");
 
         try
         {
@@ -78,7 +94,7 @@ public class OrderController
             OrderWithDetailsDTO order = orderService.getOrderwithDetails(orderId);
             if (order == null)
             {
-                ctx.attribute("errorMessage", "Ordre ikke fundet");
+                flashError(ctx, "Ordren blev ikke fundet");
                 ctx.redirect("/orders");
                 return;
             }
@@ -91,49 +107,53 @@ public class OrderController
             ctx.attribute("hasMaterialsList", materialsLines != null && !materialsLines.isEmpty());
             ctx.attribute("editSection", editSection);
 
-
-            //TODO refactor hvordan error message bliver vist, så det er konsekvent med resten af koden
-            if ("email".equals(success))
-            {
-                ctx.attribute("successMessage", "Tilbuddet blev sendt til kunden!");
-            }
-            else if ("order".equals(success))
-            {
-                ctx.attribute("successMessage", "Ordre information opdateret");
-            }
-            else if ("customer".equals(success))
-            {
-                ctx.attribute("successMessage", "Kunde information opdateret");
-            }
-            else if ("carport".equals(success))
-            {
-                ctx.attribute("successMessage", "Carport information opdateret");
-            }
-            else if ("prices".equals(success))
-            {
-                ctx.attribute("successMessage", "Priser opdateret");
-            }
-
-            if ("email".equals(error))
-            {
-                ctx.attribute("errorMessage", "Kunne ikke sende email. Prøv igen.");
-            }
-
+            // Transfer session messages to context attributes and clear them
+            consumeFlash(ctx);
             ctx.render("order-details.html");
         }
         catch (NumberFormatException e)
         {
-            ctx.attribute("errorMessage", "Ugyldigt ordre ID");
+            flashError(ctx, "Ugyldigt ordre ID");
             ctx.redirect("/orders");
         }
         catch (NullPointerException e)
         {
-            ctx.attribute("errorMessage", "Ordre har ikke materiale liste");
+            flashError(ctx, "Ordren har ikke en materiale liste");
             ctx.redirect("/orders");
         }
         catch (DatabaseException e)
         {
-            ctx.attribute("errorMessage", e.getMessage());
+            flashError(ctx, "Der opstod en fejl ved hentning af ordren");
+            ctx.redirect("/orders");
+        }
+    }
+
+    private void deleteOrder(Context ctx)
+    {
+        String orderIdStr = ctx.pathParam("id");
+
+        try
+        {
+            int orderId = Integer.parseInt(orderIdStr);
+            if (orderService.deleteOrder(orderId))
+            {
+                flashSuccess(ctx, "Ordren blev slettet");
+                ctx.redirect("/orders");
+            }
+            else
+            {
+                flashError(ctx, "Kunne ikke slette ordren. Prøv igen senere.");
+                ctx.redirect("/orders");
+            }
+        }
+        catch (NumberFormatException e)
+        {
+            flashError(ctx, "Ugyldigt ordre ID");
+            ctx.redirect("/orders");
+        }
+        catch (DatabaseException e)
+        {
+            flashError(ctx, "Kunne ikke slette ordren. Prøv igen senere.");
             ctx.redirect("/orders");
         }
     }
@@ -165,11 +185,13 @@ public class OrderController
                 orderService.updateOrderEmployee(orderId, 0);
             }
 
-            ctx.redirect("/orders/details/" + orderId + "?success=order");
+            flashSuccess(ctx, "Ordre information blev opdateret");
+            ctx.redirect("/orders/details/" + orderId);
         }
         catch (DatabaseException e)
         {
-            ctx.redirect("/orders/details/" + orderId + "?error=" + e.getMessage());
+            flashError(ctx, "Kunne ikke opdatere ordre information. Prøv igen senere.");
+            ctx.redirect("/orders/details/" + orderId);
         }
     }
 
@@ -193,16 +215,16 @@ public class OrderController
             customer.setCity(ctx.formParam("city"));
 
             orderService.updateCustomerInfo(customer);
-            ctx.redirect("/orders/details/" + orderId + "?success=customer");
+            flashSuccess(ctx, "Kunde information blev opdateret");
+            ctx.redirect("/orders/details/" + orderId);
 
         }
         catch (DatabaseException e)
         {
-            ctx.attribute("errorMessage", e.getMessage());
-            ctx.redirect("/orders/details/" + orderId + "?error=" + e.getMessage());
+            flashError(ctx, "Kunne ikke opdatere kunde information. Prøv igen senere.");
+            ctx.redirect("/orders/details/" + orderId);
         }
     }
-
 
     //TODO move service actions to service layer and validate input
     private void updateCarportInfo(Context ctx)
@@ -243,11 +265,13 @@ public class OrderController
             carport.setCustomerWishes(customerWishes);
 
             orderService.updateCarport(carport);
-            ctx.redirect("/orders/details/" + orderId + "?success=carport");
+            flashSuccess(ctx, "Carport information blev opdateret");
+            ctx.redirect("/orders/details/" + orderId);
         }
         catch (DatabaseException e)
         {
-            ctx.redirect("/orders/details/" + orderId + "?error=" + e.getMessage());
+            flashError(ctx, "Kunne ikke opdatere carport information. Prøv igen senere.");
+            ctx.redirect("/orders/details/" + orderId);
         }
     }
 
@@ -281,11 +305,13 @@ public class OrderController
                 }
             }
             orderService.updateOrderTotalPrice(orderId);
-            ctx.redirect("/orders/details/" + orderId + "?success=prices");
+            flashSuccess(ctx, "Priser blev opdateret");
+            ctx.redirect("/orders/details/" + orderId);
         }
         catch (DatabaseException e)
         {
-            ctx.redirect("/orders/details/" + orderId + "?error=" + e.getMessage());
+            flashError(ctx, "Kunne ikke opdatere priser. Prøv igen senere.");
+            ctx.redirect("/orders/details/" + orderId);
         }
     }
 
@@ -301,18 +327,19 @@ public class OrderController
             if (orderDetailsService.addMaterialListToOrder(orderId, carport))
             {
                 orderService.updateOrderTotalPrice(orderId);
-                ctx.attribute("successMessage", "Materiale liste blev genereret");
+                flashSuccess(ctx, "Materiale listen blev genereret");
                 ctx.redirect("/orders/details/" + orderId);
             }
             else
             {
-                ctx.attribute("errorMessage", "Materialer er allerede generet for denne ordre");
+                flashError(ctx, "Materiale listen er allerede genereret for denne ordre");
                 ctx.redirect("/orders/details/" + orderId);
             }
         }
         catch (DatabaseException e)
         {
-            ctx.attribute("errorMessage", "Kunne ikke oprette materiale liste: " + e.getMessage());
+            flashError(ctx, "Kunne ikke oprette materiale liste. Prøv igen senere.");
+            ctx.redirect("/orders/details/" + orderId);
         }
     }
 
@@ -326,74 +353,61 @@ public class OrderController
 
             orderDetailsService.regenerateMaterialList(orderId, order.getCarport());
 
-            ctx.redirect("/orders/details/" + orderId + "?success=carport");
+            flashSuccess(ctx, "Materiale listen blev opdateret");
+            ctx.redirect("/orders/details/" + orderId);
         }
         catch (DatabaseException e)
         {
-            ctx.attribute("errorMessage", "Kunne ikke regenerere materiale liste");
-            ctx.redirect("/orders/details/" + orderId + "?error=" + e.getMessage());
+            flashError(ctx, "Kunne ikke opdatere materiale listen. Prøv igen senere.");
+            ctx.redirect("/orders/details/" + orderId);
         }
     }
 
-    private void showOrders(Context ctx)
+    private void sendOffer(Context ctx)
     {
-        try
-        {
-            //TODO ENUMS FOR STATUS
-            List<OrderWithDetailsDTO> newOrders = orderService.getOrdersByStatusDTO("NY ORDRE");
-            List<OrderWithDetailsDTO> pendingOrders = orderService.getOrdersByStatusDTO("AFVENTER ACCEPT");
-            List<OrderWithDetailsDTO> paidOrders = orderService.getOrdersByStatusDTO("BETALT");
-            List<OrderWithDetailsDTO> inTransitOrders = orderService.getOrdersByStatusDTO("AFSENDT");
-            List<OrderWithDetailsDTO> doneOrders = orderService.getOrdersByStatusDTO("AFSLUTTET");
-
-            ctx.attribute("newOrders", newOrders);
-            ctx.attribute("pendingOrders", pendingOrders);
-            ctx.attribute("paidOrders", paidOrders);
-            ctx.attribute("inTransitOrders", inTransitOrders);
-            ctx.attribute("doneOrders", doneOrders);
-
-            ctx.render("orders.html");
-        }
-        catch (DatabaseException e)
-        {
-            ctx.attribute("orderErrorMessage", e.getMessage());
-            ctx.attribute("paidOrders", new ArrayList<>());
-            ctx.attribute("inTransitOrders", new ArrayList<>());
-            ctx.attribute("doneOrders", new ArrayList<>());
-            ctx.attribute("newOrders", new ArrayList<>());
-            ctx.attribute("pendingOrders", new ArrayList<>());
-
-            ctx.render("orders.html");
-        }
-    }
-
-    private void deleteOrder(Context ctx) throws DatabaseException
-    {
-        String orderIdStr = ctx.pathParam("id");
+        int orderId = Integer.parseInt(ctx.pathParam("id"));
 
         try
         {
-            int orderId = Integer.parseInt(orderIdStr);
-            if (orderService.deleteOrder(orderId))
-            {
-                ctx.redirect("/orders");
-                ctx.attribute("successMessage", "Du har slette ordren med id " + orderId);
-            }
-            else
-            {
-                ctx.attribute("errorMessage", "Kunne ikke slette ordren");
-                ctx.redirect("/orders");
-            }
+            OrderWithDetailsDTO order = orderService.getOrderwithDetails(orderId);
+            emailService.sendCarportOffer(order);
+            flashSuccess(ctx, "Tilbuddet blev sendt til kunden!");
+            ctx.redirect("/orders/details/" + orderId);
         }
-        catch (NumberFormatException e)
+        catch (DatabaseException | MessagingException e)
         {
-            ctx.attribute("errorMessage", "Kunne ikke parse tallet");
-            ctx.redirect("/orders");
-        }
-        catch (DatabaseException e)
-        {
-            ctx.attribute("errorMessage", e.getMessage());
-            ctx.redirect("/orders");
+            flashError(ctx, "Kunne ikke sende email til kunden. Prøv igen senere.");
+            ctx.redirect("/orders/details/" + orderId);
         }
     }
+
+    private void flashSuccess(Context ctx, String msg)
+    {
+        ctx.sessionAttribute("successMessage", msg);
+        ctx.sessionAttribute("errorMessage", null);
+    }
+
+    private void flashError(Context ctx, String msg)
+    {
+        ctx.sessionAttribute("errorMessage", msg);
+        ctx.sessionAttribute("successMessage", null);
+    }
+
+    private void consumeFlash(Context ctx)
+    {
+        String sessionSuccessMessage = ctx.sessionAttribute("successMessage");
+        if (sessionSuccessMessage != null)
+        {
+            ctx.attribute("successMessage", sessionSuccessMessage);
+            ctx.sessionAttribute("successMessage", null);
+        }
+
+        String sessionErrorMessage = ctx.sessionAttribute("errorMessage");
+        if (sessionErrorMessage != null)
+        {
+            ctx.attribute("errorMessage", sessionErrorMessage);
+            ctx.sessionAttribute("errorMessage", null);
+        }
+    }
+
 }
