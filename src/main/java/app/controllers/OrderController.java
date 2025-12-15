@@ -53,19 +53,29 @@ public class OrderController
     {
         try
         {
+            String statusFilter = ctx.queryParam("status");
+
             List<OrderWithDetailsDTO> newOrders = orderService.getOrdersByStatusDTO(Status.NEW);
-            List<OrderWithDetailsDTO> pendingOrders = orderService.getOrdersByStatusDTO(Status.PENDING);
-            List<OrderWithDetailsDTO> paidOrders = orderService.getOrdersByStatusDTO(Status.PAID);
-            List<OrderWithDetailsDTO> inTransitOrders = orderService.getOrdersByStatusDTO(Status.IN_TRANSIT);
-            List<OrderWithDetailsDTO> doneOrders = orderService.getOrdersByStatusDTO(Status.DONE);
 
+            List<OrderWithDetailsDTO> filteredOrders;
+            if (statusFilter != null && !statusFilter.isEmpty() && !statusFilter.equals("ALL"))
+            {
+                filteredOrders = orderService.getOrdersByStatusDTO(Status.valueOf(statusFilter));
+            }
+            else
+            {
+                filteredOrders = new ArrayList<>();
+                filteredOrders.addAll(orderService.getOrdersByStatusDTO(Status.PENDING));
+                filteredOrders.addAll(orderService.getOrdersByStatusDTO(Status.PAID));
+                filteredOrders.addAll(orderService.getOrdersByStatusDTO(Status.IN_TRANSIT));
+                filteredOrders.addAll(orderService.getOrdersByStatusDTO(Status.DONE));
+
+            }
             ctx.attribute("newOrders", newOrders);
-            ctx.attribute("pendingOrders", pendingOrders);
-            ctx.attribute("paidOrders", paidOrders);
-            ctx.attribute("inTransitOrders", inTransitOrders);
-            ctx.attribute("doneOrders", doneOrders);
+            ctx.attribute("filteredOrders", filteredOrders);
+            ctx.attribute("selectedStatus", statusFilter != null ? statusFilter : "ALL");
+            ctx.attribute("allStatuses", Status.values());
 
-            // Transfer session messages to context attributes and clear them
             consumeFlash(ctx);
             ctx.render("orders.html");
         }
