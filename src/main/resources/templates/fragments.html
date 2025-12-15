@@ -50,8 +50,18 @@
                 <td data-label="Email" th:text="${order.customer.email}"></td>
                 <td data-label="Ordre dato" th:text="${#temporals.format(order.orderDate, 'dd-MM-yyyy HH:mm')}"></td>
                 <td data-label="Leverings dato">
-                    <span th:if="${order.deliveryDate != null}" th:text="${#temporals.format(order.deliveryDate, 'dd-MM-yyyy')}"></span>
-                    <span th:if="${order.deliveryDate == null}">Ikke afsendt</span>
+                        <span th:if="${order.status.name() == 'IN_TRANSIT' or
+                   order.status.name() == 'PAID' or
+                   order.status.name() == 'DONE'}">
+                                <span th:if="${order.deliveryDate != null}"
+                                      th:text="${#temporals.format(order.deliveryDate, 'dd-MM-yyyy')}"></span>
+                                <span th:if="${order.deliveryDate == null}">Ikke sat</span>
+                        </span>
+                    <span th:unless="${order.status.name() == 'IN_TRANSIT' or
+                      order.status.name() == 'PAID' or
+                      order.status.name() == 'DONE'}">
+                     Ikke sat
+                    </span>
                 </td>
                 <td data-label="Total pris">
                     <span th:if="${order.totalPrice <= 0.0}" th:text="'Ikke udregnet'"></span>
