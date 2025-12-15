@@ -53,11 +53,11 @@ public class OrderController
     {
         try
         {
-            List<OrderWithDetailsDTO> newOrders = orderService.getOrdersByStatusDTO(Status.NEW.getDisplayName());
-            List<OrderWithDetailsDTO> pendingOrders = orderService.getOrdersByStatusDTO(Status.PENDING.getDisplayName());
-            List<OrderWithDetailsDTO> paidOrders = orderService.getOrdersByStatusDTO(Status.PAID.getDisplayName());
-            List<OrderWithDetailsDTO> inTransitOrders = orderService.getOrdersByStatusDTO(Status.IN_TRANSIT.getDisplayName());
-            List<OrderWithDetailsDTO> doneOrders = orderService.getOrdersByStatusDTO(Status.DONE.getDisplayName());
+            List<OrderWithDetailsDTO> newOrders = orderService.getOrdersByStatusDTO(Status.NEW);
+            List<OrderWithDetailsDTO> pendingOrders = orderService.getOrdersByStatusDTO(Status.PENDING);
+            List<OrderWithDetailsDTO> paidOrders = orderService.getOrdersByStatusDTO(Status.PAID);
+            List<OrderWithDetailsDTO> inTransitOrders = orderService.getOrdersByStatusDTO(Status.IN_TRANSIT);
+            List<OrderWithDetailsDTO> doneOrders = orderService.getOrdersByStatusDTO(Status.DONE);
 
             ctx.attribute("newOrders", newOrders);
             ctx.attribute("pendingOrders", pendingOrders);
@@ -170,7 +170,7 @@ public class OrderController
             String employeeIdString = ctx.formParam("employeeId");
 
 
-            orderService.updateOrderStatus(orderId, status);
+            orderService.updateOrderStatus(orderId, Status.valueOf(status));
             if (deliveryDate != null)
             {
                 orderService.updateOrderDeliveryDate(orderId, deliveryDate.atStartOfDay().plusHours(12));

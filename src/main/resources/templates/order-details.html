@@ -42,7 +42,7 @@
                 <div class="info-grid" th:if="${editSection != 'order'}">
                     <div class="info-item">
                         <strong>Status:</strong>
-                        <span th:text="${order.status}"></span>
+                        <span th:text="${order.status.displayName}"></span>
                     </div>
                     <div class="info-item">
                         <strong>Ordre Dato:</strong>
@@ -65,13 +65,13 @@
                         <div class="info-item">
                             <label for="status"><strong>Status:</strong></label>
                             <select id="status" name="status">
-                                <option value="NY ORDRE" th:selected="${order.status == 'NY ORDRE'}">NY ORDRE</option>
-                                <option value="AFVENTER ACCEPT" th:selected="${order.status == 'AFVENTER ACCEPT'}">
+                                <option value="NEW" th:selected="${order.status.name() == 'NEW'}">NY ORDRE</option>
+                                <option value="PENDING" th:selected="${order.status.name() == 'PENDING'}">
                                     AFVENTER ACCEPT
                                 </option>
-                                <option value="BETALT" th:selected="${order.status == 'BETALT'}">BETALT</option>
-                                <option value="AFSENDT" th:selected="${order.status == 'AFSENDT'}">AFSENDT</option>
-                                <option value="AFSLUTTET" th:selected="${order.status == 'AFSLUTTET'}">AFSLUTTET
+                                <option value="PAID" th:selected="${order.status.name() == 'PAID'}">BETALT</option>
+                                <option value="IN_TRANSIT" th:selected="${order.status.name() == 'IN_TRANSIT'}">AFSENDT</option>
+                                <option value="DONE" th:selected="${order.status.name() == 'DONE'}">AFSLUTTET
                                 </option>
                             </select>
                         </div>
