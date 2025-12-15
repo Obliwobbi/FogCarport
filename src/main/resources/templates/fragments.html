@@ -26,3 +26,56 @@
         </nav>
     </footer>
 </div>
+
+<!-- Order Fragment -->
+<div th:fragment="orderTable(orders, emptyMessage)">
+    <div th:if="${orders != null and !orders.isEmpty()}" class="orders-table">
+        <table>
+            <thead>
+            <tr>
+                <th>Ordre Id</th>
+                <th>Kunde</th>
+                <th>Email</th>
+                <th>Ordre dato</th>
+                <th>Leverings dato</th>
+                <th>Total pris</th>
+                <th>Status</th>
+                <th>Handlinger</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="order : ${orders}">
+                <td data-label="Ordre Id" th:text="${order.orderId}"></td>
+                <td data-label="Kunde" th:text="${order.customer.firstName + ' ' + order.customer.lastName}"></td>
+                <td data-label="Email" th:text="${order.customer.email}"></td>
+                <td data-label="Ordre dato" th:text="${#temporals.format(order.orderDate, 'dd-MM-yyyy HH:mm')}"></td>
+                <td data-label="Leverings dato">
+                    <span th:if="${order.deliveryDate != null}" th:text="${#temporals.format(order.deliveryDate, 'dd-MM-yyyy')}"></span>
+                    <span th:if="${order.deliveryDate == null}">Ikke afsendt</span>
+                </td>
+                <td data-label="Total pris">
+                    <span th:if="${order.totalPrice <= 0.0}" th:text="'Ikke udregnet'"></span>
+                    <span th:if="${order.totalPrice > 0.0}" th:text="${order.totalPrice + ' kr.'}"></span>
+                </td>
+                <td data-label="Status">
+                    <span class="status" th:text="${order.status.displayName}"></span>
+                </td>
+                <td data-label="Handlinger" class="action-buttons">
+                    <a th:href="@{/orders/details/{id}(id=${order.orderId})}"
+                       class="action-btn view-btn" title="Se detaljer">
+                        <img th:src="@{/images/view-w.svg}" alt="Se detaljer"/>
+                    </a>
+
+                    <form method="post" th:action="@{/orders/delete/{id}(id=${order.orderId})}"
+                          onsubmit="return confirm('Er du sikker på du vil slette ordren?')">
+                        <button type="submit" class="action-btn delete-btn" title="Slet ordre">
+                            <img th:src="@{/images/delete-w.svg}" alt="Slet"/>
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <p th:if="${orders == null or orders.isEmpty()}" th:text="${emptyMessage}"></p>
+</div>
