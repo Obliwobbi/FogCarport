@@ -9,6 +9,7 @@ import app.exceptions.DatabaseException;
 import app.services.EmailService;
 import app.services.OrderDetailsService;
 import app.services.OrderService;
+import app.util.Status;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 import jakarta.mail.MessagingException;
@@ -52,12 +53,11 @@ public class OrderController
     {
         try
         {
-            //TODO ENUMS FOR STATUS
-            List<OrderWithDetailsDTO> newOrders = orderService.getOrdersByStatusDTO("NY ORDRE");
-            List<OrderWithDetailsDTO> pendingOrders = orderService.getOrdersByStatusDTO("AFVENTER ACCEPT");
-            List<OrderWithDetailsDTO> paidOrders = orderService.getOrdersByStatusDTO("BETALT");
-            List<OrderWithDetailsDTO> inTransitOrders = orderService.getOrdersByStatusDTO("AFSENDT");
-            List<OrderWithDetailsDTO> doneOrders = orderService.getOrdersByStatusDTO("AFSLUTTET");
+            List<OrderWithDetailsDTO> newOrders = orderService.getOrdersByStatusDTO(Status.NEW.getDisplayName());
+            List<OrderWithDetailsDTO> pendingOrders = orderService.getOrdersByStatusDTO(Status.PENDING.getDisplayName());
+            List<OrderWithDetailsDTO> paidOrders = orderService.getOrdersByStatusDTO(Status.PAID.getDisplayName());
+            List<OrderWithDetailsDTO> inTransitOrders = orderService.getOrdersByStatusDTO(Status.IN_TRANSIT.getDisplayName());
+            List<OrderWithDetailsDTO> doneOrders = orderService.getOrdersByStatusDTO(Status.DONE.getDisplayName());
 
             ctx.attribute("newOrders", newOrders);
             ctx.attribute("pendingOrders", pendingOrders);
