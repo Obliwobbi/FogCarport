@@ -4,6 +4,7 @@ import app.dto.OrderWithDetailsDTO;
 import app.entities.*;
 import app.exceptions.DatabaseException;
 import app.persistence.*;
+import app.util.Status;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -75,7 +76,7 @@ public class OrderServiceImpl implements OrderService
     }
 
     @Override
-    public void updateOrderStatus(int orderId, String status) throws DatabaseException
+    public void updateOrderStatus(int orderId, Status status) throws DatabaseException
     {
         orderMapper.updateOrderStatus(orderId, status);
     }
@@ -119,15 +120,7 @@ public class OrderServiceImpl implements OrderService
     }
 
     @Override
-    public List<Order> getOrdersByStatus(String status) throws DatabaseException
-    {
-        return orderMapper.getAllOrders().stream()
-                .filter(order -> order.getStatus().equals(status))
-                .sorted(Comparator.comparing(Order::getOrderDate))
-                .collect(Collectors.toList());
-    }
-
-    public List<OrderWithDetailsDTO> getOrdersByStatusDTO(String status) throws DatabaseException
+    public List<OrderWithDetailsDTO> getOrdersByStatusDTO(Status status) throws DatabaseException
     {
         return orderMapper.getAllOrdersByStatus(status);
     }

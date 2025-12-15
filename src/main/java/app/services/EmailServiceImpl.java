@@ -2,10 +2,12 @@ package app.services;
 
 import app.dto.OrderWithDetailsDTO;
 import app.util.GmailEmailSenderHTML;
+import app.util.Status;
 import jakarta.mail.MessagingException;
 
 import java.util.HashMap;
 import java.util.Map;
+
 
 public class EmailServiceImpl implements EmailService
 {
@@ -22,9 +24,11 @@ public class EmailServiceImpl implements EmailService
         int orderId = orderDetails.getOrderId();
         String email = orderDetails.getCustomer().getEmail();
         String subject;
+        boolean hasPaid = Status.PAID.equals(orderDetails.getStatus()) ||
+                Status.IN_TRANSIT.equals(orderDetails.getStatus()) ||
+                Status.DONE.equals(orderDetails.getStatus());
 
-        if ("BETALT".equals(orderDetails.getStatus()) || "AFSENDT".equals(orderDetails.getStatus()) ||
-                "AFSLUTTET".equals(orderDetails.getStatus()))
+        if (hasPaid)
         {
             subject = "Ordre bekræftelse på Fog Carport (Ordre #" + orderId + ")";
         }
@@ -56,7 +60,7 @@ public class EmailServiceImpl implements EmailService
         variables.put("customerAddress", customerAddress);
 
         String orderDate = String.valueOf(orderDetails.getOrderDate().toLocalDate());
-        String status = orderDetails.getStatus();
+        String status = orderDetails.getStatus().getDisplayName();
 
         variables.put("orderId", orderId);
         variables.put("orderDate", orderDate);
@@ -79,15 +83,14 @@ public class EmailServiceImpl implements EmailService
             variables.put("shedDimensions", shedDimensions);
         }
 
-        //TODO ENUMS FOR STATUS
-        boolean hasPaid = "BETALT".equals(orderDetails.getStatus()) ||
-                "AFSENDT".equals(orderDetails.getStatus()) ||
-                "AFSLUTTET".equals(orderDetails.getStatus());
+        boolean hasPaid = Status.PAID.equals(orderDetails.getStatus()) ||
+                Status.IN_TRANSIT.equals(orderDetails.getStatus()) ||
+                Status.DONE.equals(orderDetails.getStatus());
 
         variables.put("hasPaid", hasPaid);
 
         String emailText;
-        if(hasPaid)
+        if (hasPaid)
         {
             emailText = "Tak for din Bestilling på en af vores carporte. Nedenfor finder du detaljerne for din Ordre.";
             variables.put("mailText", emailText);

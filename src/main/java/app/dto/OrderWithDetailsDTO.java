@@ -1,6 +1,7 @@
 package app.dto;
 
 import app.entities.*;
+import app.util.Status;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,7 +15,7 @@ import java.util.List;
 public class OrderWithDetailsDTO {
     private int orderId;
     private LocalDateTime orderDate;
-    private String status;
+    private Status status;
     private LocalDateTime deliveryDate;
     private Drawing drawing;
     private List<MaterialsLine> materialsLines;

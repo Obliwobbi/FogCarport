@@ -9,6 +9,7 @@ import app.exceptions.DatabaseException;
 import app.services.EmailService;
 import app.services.OrderDetailsService;
 import app.services.OrderService;
+import app.util.Status;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 import jakarta.mail.MessagingException;
@@ -52,20 +53,29 @@ public class OrderController
     {
         try
         {
-            //TODO ENUMS FOR STATUS
-            List<OrderWithDetailsDTO> newOrders = orderService.getOrdersByStatusDTO("NY ORDRE");
-            List<OrderWithDetailsDTO> pendingOrders = orderService.getOrdersByStatusDTO("AFVENTER ACCEPT");
-            List<OrderWithDetailsDTO> paidOrders = orderService.getOrdersByStatusDTO("BETALT");
-            List<OrderWithDetailsDTO> inTransitOrders = orderService.getOrdersByStatusDTO("AFSENDT");
-            List<OrderWithDetailsDTO> doneOrders = orderService.getOrdersByStatusDTO("AFSLUTTET");
+            String statusFilter = ctx.queryParam("status");
 
+            List<OrderWithDetailsDTO> newOrders = orderService.getOrdersByStatusDTO(Status.NEW);
+
+            List<OrderWithDetailsDTO> filteredOrders;
+            if (statusFilter != null && !statusFilter.isEmpty() && !statusFilter.equals("ALL"))
+            {
+                filteredOrders = orderService.getOrdersByStatusDTO(Status.valueOf(statusFilter));
+            }
+            else
+            {
+                filteredOrders = new ArrayList<>();
+                filteredOrders.addAll(orderService.getOrdersByStatusDTO(Status.PENDING));
+                filteredOrders.addAll(orderService.getOrdersByStatusDTO(Status.PAID));
+                filteredOrders.addAll(orderService.getOrdersByStatusDTO(Status.IN_TRANSIT));
+                filteredOrders.addAll(orderService.getOrdersByStatusDTO(Status.DONE));
+
+            }
             ctx.attribute("newOrders", newOrders);
-            ctx.attribute("pendingOrders", pendingOrders);
-            ctx.attribute("paidOrders", paidOrders);
-            ctx.attribute("inTransitOrders", inTransitOrders);
-            ctx.attribute("doneOrders", doneOrders);
+            ctx.attribute("filteredOrders", filteredOrders);
+            ctx.attribute("selectedStatus", statusFilter != null ? statusFilter : "ALL");
+            ctx.attribute("allStatuses", Status.values());
 
-            // Transfer session messages to context attributes and clear them
             consumeFlash(ctx);
             ctx.render("orders.html");
         }
@@ -170,7 +180,7 @@ public class OrderController
             String employeeIdString = ctx.formParam("employeeId");
 
 
-            orderService.updateOrderStatus(orderId, status);
+            orderService.updateOrderStatus(orderId, Status.valueOf(status));
             if (deliveryDate != null)
             {
                 orderService.updateOrderDeliveryDate(orderId, deliveryDate.atStartOfDay().plusHours(12));

@@ -3,6 +3,7 @@ package app.persistence;
 import app.dto.OrderWithDetailsDTO;
 import app.entities.Order;
 import app.exceptions.DatabaseException;
+import app.util.Status;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -106,7 +107,7 @@ class OrderMapperTest
                             CREATE TABLE test.orders (
                                 order_id SERIAL PRIMARY KEY,
                                 order_date TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
-                                status VARCHAR(50) NOT NULL DEFAULT 'NY ORDRE',
+                                status VARCHAR(50) NOT NULL DEFAULT 'NEW',
                                 delivery_date TIMESTAMP WITH TIME ZONE DEFAULT (NOW() + INTERVAL '1 year'),
                                 drawing_id INT,
                                 carport_id INT NOT NULL,
@@ -201,9 +202,9 @@ class OrderMapperTest
 
             stmt.execute("""
                         INSERT INTO test.orders (order_id, order_date, status, delivery_date, drawing_id, carport_id, customer_id, total_price, employee_id)
-                        VALUES (1, '2024-01-15 10:30:00', 'AFVENTER ACCEPT', '2024-02-15 10:00:00', 1, 1, 1, 0.00, NULL),
-                               (2, '2024-01-10 14:20:00', 'BETALT', '2024-02-10 12:00:00', 2, 2, 2, 6484.00, 1),
-                               (3, '2024-01-05 09:15:00', 'AFSENDT', '2024-02-01 08:00:00', 3, 3, 3, 8143.00, 2)
+                        VALUES (1, '2024-01-15 10:30:00', 'PENDING', '2024-02-15 10:00:00', 1, 1, 1, 0.00, NULL),
+                               (2, '2024-01-10 14:20:00', 'PAID', '2024-02-10 12:00:00', 2, 2, 2, 6484.00, 1),
+                               (3, '2024-01-05 09:15:00', 'IN_TRANSIT', '2024-02-01 08:00:00', 3, 3, 3, 8143.00, 2)
                     """);
 
             stmt.execute("SELECT setval('test.orders_order_id_seq', 3, true)");
@@ -239,7 +240,7 @@ class OrderMapperTest
 
         assertNotNull(order);
         assertEquals(1, order.getOrderId());
-        assertEquals("AFVENTER ACCEPT", order.getStatus());
+        assertEquals(Status.PENDING, order.getStatus());
         assertEquals(1, order.getCarportId());
         assertEquals(1, order.getCustomerId());
     }
@@ -258,10 +259,10 @@ class OrderMapperTest
     @Test
     void updateOrderStatus() throws DatabaseException
     {
-        assertTrue(orderMapper.updateOrderStatus(1, "BETALT"));
+        assertTrue(orderMapper.updateOrderStatus(1, Status.PAID));
 
         Order updatedOrder = orderMapper.getOrderById(1);
-        assertEquals("BETALT", updatedOrder.getStatus());
+        assertEquals(Status.PAID, updatedOrder.getStatus());
     }
 
     @Test
@@ -284,13 +285,13 @@ class OrderMapperTest
     @Test
     void getAllOrdersByStatus() throws DatabaseException
     {
-        List<OrderWithDetailsDTO> pendingOrders = orderMapper.getAllOrdersByStatus("AFVENTER ACCEPT");
+        List<OrderWithDetailsDTO> pendingOrders = orderMapper.getAllOrdersByStatus(Status.PENDING);
 
         assertEquals(1, pendingOrders.size());
         OrderWithDetailsDTO order = pendingOrders.get(0);
 
         assertEquals(1, order.getOrderId());
-        assertEquals("AFVENTER ACCEPT", order.getStatus());
+        assertEquals(Status.PENDING, order.getStatus());
 
         assertNotNull(order.getCustomer());
         assertEquals("Anders", order.getCustomer().getFirstName());
@@ -309,9 +310,9 @@ class OrderMapperTest
     void getAllOrdersByStatusMultipleResults() throws DatabaseException
     {
         orderMapper.createOrder(2, 2, 2);
-        orderMapper.updateOrderStatus(4, "BETALT");
+        orderMapper.updateOrderStatus(4, Status.PAID);
 
-        List<OrderWithDetailsDTO> approvedOrders = orderMapper.getAllOrdersByStatus("BETALT");
+        List<OrderWithDetailsDTO> approvedOrders = orderMapper.getAllOrdersByStatus(Status.PAID);
 
         assertEquals(2, approvedOrders.size());
     }
@@ -319,7 +320,8 @@ class OrderMapperTest
     @Test
     void getAllOrdersByStatusNoResults() throws DatabaseException
     {
-        List<OrderWithDetailsDTO> orders = orderMapper.getAllOrdersByStatus("IKKE_EKSISTERENDE");
+
+        List<OrderWithDetailsDTO> orders = orderMapper.getAllOrdersByStatus(Status.DONE);
 
         assertTrue(orders.isEmpty());
     }

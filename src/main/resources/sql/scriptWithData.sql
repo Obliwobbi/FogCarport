@@ -77,7 +77,7 @@ CREATE TABLE orders
 (
     order_id      SERIAL PRIMARY KEY,
     order_date    TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
-    status        VARCHAR(50)              NOT NULL DEFAULT 'NY ORDRE',
+    status        VARCHAR(50)              NOT NULL DEFAULT 'NEW',
     delivery_date TIMESTAMP WITH TIME ZONE DEFAULT (NOW() + INTERVAL '1 year'),
     drawing_id    INT,
     carport_id    INT                      NOT NULL,
@@ -193,19 +193,19 @@ VALUES ('SVG drawing data for standard carport 600x780...'),
 INSERT INTO orders (order_date, status, delivery_date, drawing_id, carport_id, customer_id, total_price, employee_id)
 VALUES
     -- NY ORDRE (Order 1)
-    ('2024-01-20 09:00:00', 'NY ORDRE', '2024-02-20 10:00:00', 4, 4, 4, 0.00, NULL),
+    ('2024-01-20 09:00:00', 'NEW', '2024-02-20 10:00:00', 4, 4, 4, 0.00, NULL),
 
     -- AFVENTER ACCEPT (Order 2)
-    ('2024-01-15 10:30:00', 'AFVENTER ACCEPT', '2024-02-15 10:00:00', 1, 1, 1, 0.00, 1),
+    ('2024-01-15 10:30:00', 'PENDING', '2024-02-15 10:00:00', 1, 1, 1, 0.00, 1),
 
     -- BETALT (Order 3)
-    ('2024-01-10 14:20:00', 'BETALT', '2024-02-10 12:00:00', 2, 2, 2, 8143.00, 2),
+    ('2024-01-10 14:20:00', 'PAID', '2024-02-10 12:00:00', 2, 2, 2, 8143.00, 2),
 
     -- AFSENDT (Order 4)
-    ('2024-01-05 09:15:00', 'AFSENDT', '2024-02-01 08:00:00', 3, 3, 3, 8407.00, 2),
+    ('2024-01-05 09:15:00', 'IN_TRANSIT', '2024-02-01 08:00:00', 3, 3, 3, 8407.00, 2),
 
     -- AFSLUTTET (Order 5)
-    ('2023-12-20 11:00:00', 'AFSLUTTET', '2024-01-20 14:00:00', 5, 5, 5, 12269.00, 1);
+    ('2023-12-20 11:00:00', 'DONE', '2024-01-20 14:00:00', 5, 5, 5, 12269.00, 1);
 
 INSERT INTO materials_lines (order_id, material_id, material_name, unit_type, quantity, unit_price, line_price)
 VALUES

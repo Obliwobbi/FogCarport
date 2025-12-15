@@ -3,6 +3,7 @@ package app.persistence;
 import app.dto.OrderWithDetailsDTO;
 import app.entities.*;
 import app.exceptions.DatabaseException;
+import app.util.Status;
 
 import java.sql.*;
 import java.time.LocalDateTime;
@@ -84,7 +85,7 @@ public class OrderMapper
                     List<MaterialsLine> materialsLines = materialsLinesMapper.getMaterialLinesByOrderId(orderId);
                     return new Order(orderId,
                             rs.getTimestamp("order_date").toLocalDateTime(),
-                            rs.getString("status"),
+                            Status.valueOf(rs.getString("status")),
                             rs.getTimestamp("delivery_date").toLocalDateTime(),
                             rs.getInt("drawing_id"),
                             rs.getInt("carport_id"),
@@ -120,7 +121,7 @@ public class OrderMapper
                     Order order = new Order(
                             orderId,
                             rs.getTimestamp("order_date").toLocalDateTime(),
-                            rs.getString("status"),
+                            Status.valueOf(rs.getString("status")),
                             rs.getTimestamp("delivery_date").toLocalDateTime(),
                             rs.getInt("drawing_id"),
                             rs.getInt("carport_id"),
@@ -139,14 +140,14 @@ public class OrderMapper
         return orders;
     }
 
-    public boolean updateOrderStatus(int orderId, String status) throws DatabaseException
+    public boolean updateOrderStatus(int orderId, Status status) throws DatabaseException
     {
         String sql = "UPDATE orders SET status = ? WHERE order_id = ?";
 
         try (Connection connection = connectionPool.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql))
         {
-            ps.setString(1, status);
+            ps.setString(1, status.name());
             ps.setInt(2, orderId);
 
             int rowsAffected = ps.executeUpdate();
@@ -280,7 +281,7 @@ public class OrderMapper
         return false;
     }
 
-    public List<OrderWithDetailsDTO> getAllOrdersByStatus(String status) throws DatabaseException
+    public List<OrderWithDetailsDTO> getAllOrdersByStatus(Status status) throws DatabaseException
     {
         String sql = """
                 SELECT
@@ -306,7 +307,7 @@ public class OrderMapper
              PreparedStatement ps = connection.prepareStatement(sql))
         {
 
-            ps.setString(1, status);
+            ps.setString(1, status.name());
 
             try (ResultSet rs = ps.executeQuery())
             {
@@ -379,7 +380,7 @@ public class OrderMapper
                     orders.add(new OrderWithDetailsDTO(
                             orderId,
                             rs.getTimestamp("order_date").toLocalDateTime(),
-                            rs.getString("status"),
+                            Status.valueOf(rs.getString("status")),
                             rs.getTimestamp("delivery_date").toLocalDateTime(),
                             drawing,
                             materialLines,
