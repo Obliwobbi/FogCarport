@@ -22,7 +22,7 @@ public class EmployeeMapper
 
     public Employee getEmployeeById(int employeeId) throws DatabaseException
     {
-        String sql = "SELECT * FROM employees WHERE employee_id = ?";
+        String sql = "SELECT employee_id, name, email, phone FROM employees WHERE employee_id = ?";
 
         try (Connection connection = connectionPool.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql))
@@ -48,7 +48,7 @@ public class EmployeeMapper
 
     public List<Employee> getAllEmployees() throws DatabaseException
     {
-        String sql = "SELECT * FROM employees ORDER BY name";
+        String sql = "SELECT employee_id, name, email, phone FROM employees ORDER BY name";
         List<Employee> employees = new ArrayList<>();
 
         try (Connection connection = connectionPool.getConnection();
