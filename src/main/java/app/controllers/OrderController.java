@@ -42,6 +42,7 @@ public class OrderController
         app.post("/orders/details/{id}/update-customer", this::updateCustomerInfo);
         app.post("/orders/details/{id}/update-carport", this::updateCarportInfo);
         app.post("/orders/details/{id}/update-prices", this::updateMaterialPrices);
+        app.post("/orders/details/{id}/update-total-price", this::setTotalOrderPrice);
 
         app.post("/orders/details/{id}/stykliste", this::generateMaterialList);
         app.post("/orders/details/{id}/regenerate-stykliste", this::regenerateMaterialList);
@@ -112,6 +113,10 @@ public class OrderController
             else if ("prices".equals(success))
             {
                 ctx.attribute("successMessage", "Priser opdateret");
+            }
+            else if ("totalPrice".equals(success))
+            {
+                ctx.attribute("successMessage", "Total pris blev opdateret");
             }
 
             if ("email".equals(error))
@@ -277,8 +282,36 @@ public class OrderController
                     }
                 }
             }
-            orderService.updateOrderTotalPrice(orderId);
+            orderService.setOrderTotalPrice(orderId);
             ctx.redirect("/orders/details/" + orderId + "?success=prices");
+        }
+        catch (DatabaseException e)
+        {
+            ctx.redirect("/orders/details/" + orderId + "?error=" + e.getMessage());
+        }
+    }
+
+    private void setTotalOrderPrice(Context ctx)
+    {
+        int orderId = Integer.parseInt(ctx.pathParam("id"));
+
+        try
+        {
+            String totalPriceString = ctx.formParam("totalPrice");
+            if (totalPriceString == null || totalPriceString.isEmpty())
+            {
+                ctx.redirect("/orders/details/" + orderId + "?error=Ingen pris angivet");
+                return;
+            }
+
+            double totalPrice = Double.parseDouble(totalPriceString);
+            orderService.setOrderTotalPrice(orderId, totalPrice);
+            ctx.redirect("/orders/details/" + orderId + "?success=totalPrice");
+
+        }
+        catch (NumberFormatException e)
+        {
+            ctx.redirect("/orders/details/" + orderId + "?error=Ugyldig pris format");
         }
         catch (DatabaseException e)
         {

@@ -46,7 +46,8 @@ public class OrderServiceImpl implements OrderService
                 materialsLines,
                 carport,
                 customer,
-                employee);
+                employee,
+                order.getAdjustedTotalPrice());
     }
 
     @Override
@@ -115,6 +116,12 @@ public class OrderServiceImpl implements OrderService
     public void updateOrderTotalPrice(int orderId) throws DatabaseException
     {
         double totalPrice = getOrderwithDetails(orderId).getTotalPrice();
+        orderMapper.updateOrderTotalPrice(orderId, totalPrice);
+    }
+
+    @Override
+    public void setOrderTotalPrice(int orderId, double totalPrice) throws DatabaseException
+    {
         orderMapper.updateOrderTotalPrice(orderId, totalPrice);
     }
 

@@ -347,6 +347,12 @@
                 <div class="section-header">
                     <h2>Stykliste</h2>
                     <div th:if="${hasMaterialsList}" class="section-header-actions">
+                        <a th:if="${editSection != 'totalPrice'}"
+                           th:href="@{/orders/details/{id}(id=${order.orderId}, edit='totalPrice')}"
+                           class="edit-button">Rediger Samlet Pris</a>
+                        <a th:if="${editSection == 'totalPrice'}"
+                           th:href="@{/orders/details/{id}(id=${order.orderId})}"
+                           class="edit-button cancel-button">Annuller</a>
                         <a th:if="${editSection != 'materials'}"
                            th:href="@{/orders/details/{id}(id=${order.orderId}, edit='materials')}"
                            class="edit-button">Rediger Priser</a>
@@ -394,11 +400,21 @@
                             </tr>
                             </tbody>
                             <tfoot>
-                            <tr class="total-row">
+                            <tr class="total-row" th:if="${editSection != 'totalPrice'}">
                                 <td colspan="4">Total Pris:</td>
                                 <td th:text="${#numbers.formatDecimal(order.totalPrice, 1, 2) + ' kr.'}">0,00 kr.</td>
                             </tr>
+                            <tr class="total-row" th:if="${editSection == 'totalPrice'}">
+                                <td colspan="4">Total Pris:</td>
+                                <td>
+                                    <form method="post" th:action="@{/orders/details/{id}/update-total-price(id=${order.orderId})}" class="inline-form">
+                                        <input type="number" step="0.01" min="0" name="totalPrice" th:value="${order.totalPrice}" class="price-input"/>
+                                        <button type="submit" class="button save-button" style="margin-left: 10px;">Gem</button>
+                                    </form>
+                                </td>
+                            </tr>
                             </tfoot>
+
                         </table>
                         <form class="offer-buttons" method="post" th:action="@{/orders/send-offer/{id}(id=${order.orderId})}"
                               onsubmit="return confirm('Er du sikker på du vil sende tilbud på ordren?')">

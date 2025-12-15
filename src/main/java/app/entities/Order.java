@@ -19,6 +19,7 @@ public class Order
     private List<MaterialsLine> materialLines;
     private int customerId;
     private int employeeId;
+    private double adjustedTotalPrice;
 
     public Order(int drawingId, int carportId, int customerId)
     {

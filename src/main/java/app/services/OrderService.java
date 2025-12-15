@@ -31,6 +31,8 @@ public interface OrderService
 
     void updateOrderTotalPrice(int orderId) throws DatabaseException;
 
+    void setOrderTotalPrice(int orderId, double totalPrice) throws DatabaseException;
+
     List<Order> getOrdersByStatus(String status) throws DatabaseException;
 
     List<OrderWithDetailsDTO> getOrdersByStatusDTO(String status) throws DatabaseException;

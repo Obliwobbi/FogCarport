@@ -90,7 +90,9 @@ public class OrderMapper
                             rs.getInt("carport_id"),
                             materialsLines,
                             rs.getInt("customer_id"),
-                            rs.getInt("employee_id"));
+                            rs.getInt("employee_id"),
+                            rs.getDouble("adjusted_total_price")
+                            );
                 }
             }
             throw new DatabaseException("Der blev ikke fundet en ordre med id: " + orderId);
@@ -126,7 +128,8 @@ public class OrderMapper
                             rs.getInt("carport_id"),
                             materialsLines,
                             rs.getInt("customer_id"),
-                            rs.getInt("employee_id"));
+                            rs.getInt("employee_id"),
+                            rs.getDouble("adjusted_total_price"));
 
                     orders.add(order);
                 }
@@ -193,7 +196,7 @@ public class OrderMapper
 
     public void updateOrderTotalPrice(int orderId, double totalPrice) throws DatabaseException
     {
-        String sql = "UPDATE orders SET total_price = ? WHERE order_id = ?";
+        String sql = "UPDATE orders SET adjusted_total_price = ? WHERE order_id = ?";
 
         try (Connection connection = connectionPool.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql))
@@ -284,7 +287,7 @@ public class OrderMapper
     {
         String sql = """
                 SELECT
-                    o.order_id, o.order_date, o.status, o.delivery_date, o.employee_id,
+                    o.order_id, o.order_date, o.status, o.delivery_date, o.employee_id, o.adjusted_total_price,
                     c.carport_id, c.width, c.length, c.height, c.with_shed,
                     c.shed_width, c.shed_length, c.customer_wishes,
                     cu.customer_id, cu.firstname, cu.lastname, cu.email, cu.phone,
@@ -385,7 +388,8 @@ public class OrderMapper
                             materialLines,
                             carport,
                             customer,
-                            employee
+                            employee,
+                            rs.getDouble("adjusted_total_price")
                     ));
                 }
             }

@@ -21,8 +21,15 @@ public class OrderWithDetailsDTO {
     private Carport carport;
     private Customer customer;
     private Employee employee;
+    private Double adjustedTotalPrice;
 
     public double getTotalPrice() {
+
+        if(adjustedTotalPrice != null && adjustedTotalPrice > 0)
+        {
+            return adjustedTotalPrice;
+        }
+
         if (materialsLines == null || materialsLines.isEmpty()) {
             return 0.0;
         }
