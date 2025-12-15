@@ -281,7 +281,7 @@ public class OrderMapper
         return false;
     }
 
-    public List<OrderWithDetailsDTO> getAllOrdersByStatus(String status) throws DatabaseException
+    public List<OrderWithDetailsDTO> getAllOrdersByStatus(Status status) throws DatabaseException
     {
         String sql = """
                 SELECT
@@ -307,7 +307,7 @@ public class OrderMapper
              PreparedStatement ps = connection.prepareStatement(sql))
         {
 
-            ps.setString(1, status);
+            ps.setString(1, status.name());
 
             try (ResultSet rs = ps.executeQuery())
             {
