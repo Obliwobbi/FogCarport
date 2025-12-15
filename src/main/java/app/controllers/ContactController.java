@@ -164,7 +164,7 @@ public class ContactController
         }
         catch (DatabaseException e)
         {
-            //TODO Should probably be logged
+            //TODO Should be logged
             System.err.println("Cleanup failed: " + e.getMessage());
         }
     }

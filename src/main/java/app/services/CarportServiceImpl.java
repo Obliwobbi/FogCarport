@@ -81,6 +81,8 @@ public class CarportServiceImpl implements CarportService
         // Check if space BESIDE shed can fit 240x240
         boolean hasSpaceBeside = remainingCarportWidth >= minCarSpace && carportLength >= minCarSpace;
 
+
+        //TODO Bedre fejlbesked/Mere konkret information om hvad fejlen er.
         if (!hasSpaceInFront && !hasSpaceBeside)
         {
             throw new IllegalArgumentException("Der er ikke plads til bilen med nuværende skur mål. Minimum 240x240 cm til carport.");
