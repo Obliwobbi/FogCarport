@@ -56,14 +56,11 @@ public class EmailServiceImpl implements EmailService
         variables.put("customerPhone", customerPhone);
         variables.put("customerAddress", customerAddress);
 
-
         String orderDate = String.valueOf(orderDetails.getOrderDate().toLocalDate());
         String status = orderDetails.getStatus();
-        String deliveryDate = String.valueOf(orderDetails.getDeliveryDate().toLocalDate());
 
         variables.put("orderId", orderId);
         variables.put("orderDate", orderDate);
-        variables.put("deliveryDate", deliveryDate);
         variables.put("status", status);
 
         String carportWidth = String.valueOf(orderDetails.getCarport().getWidth());
@@ -94,6 +91,9 @@ public class EmailServiceImpl implements EmailService
         {
             emailText = "Tak for din Bestilling på en af vores carporte. Nedenfor finder du detaljerne for din Ordre.";
             variables.put("mailText", emailText);
+
+            String deliveryDate = String.valueOf(orderDetails.getDeliveryDate().toLocalDate());
+            variables.put("deliveryDate", deliveryDate);
         }
         else
         {
@@ -108,7 +108,6 @@ public class EmailServiceImpl implements EmailService
 
         String totalPrice = String.valueOf(orderDetails.getTotalPrice());
         variables.put("totalPrice", totalPrice);
-
 
         return variables;
     }
