@@ -55,6 +55,29 @@ public class OrderController
         app.post("/orders/send-offer/{id}", this::sendOffer);
     }
 
+    private void showLogin(Context ctx)
+    {
+        ctx.render("login");
+    }
+
+    private void authenticateLogin(Context ctx)
+    {
+        String email = ctx.formParam("email");
+        String password = ctx.formParam("password");
+
+        try
+        {
+            Employee employee = employeeService.authenticateEmployee(email, password);
+            ctx.sessionAttribute("currentEmployee", employee);
+            ctx.redirect("/orders");
+        }
+        catch (DatabaseException e)
+        {
+            flashError(ctx, "Forkert email eller password");
+            ctx.render("login");
+        }
+    }
+
     private void showOrders(Context ctx)
     {
         try
