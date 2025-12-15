@@ -15,6 +15,7 @@ public class Employee {
     private int employeeId;
     private String name;
     private String email;
+    private String password;
     private String phone;
 }
 
