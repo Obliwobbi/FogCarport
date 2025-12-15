@@ -9,7 +9,6 @@ import java.util.Map;
 
 public class EmailServiceImpl implements EmailService
 {
-    private EmailService emailService;
     GmailEmailSenderHTML sender;
 
     public EmailServiceImpl()
