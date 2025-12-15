@@ -12,7 +12,6 @@ import app.services.OrderService;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 import jakarta.mail.MessagingException;
-import org.jetbrains.annotations.NotNull;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -64,7 +63,6 @@ public class OrderController
             ctx.attribute("errorMessage", e.getMessage());
             ctx.redirect("/orders/details/" + orderId + "?error=" + e.getMessage());
         }
-
     }
 
     private void showOrderDetails(Context ctx)
@@ -93,6 +91,8 @@ public class OrderController
             ctx.attribute("hasMaterialsList", materialsLines != null && !materialsLines.isEmpty());
             ctx.attribute("editSection", editSection);
 
+
+            //TODO refactor hvordan error message bliver vist, så det er konsekvent med resten af koden
             if ("email".equals(success))
             {
                 ctx.attribute("successMessage", "Tilbuddet blev sendt til kunden!");
@@ -173,6 +173,7 @@ public class OrderController
         }
     }
 
+    //TODO move service actions to service layer and validate input
     private void updateCustomerInfo(Context ctx)
     {
         int orderId = Integer.parseInt(ctx.pathParam("id"));
@@ -202,6 +203,8 @@ public class OrderController
         }
     }
 
+
+    //TODO move service actions to service layer and validate input
     private void updateCarportInfo(Context ctx)
     {
         int orderId = Integer.parseInt(ctx.pathParam("id"));
@@ -336,6 +339,7 @@ public class OrderController
     {
         try
         {
+            //TODO ENUMS FOR STATUS
             List<OrderWithDetailsDTO> newOrders = orderService.getOrdersByStatusDTO("NY ORDRE");
             List<OrderWithDetailsDTO> pendingOrders = orderService.getOrdersByStatusDTO("AFVENTER ACCEPT");
             List<OrderWithDetailsDTO> paidOrders = orderService.getOrdersByStatusDTO("BETALT");

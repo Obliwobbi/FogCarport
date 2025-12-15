@@ -79,6 +79,7 @@ public class EmailServiceImpl implements EmailService
             variables.put("shedDimensions", shedDimensions);
         }
 
+        //TODO ENUMS FOR STATUS
         boolean hasPaid = "BETALT".equals(orderDetails.getStatus()) ||
                 "AFSENDT".equals(orderDetails.getStatus()) ||
                 "AFSLUTTET".equals(orderDetails.getStatus());
