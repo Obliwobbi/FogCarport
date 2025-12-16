@@ -4,6 +4,7 @@ import app.dto.OrderWithDetailsDTO;
 import app.entities.*;
 import app.exceptions.DatabaseException;
 import app.util.Status;
+import io.javalin.http.Context;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -33,5 +34,7 @@ public interface OrderService
     void updateOrderTotalPrice(int orderId) throws DatabaseException;
 
     List<OrderWithDetailsDTO> getOrdersByStatusDTO(Status status) throws DatabaseException;
+
+    boolean requireEmployee(Context ctx);
 }
 

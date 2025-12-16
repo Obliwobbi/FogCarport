@@ -5,6 +5,7 @@ import app.entities.*;
 import app.exceptions.DatabaseException;
 import app.persistence.*;
 import app.util.Status;
+import io.javalin.http.Context;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -123,6 +124,17 @@ public class OrderServiceImpl implements OrderService
     public List<OrderWithDetailsDTO> getOrdersByStatusDTO(Status status) throws DatabaseException
     {
         return orderMapper.getAllOrdersByStatus(status);
+    }
+
+    @Override
+    public boolean requireEmployee(Context ctx)
+    {
+        if (ctx.sessionAttribute("currentEmployee") == null)
+        {
+            ctx.redirect("/");
+            return false;
+        }
+        return true;
     }
 }
 
