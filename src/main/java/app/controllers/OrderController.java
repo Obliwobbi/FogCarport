@@ -6,10 +6,8 @@ import app.entities.Customer;
 import app.entities.Employee;
 import app.entities.MaterialsLine;
 import app.exceptions.DatabaseException;
-import app.services.EmailService;
-import app.services.EmployeeService;
-import app.services.OrderDetailsService;
-import app.services.OrderService;
+import app.services.*;
+import app.util.Constants;
 import app.util.Status;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
@@ -25,13 +23,15 @@ public class OrderController
     private final OrderDetailsService orderDetailsService;
     private final EmailService emailService;
     private final EmployeeService employeeService;
+    private final CarportService carportService;
 
-    public OrderController(OrderService orderService, OrderDetailsService orderDetailsService, EmailService emailService, EmployeeService employeeService)
+    public OrderController(OrderService orderService, OrderDetailsService orderDetailsService, EmailService emailService, EmployeeService employeeService, CarportService carportService)
     {
         this.orderService = orderService;
         this.orderDetailsService = orderDetailsService;
         this.emailService = emailService;
         this.employeeService = employeeService;
+        this.carportService = carportService;
     }
 
     public void addRoutes(Javalin app)
@@ -265,45 +265,25 @@ public class OrderController
         }
     }
 
-    //TODO move service actions to service layer and validate input
     private void updateCarportInfo(Context ctx)
     {
         int orderId = Integer.parseInt(ctx.pathParam("id"));
         try
         {
             OrderWithDetailsDTO order = orderService.getOrderwithDetails(orderId);
-            Carport carport = order.getCarport();
 
-            double carportWidth = Double.parseDouble(ctx.formParam("width"));
-            double carportLength = Double.parseDouble(ctx.formParam("length"));
-            double carportHeight = Double.parseDouble(ctx.formParam("height"));
-            boolean withShed = Boolean.parseBoolean(ctx.formParam("withShed"));
+            Carport validatedCarport = carportService.validateAndBuildCarport(
+                    order.getCarport(),
+                    Double.parseDouble(ctx.formParam("width")),
+                    Double.parseDouble(ctx.formParam("length")),
+                    Double.parseDouble(ctx.formParam("height")),
+                    ctx.formParam("withShed") != null,
+                    carportService.parseDouble(ctx.formParam("shedWidth")),
+                    carportService.parseDouble(ctx.formParam("shedLength")),
+                    ctx.formParam("customerWishes")
+            );
 
-            Integer shedWidth = null;
-            Integer shedLength = null;
-            if (withShed)
-            {
-                String shedWidthString = ctx.formParam("shedWidth");
-                String shedLengthString = ctx.formParam("shedLength");
-                shedWidth = (shedWidthString != null && !shedWidthString.isEmpty())
-                        ? Integer.parseInt(shedWidthString) : null;
-                shedLength = (shedLengthString != null && !shedLengthString.isEmpty())
-                        ? Integer.parseInt(shedLengthString) : null;
-            }
-            String customerWishes = ctx.formParam("customerWishes");
-
-            carport.setWidth(carportWidth);
-            carport.setLength(carportLength);
-            carport.setHeight(carportHeight);
-            carport.setWithShed(withShed);
-            if (carport.isWithShed())
-            {
-                carport.setShedWidth(shedWidth);
-                carport.setShedLength(shedLength);
-            }
-            carport.setCustomerWishes(customerWishes);
-
-            orderService.updateCarport(carport);
+            carportService.updateCarport(validatedCarport);
             flashSuccess(ctx, "Carport information blev opdateret");
             ctx.redirect("/orders/details/" + orderId);
         }
@@ -312,7 +292,13 @@ public class OrderController
             flashError(ctx, "Kunne ikke opdatere carport information. Prøv igen senere.");
             ctx.redirect("/orders/details/" + orderId);
         }
+        catch (IllegalArgumentException e)
+        {
+            flashError(ctx, e.getMessage());
+            ctx.redirect("/orders/details/" + orderId);
+        }
     }
+
 
     private void updateMaterialPrices(Context ctx)
     {
