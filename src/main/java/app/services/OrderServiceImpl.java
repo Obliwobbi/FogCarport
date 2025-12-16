@@ -84,7 +84,7 @@ public class OrderServiceImpl implements OrderService
     @Override
     public void updateOrderEmployee(int orderId, int employeeId) throws DatabaseException
     {
-        if(employeeId != 0)
+        if (employeeId != 0)
         {
             orderMapper.updateOrderEmployee(orderId, employeeId);
         }

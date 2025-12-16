@@ -13,9 +13,7 @@ public interface CarportService
 
     void updateCarport(Carport carport) throws DatabaseException;
 
-    Carport validateAndBuildCarport(Carport existing, double width, double length, double height,
-                                    boolean withShed, Double shedWidth, Double shedLength,
-                                    String customerWishes);
+    Carport validateAndBuildCarport(Carport carport, double width, double length, double height, boolean withShed, Double shedWidth, Double shedLength, String customerWishes);
 
     Double parseDouble(String value);
 }

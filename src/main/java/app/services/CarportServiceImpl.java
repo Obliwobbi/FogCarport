@@ -42,9 +42,7 @@ public class CarportServiceImpl implements CarportService
     }
 
     @Override
-    public Carport validateAndBuildCarport(Carport carport, double width, double length, double height,
-                                           boolean withShed, Double shedWidth, Double shedLength,
-                                           String customerWishes)
+    public Carport validateAndBuildCarport(Carport carport, double width, double length, double height, boolean withShed, Double shedWidth, Double shedLength, String customerWishes)
     {
         //validate carport dimensions
         double validatedWidth = validateMeasurementInput(width, Constants.MIN_CARPORT_WIDTH, Constants.MAX_CARPORT_WIDTH);
@@ -115,7 +113,7 @@ public class CarportServiceImpl implements CarportService
         }
     }
 
-    private boolean validateShedTotalSize(double carportLength, double carportWidth, double shedLength, double shedWidth)
+    private void validateShedTotalSize(double carportLength, double carportWidth, double shedLength, double shedWidth)
     {
         double usableCarportWidth = (carportWidth >= SMALL_MEDIUM_CARPORT) ? carportWidth - OVERHANG_LARGE : carportWidth - OVERHANG_SMALL;
 
@@ -153,7 +151,6 @@ public class CarportServiceImpl implements CarportService
 
             throw new IllegalArgumentException(message);
         }
-        return true;
     }
 
     private double validateMeasurementInput(double input, double min, double max)

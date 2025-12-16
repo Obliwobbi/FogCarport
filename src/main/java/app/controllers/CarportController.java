@@ -29,8 +29,7 @@ public class CarportController
     {
         try
         {
-            Carport validatedCarport = carportService.validateAndBuildCarport(
-                    null, // Creating new Carport
+            Carport validatedCarport = carportService.validateAndBuildCarport(null,
                     Double.parseDouble(ctx.formParam("carportWidth")),
                     Double.parseDouble(ctx.formParam("carportLength")),
                     Double.parseDouble(ctx.formParam("carportHeight")),
