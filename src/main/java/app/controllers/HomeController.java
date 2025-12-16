@@ -27,5 +27,6 @@ public class HomeController
         ctx.sessionAttribute("successOrderId", null);
         ctx.sessionAttribute("successCustomer", null);
         ctx.sessionAttribute("successCarport", null);
+        ctx.sessionAttribute("currentEmployee",null);
     }
 }
