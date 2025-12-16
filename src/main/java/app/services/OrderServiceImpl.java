@@ -14,14 +14,11 @@ public class OrderServiceImpl implements OrderService
 {
     private OrderMapper orderMapper;
     private CustomerMapper customerMapper;
-    private EmployeeMapper employeeMapper;
 
-
-    public OrderServiceImpl(OrderMapper orderMapper, CustomerMapper customerMapper, EmployeeMapper employeeMapper)
+    public OrderServiceImpl(OrderMapper orderMapper, CustomerMapper customerMapper)
     {
         this.orderMapper = orderMapper;
         this.customerMapper = customerMapper;
-        this.employeeMapper = employeeMapper;
 
     }
 
@@ -50,11 +47,6 @@ public class OrderServiceImpl implements OrderService
         return orderMapper.deleteOrder(orderId);
     }
 
-    @Override
-    public List<Employee> getAllEmployees() throws DatabaseException
-    {
-        return employeeMapper.getAllEmployees();
-    }
 
     @Override
     public void updateOrderStatus(int orderId, Status status) throws DatabaseException

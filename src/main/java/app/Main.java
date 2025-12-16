@@ -48,7 +48,7 @@ public class Main
         CustomerService customerService = new CustomerServiceImpl(customerMapper);
         EmployeeService employeeService = new EmployeeServiceImpl(employeeMapper);
         OrderDetailsService orderDetailsService = new OrderDetailsServiceImpl(calculatorService, materialsLinesMapper, materialMapper);
-        OrderService orderService = new OrderServiceImpl(orderMapper, customerMapper, employeeMapper);
+        OrderService orderService = new OrderServiceImpl(orderMapper, customerMapper);
         EmailService emailService = new EmailServiceImpl();
 
         HomeController homeController = new HomeController();

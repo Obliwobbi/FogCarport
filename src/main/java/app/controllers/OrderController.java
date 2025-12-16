@@ -138,7 +138,7 @@ public class OrderController
                 return;
             }
             List<MaterialsLine> materialsLines = order.getMaterialsLines();
-            List<Employee> employees = orderService.getAllEmployees();
+            List<Employee> employees = employeeService.getAllEmployees();
 
             ctx.attribute("order", order);
             ctx.attribute("employees", employees);
