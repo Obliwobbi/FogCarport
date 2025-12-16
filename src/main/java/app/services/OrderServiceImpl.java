@@ -12,14 +12,11 @@ import java.util.stream.Collectors;
 
 public class OrderServiceImpl implements OrderService
 {
-    private OrderMapper orderMapper;
-    private CustomerMapper customerMapper;
+    private final OrderMapper orderMapper;
 
-    public OrderServiceImpl(OrderMapper orderMapper, CustomerMapper customerMapper)
+    public OrderServiceImpl(OrderMapper orderMapper)
     {
         this.orderMapper = orderMapper;
-        this.customerMapper = customerMapper;
-
     }
 
  @Override
@@ -71,12 +68,6 @@ public class OrderServiceImpl implements OrderService
     public void updateOrderDeliveryDate(int orderId, LocalDateTime deliveryDate) throws DatabaseException
     {
         orderMapper.updateOrderDeliveryDate(orderId, deliveryDate);
-    }
-
-    @Override
-    public void updateCustomerInfo(Customer customer) throws DatabaseException
-    {
-        customerMapper.updateCustomerInfo(customer);
     }
 
     @Override

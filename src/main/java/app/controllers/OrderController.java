@@ -24,14 +24,16 @@ public class OrderController
     private final EmailService emailService;
     private final EmployeeService employeeService;
     private final CarportService carportService;
+    private final CustomerService customerService;
 
-    public OrderController(OrderService orderService, OrderDetailsService orderDetailsService, EmailService emailService, EmployeeService employeeService, CarportService carportService)
+    public OrderController(OrderService orderService, OrderDetailsService orderDetailsService, EmailService emailService, EmployeeService employeeService, CarportService carportService, CustomerService customerService)
     {
         this.orderService = orderService;
         this.orderDetailsService = orderDetailsService;
         this.emailService = emailService;
         this.employeeService = employeeService;
         this.carportService = carportService;
+        this.customerService = customerService;
     }
 
     public void addRoutes(Javalin app)
@@ -253,7 +255,7 @@ public class OrderController
             customer.setZipcode(Integer.parseInt(ctx.formParam("zipcode")));
             customer.setCity(ctx.formParam("city"));
 
-            orderService.updateCustomerInfo(customer);
+            customerService.updateCustomerInfo(customer);
             flashSuccess(ctx, "Kunde information blev opdateret");
             ctx.redirect("/orders/details/" + orderId);
 

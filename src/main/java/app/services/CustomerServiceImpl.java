@@ -6,8 +6,7 @@ import app.persistence.CustomerMapper;
 
 public class CustomerServiceImpl implements CustomerService
 {
-
-    private CustomerMapper customerMapper;
+    private final CustomerMapper customerMapper;
 
     public CustomerServiceImpl(CustomerMapper customerMapper)
     {
@@ -32,27 +31,9 @@ public class CustomerServiceImpl implements CustomerService
     }
 
     @Override
-    public Customer findCustomerByName(String name)
+    public void updateCustomerInfo(Customer customer) throws DatabaseException
     {
-        return null;
-    }
-
-    @Override
-    public Customer findCustomerById(int id) throws DatabaseException
-    {
-        return customerMapper.getCustomerByID(id);
-    }
-
-    @Override
-    public Customer findCustomerByEmail(String email)
-    {
-        return null;
-    }
-
-    @Override
-    public Customer findCustomerByPhone(String phone)
-    {
-        return null;
+        customerMapper.updateCustomerInfo(customer);
     }
 
     @Override

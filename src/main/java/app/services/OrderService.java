@@ -24,8 +24,6 @@ public interface OrderService
 
     void updateOrderDeliveryDate(int orderId, LocalDateTime deliveryDate) throws DatabaseException;
 
-    void updateCustomerInfo(Customer customer) throws DatabaseException;
-
     void updateOrderTotalPrice(int orderId) throws DatabaseException;
 
     List<OrderWithDetailsDTO> getOrdersByStatusDTO(Status status) throws DatabaseException;
