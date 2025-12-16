@@ -7,10 +7,8 @@ import app.util.Constants;
 
 public class CarportServiceImpl implements CarportService
 {
-    private CarportMapper carportMapper;
-    double SMALL_MEDIUM_CARPORT = 330;
-    double OVERHANG_SMALL = 30;
-    double OVERHANG_LARGE = 70;
+    private final CarportMapper carportMapper;
+    double smallMediumThreshold = 330;
 
     public CarportServiceImpl(CarportMapper carportMapper)
     {
@@ -96,8 +94,8 @@ public class CarportServiceImpl implements CarportService
         double deadZone = 40;
 
         //creates dead zone so if a shed is to close to the edge it resizes shed to match carport width
-        double maxShedSize = (carportMeasurement <= SMALL_MEDIUM_CARPORT) ? carportMeasurement - OVERHANG_SMALL : carportMeasurement - (OVERHANG_SMALL + deadZone);
-        double minShedSize = (carportMeasurement <= SMALL_MEDIUM_CARPORT) ? carportMeasurement - OVERHANG_LARGE : carportMeasurement - (OVERHANG_LARGE + deadZone);
+        double maxShedSize = (carportMeasurement <= smallMediumThreshold) ? carportMeasurement - Constants.OVERHANG_SMALL : carportMeasurement - (Constants.OVERHANG_SMALL + deadZone);
+        double minShedSize = (carportMeasurement <= smallMediumThreshold) ? carportMeasurement - Constants.OVERHANG_LARGE : carportMeasurement - (Constants.OVERHANG_LARGE + deadZone);
 
         if (shedMeasurement > maxShedSize)
         {
@@ -115,7 +113,7 @@ public class CarportServiceImpl implements CarportService
 
     private void validateShedTotalSize(double carportLength, double carportWidth, double shedLength, double shedWidth)
     {
-        double usableCarportWidth = (carportWidth >= SMALL_MEDIUM_CARPORT) ? carportWidth - OVERHANG_LARGE : carportWidth - OVERHANG_SMALL;
+        double usableCarportWidth = (carportWidth >= smallMediumThreshold) ? carportWidth - Constants.OVERHANG_LARGE : carportWidth - Constants.OVERHANG_SMALL;
 
         double remainingCarportLength = carportLength - shedLength;
         double remainingCarportWidth = usableCarportWidth - shedWidth;
