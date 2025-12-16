@@ -107,12 +107,6 @@ public class OrderServiceImpl implements OrderService
     }
 
     @Override
-    public void updateCarport(Carport carport) throws DatabaseException
-    {
-        carportMapper.updateCarport(carport);
-    }
-
-    @Override
     public void updateOrderTotalPrice(int orderId) throws DatabaseException
     {
         double totalPrice = getOrderwithDetails(orderId).getTotalPrice();

@@ -28,8 +28,6 @@ public interface OrderService
 
     void updateCustomerInfo(Customer customer) throws DatabaseException;
 
-    void updateCarport(Carport carport) throws DatabaseException;
-
     void updateOrderTotalPrice(int orderId) throws DatabaseException;
 
     List<OrderWithDetailsDTO> getOrdersByStatusDTO(Status status) throws DatabaseException;
