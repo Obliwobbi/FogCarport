@@ -19,11 +19,11 @@ public class OrderServiceImpl implements OrderService
         this.orderMapper = orderMapper;
     }
 
- @Override
- public OrderWithDetailsDTO getOrderwithDetails(int orderId) throws DatabaseException
- {
-     return orderMapper.getOrderWithDetailsByIdDTO(orderId);
- }
+    @Override
+    public OrderWithDetailsDTO getOrderwithDetails(int orderId) throws DatabaseException
+    {
+        return orderMapper.getOrderWithDetailsByIdDTO(orderId);
+    }
 
     @Override
     public List<Order> getAllOrders() throws DatabaseException
@@ -43,7 +43,6 @@ public class OrderServiceImpl implements OrderService
     {
         return orderMapper.deleteOrder(orderId);
     }
-
 
     @Override
     public void updateOrderStatus(int orderId, Status status) throws DatabaseException
