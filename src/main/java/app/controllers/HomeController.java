@@ -13,6 +13,7 @@ public class HomeController
 
     private void showIndex(Context ctx)
     {
+        ctx.req().getSession().invalidate();
         ctx.render("index.html");
     }
 
