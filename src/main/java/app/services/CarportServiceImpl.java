@@ -67,8 +67,7 @@ public class CarportServiceImpl implements CarportService
     @Override
     public boolean validateShedTotalSize(double carportLength, double carportWidth, double shedLength, double shedWidth)
     {
-        double postOffset = (carportWidth >= SMALL_MEDIUM_CARPORT) ? OVERHANG_LARGE / 2 : OVERHANG_SMALL / 2;
-        double usableCarportWidth = carportWidth - (2 * postOffset);
+        double usableCarportWidth = (carportWidth >= SMALL_MEDIUM_CARPORT) ? carportWidth - OVERHANG_LARGE : carportWidth - OVERHANG_SMALL;
 
         double remainingCarportLength = carportLength - shedLength;
         double remainingCarportWidth = usableCarportWidth - shedWidth;
@@ -81,11 +80,28 @@ public class CarportServiceImpl implements CarportService
         // Check if space BESIDE shed can fit 240x240
         boolean hasSpaceBeside = remainingCarportWidth >= minCarSpace && carportLength >= minCarSpace;
 
-
-        //TODO Bedre fejlbesked/Mere konkret information om hvad fejlen er.
         if (!hasSpaceInFront && !hasSpaceBeside)
         {
-            throw new IllegalArgumentException("Der er ikke plads til bilen med nuværende skur mål. Minimum 240x240 cm til carport.");
+            double maxShedLengthForFront = carportLength - minCarSpace;
+            double maxShedWidthForSide = usableCarportWidth - minCarSpace;
+
+            String message = "Der er ikke plads til bilen med nuværende skur mål (minimum 240x240 cm kræves).";
+
+            if (remainingCarportLength < minCarSpace && remainingCarportWidth < minCarSpace)
+            {
+                message += String.format(" Skuret er for stort i begge retninger. Maksimal skur længde: %.0f cm. Maksimal skur bredde: %.0f cm.",
+                        maxShedLengthForFront, maxShedWidthForSide);
+            }
+            else if (remainingCarportLength < minCarSpace)
+            {
+                message += String.format(" Manglende plads foran skuret. Maksimal skur længde: %.0f cm.", maxShedLengthForFront);
+            }
+            else
+            {
+                message += String.format(" Manglende plads ved siden af skuret. Maksimal skur bredde: %.0f cm.", maxShedWidthForSide);
+            }
+
+            throw new IllegalArgumentException(message);
         }
         return true;
     }
@@ -104,7 +120,7 @@ public class CarportServiceImpl implements CarportService
 
         double measurement = min + (stepsFromMin * interval);
 
-        return Math.min(measurement,max);
+        return Math.min(measurement, max);
     }
 
     @Override
