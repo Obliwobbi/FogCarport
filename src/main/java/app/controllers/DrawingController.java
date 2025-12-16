@@ -51,6 +51,8 @@ public class DrawingController
 
     private void showOrderDrawing(Context ctx)
     {
+        if (!orderService.requireEmployee(ctx)) return;
+
         try
         {
             int orderId = Integer.parseInt(ctx.pathParam("id"));
@@ -79,6 +81,8 @@ public class DrawingController
 
     private void regenerateDrawing(Context ctx)
     {
+        if (!orderService.requireEmployee(ctx)) return;
+
         int orderId = Integer.parseInt(ctx.pathParam("id"));
 
         try
