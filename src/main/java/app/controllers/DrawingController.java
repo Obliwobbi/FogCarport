@@ -51,9 +51,10 @@ public class DrawingController
 
     private void showOrderDrawing(Context ctx)
     {
+        int orderId = Integer.parseInt(ctx.pathParam("id"));
+
         try
         {
-            int orderId = Integer.parseInt(ctx.pathParam("id"));
             OrderWithDetailsDTO order = orderService.getOrderwithDetails(orderId);
 
             String svgData;
@@ -73,7 +74,8 @@ public class DrawingController
         }
         catch (DatabaseException e)
         {
-            ctx.redirect("/orders?error=" + e.getMessage());
+            ctx.sessionAttribute("errorMessage", "Fejl ved hentning af tegning fra databasen. Prøv igen senere");
+            ctx.redirect("/orders/details/" + orderId);
         }
     }
 
