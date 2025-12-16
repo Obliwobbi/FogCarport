@@ -242,9 +242,9 @@ public class OrderController
         try
         {
             OrderWithDetailsDTO order = orderService.getOrderwithDetails(orderId);
-            Customer customer = order.getCustomer();
 
-            customerService.validateCustomer(customer,
+            Customer validatedCustomer = customerService.validateCustomer(
+                    order.getCustomer(),
                     ctx.formParam("firstName"),
                     ctx.formParam("lastName"),
                     ctx.formParam("email"),
@@ -255,7 +255,7 @@ public class OrderController
                     ctx.formParam("city")
                     );
 
-            customerService.updateCustomerInfo(customer);
+            customerService.updateCustomerInfo(validatedCustomer);
             flashSuccess(ctx, "Kunde information blev opdateret");
             ctx.redirect("/orders/details/" + orderId);
 
