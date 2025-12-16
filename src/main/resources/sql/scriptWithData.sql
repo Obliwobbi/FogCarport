@@ -21,6 +21,7 @@ CREATE TABLE employees
     employee_id SERIAL PRIMARY KEY,
     name        VARCHAR(100)        NOT NULL,
     email       VARCHAR(100) UNIQUE NOT NULL,
+    password    VARCHAR(255)        NOT NULL,
     phone       VARCHAR(20)
 );
 
@@ -126,9 +127,9 @@ CREATE INDEX idx_materials_name ON materials (name);
 -- ============================================
 
 -- Insert sample employees
-INSERT INTO employees (name, email, phone)
-VALUES ('Jesper Person', 'jp@fogcarport.dk', '+45 23456789'),
-       ('Toby Person', 'tp@fogcarport.dk', '+45 23456790');
+INSERT INTO employees (name, email, password, phone)
+VALUES ('Jesper Person', 'jp@fogcarport.dk', '$2a$12$1vWgGmcO1F0M00OCx2rk9OFEC2Iq3TDbQR7BT01.VyoMZ/2IDVOEi', '+45 23456789'),
+       ('Toby Person', 'tp@fogcarport.dk', '$2a$12$9czTxMIL0LOE8blHpzBbl.D/j/hHb1JOLhMXtEQw/.QcvV3zLQ9SO','+45 23456790');
 
 -- Insert sample materials
 INSERT INTO materials (name, description, unit, unit_type, material_length, material_width, material_height, price)

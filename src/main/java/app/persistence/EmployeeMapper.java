@@ -22,7 +22,7 @@ public class EmployeeMapper
 
     public Employee getEmployeeById(int employeeId) throws DatabaseException
     {
-        String sql = "SELECT * FROM employees WHERE employee_id = ?";
+        String sql = "SELECT employee_id, name, email, phone FROM employees WHERE employee_id = ?";
 
         try (Connection connection = connectionPool.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql))
@@ -46,9 +46,36 @@ public class EmployeeMapper
         return null;
     }
 
+    public Employee getEmployeeByEmail(String email) throws DatabaseException
+    {
+        String sql = "SELECT * FROM employees WHERE email = ?";
+
+        try (Connection connection = connectionPool.getConnection();
+            PreparedStatement ps = connection.prepareStatement(sql))
+        {
+            ps.setString(1, email);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next())
+            {
+                return new Employee(
+                        rs.getInt("employee_id"),
+                        rs.getString("name"),
+                        rs.getString("email"),
+                        rs.getString("password"),
+                        rs.getString("phone")
+                );
+            }
+        }
+        catch (SQLException e)
+        {
+            throw new DatabaseException("Fejl ved hentning af material på id:" + e.getMessage());
+        }
+        return null;
+    }
+
     public List<Employee> getAllEmployees() throws DatabaseException
     {
-        String sql = "SELECT * FROM employees ORDER BY name";
+        String sql = "SELECT employee_id, name, email, phone FROM employees ORDER BY name";
         List<Employee> employees = new ArrayList<>();
 
         try (Connection connection = connectionPool.getConnection();

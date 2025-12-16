@@ -7,6 +7,7 @@ import app.entities.Employee;
 import app.entities.MaterialsLine;
 import app.exceptions.DatabaseException;
 import app.services.EmailService;
+import app.services.EmployeeService;
 import app.services.OrderDetailsService;
 import app.services.OrderService;
 import app.util.Status;
@@ -23,18 +24,23 @@ public class OrderController
     private final OrderService orderService;
     private final OrderDetailsService orderDetailsService;
     private final EmailService emailService;
+    private final EmployeeService employeeService;
 
-    public OrderController(OrderService orderService, OrderDetailsService orderDetailsService, EmailService emailService)
+    public OrderController(OrderService orderService, OrderDetailsService orderDetailsService, EmailService emailService, EmployeeService employeeService)
     {
         this.orderService = orderService;
         this.orderDetailsService = orderDetailsService;
         this.emailService = emailService;
+        this.employeeService = employeeService;
     }
 
     public void addRoutes(Javalin app)
     {
+        app.get("/login", this::showLogin);
         app.get("/orders", this::showOrders);
         app.get("/orders/details/{id}", this::showOrderDetails);
+
+        app.post("/login", this::authenticateLogin);
 
         app.post("/orders/delete/{id}", this::deleteOrder);
 
@@ -47,6 +53,29 @@ public class OrderController
         app.post("/orders/details/{id}/regenerate-stykliste", this::regenerateMaterialList);
 
         app.post("/orders/send-offer/{id}", this::sendOffer);
+    }
+
+    private void showLogin(Context ctx)
+    {
+        ctx.render("login");
+    }
+
+    private void authenticateLogin(Context ctx)
+    {
+        String email = ctx.formParam("email");
+        String password = ctx.formParam("password");
+
+        try
+        {
+            Employee employee = employeeService.authenticateEmployee(email, password);
+            ctx.sessionAttribute("currentEmployee", employee);
+            ctx.redirect("/orders");
+        }
+        catch (DatabaseException e)
+        {
+            flashError(ctx, "Forkert email eller password");
+            ctx.render("login");
+        }
     }
 
     private void showOrders(Context ctx)
