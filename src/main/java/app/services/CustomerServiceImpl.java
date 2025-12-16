@@ -6,8 +6,7 @@ import app.persistence.CustomerMapper;
 
 public class CustomerServiceImpl implements CustomerService
 {
-
-    private CustomerMapper customerMapper;
+    private final CustomerMapper customerMapper;
 
     public CustomerServiceImpl(CustomerMapper customerMapper)
     {
@@ -15,7 +14,7 @@ public class CustomerServiceImpl implements CustomerService
     }
 
     @Override
-    public Customer registerNewCustomer(String firstName, String lastName, String email, String phoneNumber, String street, String houseNumber, int zipcode, String city) throws DatabaseException
+    public Customer validateCustomer(Customer customer, String firstName, String lastName, String email, String phoneNumber, String street, String houseNumber, int zipcode, String city) throws DatabaseException
     {
         String validatedFirstName = validateFirstOrLastName(firstName, "Fornavn");
         String validatedLastName = validateFirstOrLastName(lastName, "Efternavn");
@@ -26,33 +25,30 @@ public class CustomerServiceImpl implements CustomerService
         validateZipCode(zipcode);
         String validatedCity = validateCity(city);
 
-        return customerMapper.newCustomer(validatedFirstName, validatedLastName, validatedEmail,
-                validatedPhone, validatedStreet, validatedHouseNumber,
-                zipcode, validatedCity);
+        //create new customer
+        if (customer == null)
+        {
+            return customerMapper.newCustomer(validatedFirstName, validatedLastName, validatedEmail,
+                    validatedPhone, validatedStreet, validatedHouseNumber,
+                    zipcode, validatedCity);
+        }
+
+        customer.setFirstName(validatedFirstName);
+        customer.setLastName(validatedLastName);
+        customer.setEmail(validatedEmail);
+        customer.setPhone(validatedPhone);
+        customer.setStreet(validatedStreet);
+        customer.setHouseNumber(validatedHouseNumber);
+        customer.setZipcode(zipcode);
+        customer.setCity(validatedCity);
+
+        return customer;
     }
 
     @Override
-    public Customer findCustomerByName(String name)
+    public void updateCustomerInfo(Customer customer) throws DatabaseException
     {
-        return null;
-    }
-
-    @Override
-    public Customer findCustomerById(int id) throws DatabaseException
-    {
-        return customerMapper.getCustomerByID(id);
-    }
-
-    @Override
-    public Customer findCustomerByEmail(String email)
-    {
-        return null;
-    }
-
-    @Override
-    public Customer findCustomerByPhone(String phone)
-    {
-        return null;
+        customerMapper.updateCustomerInfo(customer);
     }
 
     @Override

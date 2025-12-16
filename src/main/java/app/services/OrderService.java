@@ -21,15 +21,9 @@ public interface OrderService
 
     void updateOrderStatus(int orderId, Status status) throws DatabaseException;
 
-    List<Employee> getAllEmployees() throws DatabaseException;
-
     void updateOrderEmployee(int orderId, int employeeId) throws DatabaseException;
 
     void updateOrderDeliveryDate(int orderId, LocalDateTime deliveryDate) throws DatabaseException;
-
-    void updateCustomerInfo(Customer customer) throws DatabaseException;
-
-    void updateCarport(Carport carport) throws DatabaseException;
 
     void updateOrderTotalPrice(int orderId) throws DatabaseException;
 

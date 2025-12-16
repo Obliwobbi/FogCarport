@@ -48,14 +48,14 @@ public class Main
         CustomerService customerService = new CustomerServiceImpl(customerMapper);
         EmployeeService employeeService = new EmployeeServiceImpl(employeeMapper);
         OrderDetailsService orderDetailsService = new OrderDetailsServiceImpl(calculatorService, materialsLinesMapper, materialMapper);
-        OrderService orderService = new OrderServiceImpl(orderMapper, carportMapper, drawingMapper, customerMapper, employeeMapper, materialsLinesMapper);
+        OrderService orderService = new OrderServiceImpl(orderMapper);
         EmailService emailService = new EmailServiceImpl();
 
         HomeController homeController = new HomeController();
         CarportController carportController = new CarportController(carportService);
         DrawingController drawingController = new DrawingController(drawingService, calculatorService, orderService);
         ContactController contactController = new ContactController(customerService, orderService, drawingService, carportService);
-        OrderController orderController = new OrderController(orderService, orderDetailsService,emailService,employeeService);
+        OrderController orderController = new OrderController(orderService, orderDetailsService, emailService, employeeService, carportService,customerService);
 
         // Routing
         homeController.addRoutes(app);

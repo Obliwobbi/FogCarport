@@ -5,6 +5,8 @@ import app.exceptions.DatabaseException;
 import app.persistence.EmployeeMapper;
 import org.mindrot.jbcrypt.BCrypt;
 
+import java.util.List;
+
 public class EmployeeServiceImpl implements EmployeeService
 {
     private final EmployeeMapper employeeMapper;
@@ -26,5 +28,11 @@ public class EmployeeServiceImpl implements EmployeeService
         {
             throw new DatabaseException("Forkert email eller password");
         }
+    }
+
+    @Override
+    public List<Employee> getAllEmployees() throws DatabaseException
+    {
+        return employeeMapper.getAllEmployees();
     }
 }
