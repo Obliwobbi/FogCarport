@@ -14,7 +14,7 @@ public class CustomerServiceImpl implements CustomerService
     }
 
     @Override
-    public Customer registerNewCustomer(String firstName, String lastName, String email, String phoneNumber, String street, String houseNumber, int zipcode, String city) throws DatabaseException
+    public Customer validateCustomer(Customer customer, String firstName, String lastName, String email, String phoneNumber, String street, String houseNumber, int zipcode, String city) throws DatabaseException
     {
         String validatedFirstName = validateFirstOrLastName(firstName, "Fornavn");
         String validatedLastName = validateFirstOrLastName(lastName, "Efternavn");
@@ -25,9 +25,24 @@ public class CustomerServiceImpl implements CustomerService
         validateZipCode(zipcode);
         String validatedCity = validateCity(city);
 
-        return customerMapper.newCustomer(validatedFirstName, validatedLastName, validatedEmail,
-                validatedPhone, validatedStreet, validatedHouseNumber,
-                zipcode, validatedCity);
+        //create new customer
+        if (customer == null)
+        {
+            return customerMapper.newCustomer(validatedFirstName, validatedLastName, validatedEmail,
+                    validatedPhone, validatedStreet, validatedHouseNumber,
+                    zipcode, validatedCity);
+        }
+
+        customer.setFirstName(validatedFirstName);
+        customer.setLastName(validatedLastName);
+        customer.setEmail(validatedEmail);
+        customer.setPhone(validatedPhone);
+        customer.setStreet(validatedStreet);
+        customer.setHouseNumber(validatedHouseNumber);
+        customer.setZipcode(zipcode);
+        customer.setCity(validatedCity);
+
+        return customer;
     }
 
     @Override
