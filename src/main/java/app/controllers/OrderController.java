@@ -80,6 +80,8 @@ public class OrderController
 
     private void showOrders(Context ctx)
     {
+        if (!orderService.requireEmployee(ctx)) return;
+
         try
         {
             String statusFilter = ctx.queryParam("status");
@@ -124,6 +126,8 @@ public class OrderController
 
     private void showOrderDetails(Context ctx)
     {
+        if (!orderService.requireEmployee(ctx)) return;
+
         String orderIdString = ctx.pathParam("id");
         String editSection = ctx.queryParam("edit");
 
@@ -169,6 +173,8 @@ public class OrderController
 
     private void deleteOrder(Context ctx)
     {
+        if (!orderService.requireEmployee(ctx)) return;
+
         String orderIdStr = ctx.pathParam("id");
 
         try
@@ -199,6 +205,8 @@ public class OrderController
 
     private void updateOrderInfo(Context ctx)
     {
+        if (!orderService.requireEmployee(ctx)) return;
+
         int orderId = Integer.parseInt(ctx.pathParam("id"));
         try
         {
@@ -237,6 +245,8 @@ public class OrderController
     //TODO move service actions to service layer and validate input
     private void updateCustomerInfo(Context ctx)
     {
+        if (!orderService.requireEmployee(ctx)) return;
+
         int orderId = Integer.parseInt(ctx.pathParam("id"));
 
         try
@@ -268,6 +278,8 @@ public class OrderController
     //TODO move service actions to service layer and validate input
     private void updateCarportInfo(Context ctx)
     {
+        if (!orderService.requireEmployee(ctx)) return;
+
         int orderId = Integer.parseInt(ctx.pathParam("id"));
         try
         {
@@ -316,6 +328,8 @@ public class OrderController
 
     private void updateMaterialPrices(Context ctx)
     {
+        if (!orderService.requireEmployee(ctx)) return;
+
         int orderId = Integer.parseInt(ctx.pathParam("id"));
 
         try
@@ -356,6 +370,8 @@ public class OrderController
 
     private void generateMaterialList(Context ctx)
     {
+        if (!orderService.requireEmployee(ctx)) return;
+
         int orderId = Integer.parseInt(ctx.pathParam("id"));
 
         try
@@ -384,6 +400,8 @@ public class OrderController
 
     private void regenerateMaterialList(Context ctx)
     {
+        if (!orderService.requireEmployee(ctx)) return;
+
         int orderId = Integer.parseInt(ctx.pathParam("id"));
 
         try
@@ -404,6 +422,8 @@ public class OrderController
 
     private void sendOffer(Context ctx)
     {
+        if (!orderService.requireEmployee(ctx)) return;
+
         int orderId = Integer.parseInt(ctx.pathParam("id"));
 
         try
