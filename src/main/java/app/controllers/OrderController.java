@@ -7,7 +7,6 @@ import app.entities.Employee;
 import app.entities.MaterialsLine;
 import app.exceptions.DatabaseException;
 import app.services.*;
-import app.util.Constants;
 import app.util.Status;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
@@ -236,7 +235,6 @@ public class OrderController
         }
     }
 
-    //TODO move service actions to service layer and validate input
     private void updateCustomerInfo(Context ctx)
     {
         int orderId = Integer.parseInt(ctx.pathParam("id"));
@@ -246,14 +244,16 @@ public class OrderController
             OrderWithDetailsDTO order = orderService.getOrderwithDetails(orderId);
             Customer customer = order.getCustomer();
 
-            customer.setFirstName(ctx.formParam("firstName"));
-            customer.setLastName(ctx.formParam("lastName"));
-            customer.setEmail(ctx.formParam("email"));
-            customer.setPhone(ctx.formParam("phone"));
-            customer.setStreet(ctx.formParam("street"));
-            customer.setHouseNumber(ctx.formParam("houseNumber"));
-            customer.setZipcode(Integer.parseInt(ctx.formParam("zipcode")));
-            customer.setCity(ctx.formParam("city"));
+            customerService.validateCustomer(customer,
+                    ctx.formParam("firstName"),
+                    ctx.formParam("lastName"),
+                    ctx.formParam("email"),
+                    ctx.formParam("phone"),
+                    ctx.formParam("street"),
+                    ctx.formParam("houseNumber"),
+                    Integer.parseInt(ctx.formParam("zipcode")),
+                    ctx.formParam("city")
+                    );
 
             customerService.updateCustomerInfo(customer);
             flashSuccess(ctx, "Kunde information blev opdateret");
@@ -263,6 +263,11 @@ public class OrderController
         catch (DatabaseException e)
         {
             flashError(ctx, "Kunne ikke opdatere kunde information. Prøv igen senere.");
+            ctx.redirect("/orders/details/" + orderId);
+        }
+        catch (IllegalArgumentException e)
+        {
+            flashError(ctx, e.getMessage());
             ctx.redirect("/orders/details/" + orderId);
         }
     }
@@ -276,12 +281,12 @@ public class OrderController
 
             Carport validatedCarport = carportService.validateAndBuildCarport(
                     order.getCarport(),
-                    Double.parseDouble(ctx.formParam("width")),
-                    Double.parseDouble(ctx.formParam("length")),
-                    Double.parseDouble(ctx.formParam("height")),
+                    carportService.parseOptionalDouble(ctx.formParam("width")),
+                    carportService.parseOptionalDouble(ctx.formParam("length")),
+                    carportService.parseOptionalDouble(ctx.formParam("height")),
                     ctx.formParam("withShed") != null,
-                    carportService.parseDouble(ctx.formParam("shedWidth")),
-                    carportService.parseDouble(ctx.formParam("shedLength")),
+                    carportService.parseOptionalDouble(ctx.formParam("shedWidth")),
+                    carportService.parseOptionalDouble(ctx.formParam("shedLength")),
                     ctx.formParam("customerWishes")
             );
 
