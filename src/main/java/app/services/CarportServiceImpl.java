@@ -86,7 +86,7 @@ public class CarportServiceImpl implements CarportService
         return carport;
     }
 
-    public Double parseDouble(String value)
+    public Double parseOptionalDouble(String value)
     {
         return (value != null && !value.isEmpty()) ? Double.parseDouble(value) : null;
     }

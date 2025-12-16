@@ -15,6 +15,6 @@ public interface CarportService
 
     Carport validateAndBuildCarport(Carport carport, double width, double length, double height, boolean withShed, Double shedWidth, Double shedLength, String customerWishes);
 
-    Double parseDouble(String value);
+    Double parseOptionalDouble(String value);
 }
 

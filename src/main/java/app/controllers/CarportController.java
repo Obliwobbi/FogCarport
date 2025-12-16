@@ -34,8 +34,8 @@ public class CarportController
                     Double.parseDouble(ctx.formParam("carportLength")),
                     Double.parseDouble(ctx.formParam("carportHeight")),
                     ctx.formParam("withShed") != null,
-                    carportService.parseDouble(ctx.formParam("shedWidth")),
-                    carportService.parseDouble(ctx.formParam("shedLength")),
+                    carportService.parseOptionalDouble(ctx.formParam("shedWidth")),
+                    carportService.parseOptionalDouble(ctx.formParam("shedLength")),
                     ctx.formParam("customerWishes")
             );
 
