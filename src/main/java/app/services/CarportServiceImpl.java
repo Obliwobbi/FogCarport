@@ -42,7 +42,58 @@ public class CarportServiceImpl implements CarportService
     }
 
     @Override
-    public double validateShedMeasurement(double carportMeasurement, double shedMeasurement)
+    public Carport validateAndBuildCarport(Carport carport, double width, double length, double height,
+                                           boolean withShed, Double shedWidth, Double shedLength,
+                                           String customerWishes)
+    {
+        //validate carport dimensions
+        double validatedWidth = validateMeasurementInput(width, Constants.MIN_CARPORT_WIDTH, Constants.MAX_CARPORT_WIDTH);
+        double validatedLength = validateMeasurementInput(length, Constants.MIN_CARPORT_LENGTH, Constants.MAX_CARPORT_LENGTH);
+
+        Double validatedShedWidth = null;
+        Double validatedShedLength = null;
+
+        if (withShed && shedWidth != null && shedLength != null)
+        {
+            //validate individual shed dimensions
+            validatedShedWidth = validateMeasurementInput(shedWidth, Constants.MIN_SHED_WIDTH, Constants.MAX_SHED_WIDTH);
+            validatedShedLength = validateMeasurementInput(shedLength, Constants.MIN_SHED_LENGTH, Constants.MAX_SHED_LENGTH);
+
+            //validate against carport size
+            validatedShedWidth = validateShedMeasurement(validatedWidth, validatedShedWidth);
+            validatedShedLength = validateShedMeasurement(validatedLength, validatedShedLength);
+
+            //validate total shed size (car space)
+            validateShedTotalSize(validatedLength, validatedWidth, validatedShedLength, validatedShedWidth);
+        }
+
+        String validatedWishes = validateStringInput(customerWishes);
+
+        //create new carport
+        if (carport == null)
+        {
+            return new Carport(validatedWidth, validatedLength, height, withShed,
+                    validatedShedWidth, validatedShedLength, validatedWishes);
+        }
+
+        //update existing carport
+        carport.setWidth(validatedWidth);
+        carport.setLength(validatedLength);
+        carport.setHeight(height);
+        carport.setWithShed(withShed);
+        carport.setShedWidth(validatedShedWidth);
+        carport.setShedLength(validatedShedLength);
+        carport.setCustomerWishes(validatedWishes);
+
+        return carport;
+    }
+
+    public Double parseDouble(String value)
+    {
+        return (value != null && !value.isEmpty()) ? Double.parseDouble(value) : null;
+    }
+
+    private double validateShedMeasurement(double carportMeasurement, double shedMeasurement)
     {
         double deadZone = 40;
 
@@ -64,8 +115,7 @@ public class CarportServiceImpl implements CarportService
         }
     }
 
-    @Override
-    public boolean validateShedTotalSize(double carportLength, double carportWidth, double shedLength, double shedWidth)
+    private boolean validateShedTotalSize(double carportLength, double carportWidth, double shedLength, double shedWidth)
     {
         double usableCarportWidth = (carportWidth >= SMALL_MEDIUM_CARPORT) ? carportWidth - OVERHANG_LARGE : carportWidth - OVERHANG_SMALL;
 
@@ -106,8 +156,7 @@ public class CarportServiceImpl implements CarportService
         return true;
     }
 
-    @Override
-    public double validateMeasurementInput(double input, double min, double max)
+    private double validateMeasurementInput(double input, double min, double max)
     {
         double interval = Constants.CARPORT_MEASUREMENT_INTERVAL;
 
@@ -123,8 +172,7 @@ public class CarportServiceImpl implements CarportService
         return Math.min(measurement, max);
     }
 
-    @Override
-    public String validateStringInput(String input)
+    private String validateStringInput(String input)
     {
         if (input == null || input.trim().isEmpty())
         {
