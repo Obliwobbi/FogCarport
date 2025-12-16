@@ -99,7 +99,7 @@ public class ContactController
         catch (NumberFormatException e)
         {
             orderFailure(drawing, carport, customer);
-            ctx.attribute("errorMessage", "Postnummer skal være et gyldigt tal");
+            ctx.attribute("errorMessage", "Postnummer & Telefonnummer  skal være et gyldigt tal");
             ctx.render("contact.html");
         }
         catch (IllegalArgumentException e)
