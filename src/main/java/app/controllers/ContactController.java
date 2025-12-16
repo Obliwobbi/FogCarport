@@ -44,7 +44,8 @@ public class ContactController
 
         try
         {
-            customer = customerService.registerNewCustomer(
+            customer = customerService.validateCustomer(
+                    null,
                     ctx.formParam("firstname"),
                     ctx.formParam("lastname"),
                     ctx.formParam("email"),
