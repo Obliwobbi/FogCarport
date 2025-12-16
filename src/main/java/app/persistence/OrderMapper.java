@@ -243,7 +243,7 @@ public class OrderMapper
                 """;
 
         try (Connection connection = connectionPool.getConnection();
-            PreparedStatement ps = connection.prepareStatement(sql))
+             PreparedStatement ps = connection.prepareStatement(sql))
         {
             ps.setInt(1, orderId);
             int rowsAffected = ps.executeUpdate();
@@ -279,6 +279,118 @@ public class OrderMapper
             throw new DatabaseException("Fejl ved sletning af order med id: " + orderId);
         }
         return false;
+    }
+
+    public OrderWithDetailsDTO getOrderWithDetailsByIdDTO(int orderId) throws DatabaseException
+    {
+        String sql = """
+                SELECT
+                    o.order_id, o.order_date, o.status, o.delivery_date, o.employee_id,
+                    c.carport_id, c.width, c.length, c.height, c.with_shed,
+                    c.shed_width, c.shed_length, c.customer_wishes,
+                    cu.customer_id, cu.firstname, cu.lastname, cu.email, cu.phone,
+                    cu.street, cu.house_number, cu.zipcode, cu.city,
+                    d.drawing_id, d.drawing_data,
+                    e.employee_id, e.name, e.email as emp_email, e.phone as emp_phone
+                FROM orders o
+                JOIN carports c ON o.carport_id = c.carport_id
+                JOIN customers cu ON o.customer_id = cu.customer_id
+                LEFT JOIN drawings d ON o.drawing_id = d.drawing_id
+                LEFT JOIN employees e ON o.employee_id = e.employee_id
+                WHERE o.order_id = ?
+                """;
+
+        try (Connection connection = connectionPool.getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql))
+        {
+            ps.setInt(1, orderId);
+
+            try (ResultSet rs = ps.executeQuery())
+            {
+                if (rs.next())
+                {
+                    Carport carport;
+                    boolean withShed = rs.getBoolean("with_shed");
+                    if (withShed)
+                    {
+                        carport = new Carport(
+                                rs.getInt("carport_id"),
+                                rs.getDouble("width"),
+                                rs.getDouble("length"),
+                                rs.getDouble("height"),
+                                withShed,
+                                rs.getDouble("shed_width"),
+                                rs.getDouble("shed_length"),
+                                rs.getString("customer_wishes")
+                        );
+                    }
+                    else
+                    {
+                        carport = new Carport(
+                                rs.getInt("carport_id"),
+                                rs.getDouble("width"),
+                                rs.getDouble("length"),
+                                rs.getDouble("height"),
+                                withShed,
+                                rs.getString("customer_wishes")
+                        );
+                    }
+
+                    Customer customer = new Customer(
+                            rs.getInt("customer_id"),
+                            rs.getString("firstname"),
+                            rs.getString("lastname"),
+                            rs.getString("email"),
+                            rs.getString("phone"),
+                            rs.getString("street"),
+                            rs.getString("house_number"),
+                            rs.getInt("zipcode"),
+                            rs.getString("city")
+                    );
+
+                    Drawing drawing = null;
+                    int drawingId = rs.getInt("drawing_id");
+                    if (!rs.wasNull())
+                    {
+                        drawing = new Drawing(
+                                drawingId,
+                                rs.getString("drawing_data"));
+                    }
+
+                    Employee employee = null;
+                    int employeeId = rs.getInt("employee_id");
+                    if (!rs.wasNull())
+                    {
+                        employee = new Employee(
+                                employeeId,
+                                rs.getString("name"),
+                                rs.getString("emp_email"),
+                                rs.getString("emp_phone")
+                        );
+                    }
+
+                    List<MaterialsLine> materialLines = materialsLinesMapper.getMaterialLinesByOrderId(orderId);
+
+                    return new OrderWithDetailsDTO(
+                            orderId,
+                            rs.getTimestamp("order_date").toLocalDateTime(),
+                            Status.valueOf(rs.getString("status")),
+                            rs.getTimestamp("delivery_date").toLocalDateTime(),
+                            drawing,
+                            materialLines,
+                            carport,
+                            customer,
+                            employee
+                    );
+                }
+            }
+
+            throw new DatabaseException("Der blev ikke fundet en ordre med id: " + orderId);
+        }
+        catch (SQLException e)
+        {
+            throw new DatabaseException("Fejl ved hentning af ordre med detaljer: " + e.getMessage());
+        }
     }
 
     public List<OrderWithDetailsDTO> getAllOrdersByStatus(Status status) throws DatabaseException

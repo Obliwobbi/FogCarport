@@ -13,42 +13,23 @@ import java.util.stream.Collectors;
 public class OrderServiceImpl implements OrderService
 {
     private OrderMapper orderMapper;
-    private CarportMapper carportMapper;
-    private DrawingMapper drawingMapper;
     private CustomerMapper customerMapper;
     private EmployeeMapper employeeMapper;
-    private MaterialsLinesMapper materialsLinesMapper;
 
-    public OrderServiceImpl(OrderMapper orderMapper, CarportMapper carportMapper, DrawingMapper drawingMapper, CustomerMapper customerMapper, EmployeeMapper employeeMapper, MaterialsLinesMapper materialsLinesMapper)
+
+    public OrderServiceImpl(OrderMapper orderMapper, CustomerMapper customerMapper, EmployeeMapper employeeMapper)
     {
         this.orderMapper = orderMapper;
-        this.carportMapper = carportMapper;
-        this.drawingMapper = drawingMapper;
         this.customerMapper = customerMapper;
         this.employeeMapper = employeeMapper;
-        this.materialsLinesMapper = materialsLinesMapper;
+
     }
 
-    @Override
-    public OrderWithDetailsDTO getOrderwithDetails(int orderId) throws DatabaseException
-    {
-        Order order = orderMapper.getOrderById(orderId);
-        Drawing drawing = drawingMapper.getDrawingById(order.getDrawingId());
-        Carport carport = carportMapper.getCarportById(order.getCarportId());
-        Customer customer = customerMapper.getCustomerByID(order.getCustomerId());
-        Employee employee = employeeMapper.getEmployeeById(order.getEmployeeId());
-        List<MaterialsLine> materialsLines = materialsLinesMapper.getMaterialLinesByOrderId(orderId);
-
-        return new OrderWithDetailsDTO(orderId,
-                order.getOrderDate(),
-                order.getStatus(),
-                order.getDeliveryDate(),
-                drawing,
-                materialsLines,
-                carport,
-                customer,
-                employee);
-    }
+ @Override
+ public OrderWithDetailsDTO getOrderwithDetails(int orderId) throws DatabaseException
+ {
+     return orderMapper.getOrderWithDetailsByIdDTO(orderId);
+ }
 
     @Override
     public List<Order> getAllOrders() throws DatabaseException
