@@ -35,7 +35,8 @@ public class ConnectionPool
                         System.getenv("JDBC_PASSWORD"),
                         System.getenv("JDBC_CONNECTION_STRING"),
                         System.getenv("JDBC_DB"));
-            } else
+            }
+            else
             {
                 ds = createHikariConnectionPool("postgres", "postgres", "jdbc:postgresql://localhost:5432/%s?currentSchema=public", "erdetheltsort");
             }
@@ -65,7 +66,8 @@ public class ConnectionPool
                         System.getenv("JDBC_PASSWORD"),
                         System.getenv("JDBC_CONNECTION_STRING"),
                         System.getenv("JDBC_DB"));
-            } else
+            }
+            else
             {
                 ds = createHikariConnectionPool(user, password, url, db);
             }

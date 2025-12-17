@@ -15,10 +15,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class MaterialMapperTest
 {
-
     private final static String USER = "postgres";
-    private static final String PASSWORD = "ModigsteFryser47";
-    private static final String URL = "jdbc:postgresql://164.92.247.68:5432/%s?currentSchema=test";
+    private static final String PASSWORD = "postgres";
+    private static final String URL = "jdbc:postgresql://localhost:5432/%s?currentSchema=test";
     private static final String DB = "fogcarport";
 
     private static ConnectionPool connectionPool;
@@ -77,18 +76,18 @@ class MaterialMapperTest
                 stmt.execute("DELETE FROM test.materials");
 
                 stmt.execute("""
-                        INSERT INTO materials (id, name, description, unit, unit_type, material_length, material_width, material_height, price)
-                        VALUES (1, 'Brædt 25x200', '25x200 mm. trykimp. Brædt', 1, 'stk', 540.00, 20.00, 2.50, 300.00)
+                        INSERT INTO test.materials (id, name, description, unit, unit_type, material_length, material_width, material_height, price)
+                        VALUES (1, '25x200 mm trykimpr. Brædt', 'Understernbrædder', 1, 'stk', 360.00, 20.00, 2.50, 79.00)
                         """);
 
                 stmt.execute("""
-                        INSERT INTO materials (id, name, description, unit, unit_type, material_length, material_width, material_height, price)
-                        VALUES (2, 'Skruer 4.5x60', '4,5 x 60 mm. skruer 200 stk.', 200, 'pakke', NULL, NULL, NULL, 120.00)
+                        INSERT INTO test.materials (id, name, description, unit, unit_type, material_length, material_width, material_height, price)
+                        VALUES (2, '25x200 mm trykimpr. Brædt', 'Understernbrædder', 1, 'stk', 540.00, 20.00, 2.50, 118.00)
                         """);
 
                 stmt.execute("""
-                        INSERT INTO materials (id, name, description, unit, unit_type, material_length, material_width, material_height, price)
-                        VALUES (3, 'Bundskruer', 'Plastmo bundskruer 200 stk.', 200, 'pakke', NULL, NULL, NULL, 150.00)
+                        INSERT INTO test.materials (id, name, description, unit, unit_type, material_length, material_width, material_height, price)
+                        VALUES (3, 'Plastmo bundskruer', 'Skruer til tagplader', 200, 'pakke(r)', NULL, NULL, NULL, 129.00)
                         """);
 
                 stmt.execute("SELECT setval('test.materials_id_seq', 3, true)");
@@ -107,31 +106,31 @@ class MaterialMapperTest
         Material material = materialMapper.getMaterialById(1);
 
         assertNotNull(material);
-        assertEquals("Brædt 25x200", material.getName());
-        assertEquals("25x200 mm. trykimp. Brædt", material.getDescription());
+        assertEquals("25x200 mm trykimpr. Brædt", material.getName());
+        assertEquals("Understernbrædder", material.getDescription());
         assertEquals(1, material.getUnit());
         assertEquals("stk", material.getUnitType());
-        assertEquals(540, material.getMaterialLength());
+        assertEquals(360, material.getMaterialLength());
         assertEquals(20, material.getMaterialWidth());
         assertEquals(2.50, material.getMaterialHeight());
-        assertEquals(300, material.getPrice());
+        assertEquals(79.00, material.getPrice());
     }
 
     @DisplayName("Find material in DB by NAME")
     @Test
     void getMaterialByName() throws DatabaseException
     {
-        Material material = materialMapper.getMaterialByName("Bundskruer");
+        Material material = materialMapper.getMaterialByName("Plastmo bundskruer");
 
         assertNotNull(material);
         assertEquals(3, material.getId());
-        assertEquals("Plastmo bundskruer 200 stk.", material.getDescription());
+        assertEquals("Skruer til tagplader", material.getDescription());
         assertEquals(200, material.getUnit());
-        assertEquals("pakke", material.getUnitType());
+        assertEquals("pakke(r)", material.getUnitType());
         assertEquals(0, material.getMaterialLength());
         assertEquals(0, material.getMaterialWidth());
         assertEquals(0, material.getMaterialHeight());
-        assertEquals(150, material.getPrice());
+        assertEquals(129.00, material.getPrice());
     }
 
     @DisplayName("Fail: Find material by ID")

@@ -2,19 +2,56 @@
 <html lang="da" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8"/>
-    <title>FogCarport</title>
+    <title>Alle Ordre - FogCarport</title>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <link rel="stylesheet" href="/css/stylesheet.css" th:href="@{/css/stylesheet.css}"/>
-    <link rel="stylesheet" href="/css/orders.css" th:href="@{/css/orders.css}"/>
 </head>
 <body>
 
+<div th:replace="~{fragments :: headerFragment}"></div>
+
 <main>
-    <section class="orders-body">
-        <h1>This is orders.html</h1>
+    <section class="body-style">
+        <div class="details-header center-text">
+            <h1>Alle Ordre</h1>
+        </div>
+
+        <!-- Filter Dropdown -->
+        <div class="details-section">
+            <form method="get" action="/orders">
+                <label for="statusFilter">Filtrer efter status:</label>
+                <select id="statusFilter" name="status" onchange="this.form.submit()">
+                    <option value="ALL" th:selected="${selectedStatus == 'ALL'}">Alle Ordre</option>
+                    <option th:each="status : ${allStatuses}"
+                            th:if="${status.name() != 'NEW'}"
+                            th:value="${status.name()}"
+                            th:text="${status.getDisplayName()}"
+                            th:selected="${selectedStatus == status.name()}">
+                    </option>
+                </select>
+            </form>
+        </div>
+
+        <!-- NEW ORDERS -->
+        <div class="details-section">
+            <h2>Nye Ordre</h2>
+            <div th:replace="~{fragments :: orderTable(orders=${newOrders}, emptyMessage='Ingen nye ordre')}"></div>
+        </div>
+
+        <!-- FILTERED ORDERS -->
+        <div class="details-section">
+            <h2>
+                <span th:if="${selectedStatus == 'ALL'}">Alle ordre</span>
+                <span th:if="${selectedStatus != 'ALL'}"
+                      th:text="${#lists.isEmpty(filteredOrders) ? 'Ingen ordre' : filteredOrders[0].status.getDisplayName()}"></span>
+            </h2>
+            <div th:replace="~{fragments :: orderTable(orders=${filteredOrders}, emptyMessage='Ingen ordre fundet')}"></div>
+        </div>
+
     </section>
 </main>
 
+<div th:replace="~{fragments :: footerFragment}"></div>
 
 </body>
 </html>

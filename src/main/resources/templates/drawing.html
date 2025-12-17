@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="da" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>2D Tegning - FogCarport</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link rel="stylesheet" href="/css/stylesheet.css" th:href="@{/css/stylesheet.css}"/>
+
+</head>
+<body>
+
+
+<div th:replace="~{fragments :: headerFragment}"></div>
+
+<main>
+    <section class="body-style align-items-center">
+        <h1>Vejledende Tegning af din Carport</h1>
+
+        <div class="carport-svg-topview">
+            <div th:utext="${svg}"></div>
+        </div>
+
+        <p th:if="${session.drawingErrorLabel != null}" th:text="${session.drawingErrorLabel}"></p>
+
+        <!-- Order view buttons -->
+        <div class="button-align" th:if="${isOrderView and session.currentEmployee != null}">
+            <a th:href="@{/orders/details/{id}(id=${orderId})}" class="button">Tilbage til ordre</a>
+            <form method="post" th:action="@{/orders/details/{id}/regenerate-drawing(id=${orderId})}"
+                  style="display: inline;">
+                <button type="submit" class="button-a regenerate-button">Opdater tegning</button>
+            </form>
+        </div>
+
+        <!-- Carport view buttons -->
+        <div th:unless="${isOrderView}">
+            <a th:href="@{/carport}" class="button">Tilbage til Carport</a>
+            <a th:href="@{/contact}" class="button">Fortsæt til bestilling</a>
+        </div>
+    </section>
+
+</main>
+<div th:replace="~{fragments :: footerFragment}"></div>
+</body>
+</html>

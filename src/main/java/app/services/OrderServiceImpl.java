@@ -4,44 +4,25 @@ import app.dto.OrderWithDetailsDTO;
 import app.entities.*;
 import app.exceptions.DatabaseException;
 import app.persistence.*;
+import app.util.Status;
+import io.javalin.http.Context;
 
 import java.time.LocalDateTime;
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.*;
 
 public class OrderServiceImpl implements OrderService
 {
-    private OrderMapper orderMapper;
-    private CarportMapper carportMapper;
-    private DrawingMapper drawingMapper;
-    private CustomerMapper customerMapper;
-    private MaterialsLinesMapper materialsLinesMapper;
+    private final OrderMapper orderMapper;
 
-    public OrderServiceImpl(OrderMapper orderMapper, CarportMapper carportMapper, DrawingMapper drawingMapper, CustomerMapper customerMapper)
+    public OrderServiceImpl(OrderMapper orderMapper)
     {
         this.orderMapper = orderMapper;
-        this.carportMapper = carportMapper;
-        this.drawingMapper = drawingMapper;
-        this.customerMapper = customerMapper;
     }
 
     @Override
     public OrderWithDetailsDTO getOrderwithDetails(int orderId) throws DatabaseException
     {
-        Order order = orderMapper.getOrderById(orderId);
-        Drawing drawing = drawingMapper.getDrawingById(order.getDrawingId());
-        Carport carport = carportMapper.getCarportById(order.getCarportId());
-        Customer customer = customerMapper.getCustomerByID(order.getCustomerId());
-
-        return new OrderWithDetailsDTO(orderId,
-                order.getOrderDate(),
-                order.getStatus(),
-                order.getDeliveryDate(),
-                drawing,
-                order.getMaterialLines(),
-                carport,
-                customer);
+        return orderMapper.getOrderWithDetailsByIdDTO(orderId);
     }
 
     @Override
@@ -51,21 +32,35 @@ public class OrderServiceImpl implements OrderService
     }
 
     @Override
-    public Order createOrder(LocalDateTime orderDate, String status, LocalDateTime deliveryDate, Integer drawingId, int carportId, int customerId) throws DatabaseException
+    public int createOrder(int drawingId, int carportId, int customerId) throws DatabaseException
     {
-        return orderMapper.createOrder(orderDate, status, deliveryDate, drawingId, carportId, customerId);
+        Order order = orderMapper.createOrder(drawingId, carportId, customerId);
+        return order != null ? order.getOrderId() : -1;
     }
 
     @Override
-    public void deleteOrder(int orderId) throws DatabaseException
+    public boolean deleteOrder(int orderId) throws DatabaseException
     {
-        orderMapper.deleteOrder(orderId);
+        return orderMapper.deleteOrder(orderId);
     }
 
     @Override
-    public void updateOrderStatus(int orderId, String status) throws DatabaseException
+    public void updateOrderStatus(int orderId, Status status) throws DatabaseException
     {
         orderMapper.updateOrderStatus(orderId, status);
+    }
+
+    @Override
+    public void updateOrderEmployee(int orderId, int employeeId) throws DatabaseException
+    {
+        if (employeeId != 0)
+        {
+            orderMapper.updateOrderEmployee(orderId, employeeId);
+        }
+        else
+        {
+            orderMapper.setOrderEmployeeNull(orderId);
+        }
     }
 
     @Override
@@ -75,19 +70,27 @@ public class OrderServiceImpl implements OrderService
     }
 
     @Override
-    public void updateCarport(Carport carport) throws DatabaseException
+    public void updateOrderTotalPrice(int orderId) throws DatabaseException
     {
-        carportMapper.updateCarport(carport);
+        double totalPrice = getOrderwithDetails(orderId).getTotalPrice();
+        orderMapper.updateOrderTotalPrice(orderId, totalPrice);
     }
 
     @Override
-    public List<Order> getOrdersByStatus(String status) throws DatabaseException
+    public List<OrderWithDetailsDTO> getOrdersByStatusDTO(Status status) throws DatabaseException
     {
-        return orderMapper.getAllOrders().stream()
-                .filter(order -> order.getStatus().equals(status))
-                .sorted(Comparator.comparing(Order::getOrderDate))
-                .collect(Collectors.toList());
+        return orderMapper.getAllOrdersByStatus(status);
     }
 
+    @Override
+    public boolean requireEmployee(Context ctx)
+    {
+        if (ctx.sessionAttribute("currentEmployee") == null)
+        {
+            ctx.redirect("/");
+            return false;
+        }
+        return true;
+    }
 }
 

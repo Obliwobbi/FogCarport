@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="da" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Login - FogCarport</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link rel="stylesheet" href="/css/stylesheet.css" th:href="@{/css/stylesheet.css}"/>
+</head>
+<body>
+
+<div th:replace="~{fragments :: headerFragment}"></div>
+
+<main>
+    <section class="body-style align-items-center">
+        <h1 class="center-text">Log ind her</h1>
+        <form class="contact-form" th:action="@{/login}" method="post">
+
+            <label for="email">Email</label>
+            <input type="email" placeholder="johannes@fog.dk" id="email" name="email" required>
+
+            <label for="password">Kodeord</label>
+            <input type="password" placeholder="⁕⁕⁕⁕⁕⁕⁕⁕" id="password" name="password" required>
+
+
+            <button class="button" type="submit">Log ind</button>
+        </form>
+
+        <p th:if="${errorMessage != null}" th:text="${errorMessage}"></p>
+
+    </section>
+</main>
+
+<div th:replace="~{fragments :: footerFragment}"></div>
+
+</body>
+</html>

@@ -5,13 +5,14 @@
     <title>FogCarport</title>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <link rel="stylesheet" href="/css/stylesheet.css" th:href="@{/css/stylesheet.css}"/>
-    <link rel="stylesheet" href="/css/index.css" th:href="@{/css/index.css}"/>
 </head>
 <body>
 
+<div th:replace="~{fragments :: headerFragment}"></div>
+
 <main>
-    <section class="index-body">
-        <div class="middle">
+    <section class="body-style index-body">
+        <div class="center-text">
             <img src="/images/fog-logo.svg" th:src="@{/images/fog-logo.svg}" alt="Fog Logo"
                  class="index-logo"/>
             <h1>Fog Projektet</h1>
@@ -19,11 +20,12 @@
         </div>
         <div class="buttons">
             <a class="customer-button" href="carport.html" th:href="@{/carport}">Kunde</a>
-            <a class="employee-button" href="orders.html" th:href="@{/orders}">Sælger</a>
+            <a class="employee-button" href="login.html" th:href="@{/login}">Sælger</a>
         </div>
     </section>
 </main>
 
+<div th:replace="~{fragments :: footerFragment}"></div>
 
 </body>
 </html>

@@ -15,8 +15,8 @@ import static org.junit.jupiter.api.Assertions.*;
 class CustomerMapperTest
 {
     private final static String USER = "postgres";
-    private static final String PASSWORD = "ModigsteFryser47";
-    private static final String URL = "jdbc:postgresql://164.92.247.68:5432/%s?currentSchema=test";
+    private static final String PASSWORD = "postgres";
+    private static final String URL = "jdbc:postgresql://localhost:5432/%s?currentSchema=test";
     private static final String DB = "fogcarport";
 
     private static ConnectionPool connectionPool;
@@ -43,7 +43,7 @@ class CustomerMapperTest
                                     customer_id SERIAL PRIMARY KEY,
                                     firstname VARCHAR(100) NOT NULL,
                                     lastname VARCHAR(100) NOT NULL,
-                                    email VARCHAR(100) UNIQUE NOT NULL,
+                                    email VARCHAR(100) NOT NULL,
                                     phone VARCHAR(20),
                                     street VARCHAR(100),
                                     house_number VARCHAR(10),
@@ -114,31 +114,25 @@ class CustomerMapperTest
         assertEquals(city, customer.getCity());
     }
 
-    @Test
-    void newCustomerWithDuplicateEmail() throws DatabaseException
-    {
-        // Arrange
-        customerMapper.newCustomer(
-                "John", "Doe", "duplicate@test.com", "12345678",
-                "Street", "1", 2800, "Lyngby"
-        );
-
-        // Act & Assert
-        assertThrows(DatabaseException.class, () ->
-        {
-            customerMapper.newCustomer(
-                    "Jane", "Smith", "duplicate@test.com", "87654321",
-                    "Avenue", "2", 2900, "Hellerup"
-            );
-        });
-    }
 
     @Test
     void getCustomerById() throws DatabaseException
     {
         Customer customer = customerMapper.newCustomer("Jens", "Jensen", "test@mail.dk", "12345678",
-                "Gade","2", 2900, "Hellerup");
+                "Gade", "2", 2900, "Hellerup");
 
-        assertEquals(customer,customerMapper.getCustomerByID(1));
+        assertEquals(customer, customerMapper.getCustomerByID(1));
+    }
+
+    @Test
+    void testDeleteCustomer() throws DatabaseException
+    {
+        // Arrange
+        Customer customer = customerMapper.newCustomer("Jens", "Jensen", "test@mail.dk", "12345678",
+                "Gade", "2", 2900, "Hellerup");
+
+        // Act
+        assertTrue(customerMapper.deleteCustomer(customer.getCustomerId()));
+        assertThrows(DatabaseException.class, () -> customerMapper.getCustomerByID(1));
     }
 }

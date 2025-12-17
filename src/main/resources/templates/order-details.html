@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="da" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Ordre Detaljer - FogCarport</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link rel="stylesheet" href="/css/stylesheet.css" th:href="@{/css/stylesheet.css}"/>
+</head>
+<body>
+
+<div th:replace="~{fragments :: headerFragment}"></div>
+
+<main>
+    <section class="body-style">
+        <div class="details-header center-text">
+            <h1>Ordre Detaljer</h1>
+            <p th:text="'Ordre #' + ${order.orderId}"></p>
+        </div>
+
+        <!-- Error/Success Messages -->
+        <div th:if="${errorMessage}" class="message error-message center-text">
+            <p th:text="${errorMessage}"></p>
+        </div>
+        <div th:if="${successMessage}" class="message success-message center-text">
+            <p th:text="${successMessage}"></p>
+        </div>
+
+        <div class="details-body">
+            <!-- Order Information -->
+            <div class="details-section">
+                <div class="section-header">
+                    <h2>Ordre Information</h2>
+                    <a th:if="${editSection != 'order'}"
+                       th:href="@{/orders/details/{id}(id=${order.orderId}, edit='order')}"
+                       class="edit-button">Rediger</a>
+                    <a th:if="${editSection == 'order'}"
+                       th:href="@{/orders/details/{id}(id=${order.orderId})}"
+                       class="edit-button cancel-button">Annuller</a>
+                </div>
+
+                <!-- Display Mode -->
+                <div class="info-grid" th:if="${editSection != 'order'}">
+                    <div class="info-item">
+                        <strong>Status:</strong>
+                        <span th:text="${order.status.displayName}"></span>
+                    </div>
+                    <div class="info-item">
+                        <strong>Ordre Dato:</strong>
+                        <span th:text="${#temporals.format(order.orderDate, 'dd-MM-yyyy HH:mm')}"></span>
+                    </div>
+                    <div class="info-item">
+                        <strong>Leverings Dato:</strong>
+                        <span th:text="${order.deliveryDate != null ? #temporals.format(order.deliveryDate, 'dd-MM-yyyy') : 'Ikke planlagt'}"></span>
+                    </div>
+                    <div class="info-item">
+                        <strong>Ansvarlig Medarbejder:</strong>
+                        <span th:text="${order.employee != null ? order.employee.name : 'Ingen tildelt'}"></span>
+                    </div>
+                </div>
+
+                <!-- Edit Mode -->
+                <form th:if="${editSection == 'order'}" class="edit-form" method="post"
+                      th:action="@{/orders/details/{id}/update-order(id=${order.orderId})}">
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <label for="status"><strong>Status:</strong></label>
+                            <select id="status" name="status">
+                                <option value="NEW" th:selected="${order.status.name() == 'NEW'}">NY ORDRE</option>
+                                <option value="PENDING" th:selected="${order.status.name() == 'PENDING'}">
+                                    AFVENTER ACCEPT
+                                </option>
+                                <option value="PAID" th:selected="${order.status.name() == 'PAID'}">BETALT</option>
+                                <option value="IN_TRANSIT" th:selected="${order.status.name() == 'IN_TRANSIT'}">
+                                    AFSENDT
+                                </option>
+                                <option value="DONE" th:selected="${order.status.name() == 'DONE'}">AFSLUTTET
+                                </option>
+                            </select>
+                        </div>
+                        <div class="info-item">
+                            <label for="deliveryDate"><strong>Leverings Dato:</strong></label>
+                            <input type="date" id="deliveryDate" name="deliveryDate" th:value="${order.deliveryDate}"/>
+                        </div>
+                        <div class="info-item">
+                            <label for="employeeId"><strong>Ansvarlig Medarbejder:</strong></label>
+                            <select id="employeeId" name="employeeId">
+                                <option value="">Ingen tildelt</option>
+                                <option th:each="emp : ${employees}"
+                                        th:value="${emp.employeeId}"
+                                        th:text="${emp.name}"
+                                        th:selected="${order.employee != null and order.employee.employeeId == emp.employeeId}">
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="edit-actions">
+                        <button type="submit" class="button save-button">Gem</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Customer Information -->
+            <div class="details-section">
+                <div class="section-header">
+                    <h2>Kunde Information</h2>
+                    <a th:if="${editSection != 'customer'}"
+                       th:href="@{/orders/details/{id}(id=${order.orderId}, edit='customer')}"
+                       class="edit-button">Rediger</a>
+                    <a th:if="${editSection == 'customer'}"
+                       th:href="@{/orders/details/{id}(id=${order.orderId})}"
+                       class="edit-button cancel-button">Annuller</a>
+                </div>
+
+                <!-- Display Mode -->
+                <div class="info-grid" th:if="${editSection != 'customer'}">
+                    <div class="info-item">
+                        <strong>Navn:</strong>
+                        <span th:text="${order.customer.firstName + ' ' + order.customer.lastName}"></span>
+                    </div>
+                    <div class="info-item">
+                        <strong>Email:</strong>
+                        <span th:text="${order.customer.email}"></span>
+                    </div>
+                    <div class="info-item">
+                        <strong>Telefon:</strong>
+                        <span th:text="${order.customer.phone}"></span>
+                    </div>
+                    <div class="info-item full-width">
+                        <strong>Adresse:</strong>
+                        <span th:text="${order.customer.street + ' ' + order.customer.houseNumber + ', ' + order.customer.zipcode + ' ' + order.customer.city}"></span>
+                    </div>
+                </div>
+
+                <!-- Edit Mode -->
+                <form th:if="${editSection == 'customer'}" class="edit-form" method="post"
+                      th:action="@{/orders/details/{id}/update-customer(id=${order.orderId})}">
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <label for="firstName"><strong>Fornavn:</strong></label>
+                            <input type="text" id="firstName" name="firstName" th:value="${order.customer.firstName}"
+                                   required/>
+                        </div>
+                        <div class="info-item">
+                            <label for="lastName"><strong>Efternavn:</strong></label>
+                            <input type="text" id="lastName" name="lastName" th:value="${order.customer.lastName}"
+                                   required/>
+                        </div>
+                        <div class="info-item">
+                            <label for="email"><strong>Email:</strong></label>
+                            <input type="email" id="email" name="email" th:value="${order.customer.email}" required/>
+                        </div>
+                        <div class="info-item">
+                            <label for="phone"><strong>Telefon:</strong></label>
+                            <input type="text" id="phone" name="phone" th:value="${order.customer.phone}" required/>
+                        </div>
+                        <div class="info-item">
+                            <label for="street"><strong>Vej:</strong></label>
+                            <input type="text" id="street" name="street" th:value="${order.customer.street}" required/>
+                        </div>
+                        <div class="info-item">
+                            <label for="houseNumber"><strong>Husnummer:</strong></label>
+                            <input type="text" id="houseNumber" name="houseNumber"
+                                   th:value="${order.customer.houseNumber}" required/>
+                        </div>
+                        <div class="info-item">
+                            <label for="zipcode"><strong>Postnummer:</strong></label>
+                            <input type="text" id="zipcode" name="zipcode" th:value="${order.customer.zipcode}"
+                                   required/>
+                        </div>
+                        <div class="info-item">
+                            <label for="city"><strong>By:</strong></label>
+                            <input type="text" id="city" name="city" th:value="${order.customer.city}" required/>
+                        </div>
+                    </div>
+                    <div class="edit-actions">
+                        <button type="submit" class="button save-button">Gem</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Carport Information -->
+            <div class="details-section">
+                <div class="section-header">
+                    <h2>Carport Mål</h2>
+                    <div class="row">
+                        <a th:if="${editSection != 'carport'}"
+                           th:href="@{/orders/details/{id}/drawing(id=${order.orderId})}"
+                           class="edit-button">Vis 2D tegning</a>
+                        <a th:if="${editSection != 'carport'}"
+                           th:href="@{/orders/details/{id}(id=${order.orderId}, edit='carport')}"
+                           class="edit-button">Rediger</a>
+                        <a th:if="${editSection == 'carport'}"
+                           th:href="@{/orders/details/{id}(id=${order.orderId})}"
+                           class="edit-button cancel-button">Annuller</a>
+                    </div>
+                </div>
+
+                <!-- Display Mode -->
+                <div class="info-grid" th:if="${editSection != 'carport'}">
+                    <div class="info-item">
+                        <strong>Bredde:</strong>
+                        <span th:text="${order.carport.width + ' cm'}"></span>
+                    </div>
+                    <div class="info-item">
+                        <strong>Længde:</strong>
+                        <span th:text="${order.carport.length + ' cm'}"></span>
+                    </div>
+                    <div class="info-item">
+                        <strong>Højde:</strong>
+                        <span th:text="${order.carport.height + ' cm'}"></span>
+                    </div>
+                    <div class="info-item" th:if="${order.carport.withShed}">
+                        <strong>Skur Bredde:</strong>
+                        <span th:text="${order.carport.shedWidth + ' cm'}"></span>
+                    </div>
+                    <div class="info-item" th:if="${order.carport.withShed}">
+                        <strong>Skur Længde:</strong>
+                        <span th:text="${order.carport.shedLength + ' cm'}"></span>
+                    </div>
+                    <div class="info-item full-width"
+                         th:if="${order.carport.customerWishes != null and !order.carport.customerWishes.isEmpty()}">
+                        <strong>Kundens ønsker:</strong>
+                        <span th:text="${order.carport.customerWishes}"></span>
+                    </div>
+                </div>
+
+                <!-- Edit Mode -->
+                <form th:if="${editSection == 'carport'}" class="edit-form" method="post"
+                      th:action="@{/orders/details/{id}/update-carport(id=${order.orderId})}">
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <label for="width"><strong>Bredde (cm):</strong></label>
+                            <select name="width" id="width" required="">
+                                <option value="240" th:selected="${order.carport.width == 240}">240 cm</option>
+                                <option value="270" th:selected="${order.carport.width == 270}">270 cm</option>
+                                <option value="300" th:selected="${order.carport.width == 300}">300 cm</option>
+                                <option value="330" th:selected="${order.carport.width == 330}">330 cm</option>
+                                <option value="360" th:selected="${order.carport.width == 360}">360 cm</option>
+                                <option value="390" th:selected="${order.carport.width == 390}">390 cm</option>
+                                <option value="420" th:selected="${order.carport.width == 420}">420 cm</option>
+                                <option value="450" th:selected="${order.carport.width == 450}">450 cm</option>
+                                <option value="480" th:selected="${order.carport.width == 480}">480 cm</option>
+                                <option value="510" th:selected="${order.carport.width == 510}">510 cm</option>
+                                <option value="540" th:selected="${order.carport.width == 540}">540 cm</option>
+                                <option value="570" th:selected="${order.carport.width == 570}">570 cm</option>
+                                <option value="600" th:selected="${order.carport.width == 600}">600 cm</option>
+                            </select>
+                        </div>
+                        <div class="info-item">
+                            <label for="length"><strong>Længde (cm):</strong></label>
+                            <select name="length" id="length" required="">
+                                <option value="240" th:selected="${order.carport.length == 240}">240 cm</option>
+                                <option value="270" th:selected="${order.carport.length == 270}">270 cm</option>
+                                <option value="300" th:selected="${order.carport.length == 300}">300 cm</option>
+                                <option value="330" th:selected="${order.carport.length == 330}">330 cm</option>
+                                <option value="360" th:selected="${order.carport.length == 360}">360 cm</option>
+                                <option value="390" th:selected="${order.carport.length == 390}">390 cm</option>
+                                <option value="420" th:selected="${order.carport.length == 420}">420 cm</option>
+                                <option value="450" th:selected="${order.carport.length == 450}">450 cm</option>
+                                <option value="480" th:selected="${order.carport.length == 480}">480 cm</option>
+                                <option value="510" th:selected="${order.carport.length == 510}">510 cm</option>
+                                <option value="540" th:selected="${order.carport.length == 540}">540 cm</option>
+                                <option value="570" th:selected="${order.carport.length == 570}">570 cm</option>
+                                <option value="600" th:selected="${order.carport.length == 600}">600 cm</option>
+                                <option value="630" th:selected="${order.carport.length == 630}">630 cm</option>
+                                <option value="660" th:selected="${order.carport.length == 660}">660 cm</option>
+                                <option value="690" th:selected="${order.carport.length == 690}">690 cm</option>
+                                <option value="720" th:selected="${order.carport.length == 720}">720 cm</option>
+                                <option value="750" th:selected="${order.carport.length == 750}">750 cm</option>
+                                <option value="780" th:selected="${order.carport.length == 780}">780 cm</option>
+                            </select>
+                        </div>
+                        <div class="info-item">
+                            <label for="height"><strong>Højde (cm):</strong></label>
+                            <select name="height" id="height" required="">
+                                <option value="225" th:selected="${order.carport.height == 225}">225 cm</option>
+                            </select>
+                        </div>
+                        <div class="info-item">
+                            <label for="withShedEdit"><strong>Med skur:</strong></label>
+                            <select id="withShedEdit" name="withShed">
+                                <option value="false" th:selected="${!order.carport.withShed}">Nej</option>
+                                <option value="true" th:selected="${order.carport.withShed}">Ja</option>
+                            </select>
+                        </div>
+                        <div class="info-item">
+                            <label for="shedWidth"><strong>Skur Bredde (cm):</strong></label>
+                            <select name="shedWidth" id="shedWidth">
+                                <option value="" th:selected="${order.carport.shedWidth == 0}"></option>
+                                <option value="120" th:selected="${order.carport.shedWidth == 120}">120 cm</option>
+                                <option value="150" th:selected="${order.carport.shedWidth == 150}">150 cm</option>
+                                <option value="180" th:selected="${order.carport.shedWidth == 180}">180 cm</option>
+                                <option value="210" th:selected="${order.carport.shedWidth == 210}">210 cm</option>
+                                <option value="240" th:selected="${order.carport.shedWidth == 240}">240 cm</option>
+                                <option value="270" th:selected="${order.carport.shedWidth == 270}">270 cm</option>
+                                <option value="300" th:selected="${order.carport.shedWidth == 300}">300 cm</option>
+                                <option value="330" th:selected="${order.carport.shedWidth == 330}">330 cm</option>
+                                <option value="360" th:selected="${order.carport.shedWidth == 360}">360 cm</option>
+                                <option value="390" th:selected="${order.carport.shedWidth == 390}">390 cm</option>
+                                <option value="420" th:selected="${order.carport.shedWidth == 420}">420 cm</option>
+                                <option value="450" th:selected="${order.carport.shedWidth == 450}">450 cm</option>
+                                <option value="480" th:selected="${order.carport.shedWidth == 480}">480 cm</option>
+                                <option value="510" th:selected="${order.carport.shedWidth == 510}">510 cm</option>
+                            </select>
+                        </div>
+                        <div class="info-item">
+                            <label for="shedLength"><strong>Skur Længde (cm):</strong></label>
+                            <select name="shedLength" id="shedLength">
+                                <option value="" th:selected="${order.carport.shedLength == 0}"></option>
+                                <option value="120" th:selected="${order.carport.shedLength == 120}">120 cm</option>
+                                <option value="150" th:selected="${order.carport.shedLength == 150}">150 cm</option>
+                                <option value="180" th:selected="${order.carport.shedLength == 180}">180 cm</option>
+                                <option value="210" th:selected="${order.carport.shedLength == 210}">210 cm</option>
+                                <option value="240" th:selected="${order.carport.shedLength == 240}">240 cm</option>
+                                <option value="270" th:selected="${order.carport.shedLength == 270}">270 cm</option>
+                                <option value="300" th:selected="${order.carport.shedLength == 300}">300 cm</option>
+                                <option value="330" th:selected="${order.carport.shedLength == 330}">330 cm</option>
+                                <option value="360" th:selected="${order.carport.shedLength == 360}">360 cm</option>
+                                <option value="390" th:selected="${order.carport.shedLength == 390}">390 cm</option>
+                                <option value="420" th:selected="${order.carport.shedLength == 420}">420 cm</option>
+                                <option value="450" th:selected="${order.carport.shedLength == 450}">450 cm</option>
+                                <option value="480" th:selected="${order.carport.shedLength == 480}">480 cm</option>
+                                <option value="510" th:selected="${order.carport.shedLength == 510}">510 cm</option>
+                                <option value="540" th:selected="${order.carport.shedLength == 540}">540 cm</option>
+                                <option value="570" th:selected="${order.carport.shedLength == 570}">570 cm</option>
+                                <option value="600" th:selected="${order.carport.shedLength == 600}">600 cm</option>
+                                <option value="630" th:selected="${order.carport.shedLength == 630}">630 cm</option>
+                                <option value="660" th:selected="${order.carport.shedLength == 660}">660 cm</option>
+                                <option value="690" th:selected="${order.carport.shedLength == 690}">690 cm</option>
+                            </select>
+                        </div>
+                        <div class="info-item full-width">
+                            <label for="customerWishes"><strong>Kundens ønsker:</strong></label>
+                            <textarea id="customerWishes" name="customerWishes"
+                                      th:text="${order.carport.customerWishes}"></textarea>
+                        </div>
+                    </div>
+                    <p class="warning-text" th:if="${hasMaterialsList}">
+                        ⚠️ Ændring af carport specifikationer vil kræve at styklisten gengenereres.
+                    </p>
+                    <div class="edit-actions">
+                        <button type="submit" class="button save-button">Gem</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Materials List -->
+            <div class="details-section materials-section">
+                <div class="section-header">
+                    <h2>Stykliste</h2>
+                    <div th:if="${hasMaterialsList}" class="section-header-actions">
+                        <a th:if="${editSection != 'materials'}"
+                           th:href="@{/orders/details/{id}(id=${order.orderId}, edit='materials')}"
+                           class="edit-button">Rediger Priser</a>
+                        <a th:if="${editSection == 'materials'}"
+                           th:href="@{/orders/details/{id}(id=${order.orderId})}"
+                           class="edit-button cancel-button">Annuller</a>
+                        <form method="post"
+                              th:action="@{/orders/details/{id}/regenerate-stykliste(id=${order.orderId})}"
+                              class="inline-form">
+                            <button type="submit" class="edit-button-a regenerate-button">Generer Ny Stykliste</button>
+                        </form>
+                    </div>
+                </div>
+
+                <div th:if="${!hasMaterialsList}" class="no-materials">
+                    <p>Der er endnu ikke genereret en stykliste for denne ordre.</p>
+                    <form method="post" th:action="@{/orders/details/{id}/stykliste(id=${order.orderId})}">
+                        <button type="submit" class="button">Generer Stykliste</button>
+                    </form>
+                </div>
+
+                <div th:if="${hasMaterialsList}">
+
+                    <!-- Display Mode -->
+                    <div class="materials-table" th:if="${editSection != 'materials'}">
+                        <table>
+                            <thead>
+                            <tr>
+                                <th>Materiale</th>
+                                <th>Antal</th>
+                                <th>Enhed</th>
+                                <th>Enhedspris</th>
+                                <th>Total</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="line : ${materialsLines}">
+                                <td data-label="Materiale" th:text="${line.material.name}"></td>
+                                <td data-label="Antal" th:text="${line.quantity}"></td>
+                                <td data-label="Enhed" th:text="${line.material.unitType}"></td>
+                                <td data-label="Enhedspris"
+                                    th:text="${#numbers.formatDecimal(line.unitPrice, 1, 2) + ' kr.'}"></td>
+                                <td data-label="Total"
+                                    th:text="${#numbers.formatDecimal(line.linePrice, 1, 2) + ' kr.'}"></td>
+                            </tr>
+                            </tbody>
+                            <tfoot>
+                            <tr class="total-row">
+                                <td colspan="4">Total Pris:</td>
+                                <td th:text="${#numbers.formatDecimal(order.totalPrice, 1, 2) + ' kr.'}">0,00 kr.</td>
+                            </tr>
+                            </tfoot>
+                        </table>
+                        <form class="offer-buttons" method="post"
+                              th:action="@{/orders/send-offer/{id}(id=${order.orderId})}"
+                              onsubmit="return confirm('Er du sikker på du vil sende tilbud på ordren?')">
+                            <button type="submit" class="button">Send Tilbud</button>
+                        </form>
+                    </div>
+
+                    <!-- Edit Mode -->
+                    <form th:if="${editSection == 'materials'}" class="edit-form" method="post"
+                          th:action="@{/orders/details/{id}/update-prices(id=${order.orderId})}">
+                        <div class="materials-table">
+                            <table>
+                                <thead>
+                                <tr>
+                                    <th>Materiale</th>
+                                    <th>Antal</th>
+                                    <th>Enhed</th>
+                                    <th>Enhedspris</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="line, iterStat : ${materialsLines}">
+                                    <td th:text="${line.material.name}"></td>
+                                    <td th:text="${line.quantity}"></td>
+                                    <td th:text="${line.material.unitType}"></td>
+                                    <td>
+                                        <input type="hidden" th:name="'lineIds[' + ${iterStat.index} + ']'"
+                                               th:value="${line.lineId}"/>
+                                        <input type="number" step="0.01" min="0"
+                                               th:name="'prices[' + ${iterStat.index} + ']'"
+                                               th:value="${line.unitPrice}"
+                                               class="price-input"/>
+
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <p class="info-text">Totalpris beregnes efter gem.</p>
+                        <div class="edit-actions">
+                            <button type="submit" class="button save-button">Gem Priser</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="buttons">
+            <a th:href="@{/orders}" class="button">Tilbage til Ordrer</a>
+        </div>
+
+
+    </section>
+</main>
+
+<div th:replace="~{fragments :: footerFragment}"></div>
+
+</body>
+</html>

@@ -17,8 +17,8 @@ import static org.junit.jupiter.api.Assertions.*;
 class CarportMapperTest
 {
     private final static String USER = "postgres";
-    private static final String PASSWORD = "ModigsteFryser47";
-    private static final String URL = "jdbc:postgresql://164.92.247.68:5432/%s?currentSchema=test";
+    private static final String PASSWORD = "postgres";
+    private static final String URL = "jdbc:postgresql://localhost:5432/%s?currentSchema=test";
     private static final String DB = "fogcarport";
 
     private static ConnectionPool connectionPool;
@@ -60,12 +60,14 @@ class CarportMapperTest
                                 )
                             """);
                 }
-            } catch (SQLException e)
+            }
+            catch (SQLException e)
             {
                 e.printStackTrace();
                 fail("Database connection failed: " + e.getMessage());
             }
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             e.printStackTrace();
             fail("Failed to set up test database");
@@ -85,22 +87,23 @@ class CarportMapperTest
 
                 stmt.execute("""
                             INSERT INTO test.carports (carport_id, width, length, height, with_shed, shed_width, shed_length, customer_wishes)
-                            VALUES (1, 600, 780, 210, false, NULL, NULL, 'Standard carport uden skur')
+                            VALUES (1, 600, 780, 210, FALSE, NULL, NULL, 'Standard carport uden skur')
                         """);
 
                 stmt.execute("""
                             INSERT INTO test.carports (carport_id, width, length, height, with_shed, shed_width, shed_length, customer_wishes)
-                            VALUES (2, 600, 780, 210, true, 200, 300, 'Carport med skur til haveredskaber')
+                            VALUES (2, 600, 600, 210, TRUE, 300, 210, 'Carport med skur til haveredskaber')
                         """);
 
                 stmt.execute("""
                             INSERT INTO test.carports (carport_id, width, length, height, with_shed, shed_width, shed_length, customer_wishes)
-                            VALUES (3, 500, 600, 200, false, NULL, NULL, NULL)
+                            VALUES (3, 780, 600, 240, TRUE, 300, 240, 'Stor carport med skur')
                         """);
 
                 stmt.execute("SELECT setval('test.carports_carport_id_seq', 3, true)");
             }
-        } catch (SQLException e)
+        }
+        catch (SQLException e)
         {
             fail("Failed to insert test data: " + e.getMessage());
         }
@@ -137,7 +140,7 @@ class CarportMapperTest
     @Test
     void testcreateCarport() throws DatabaseException
     {
-        Carport carport = carportMapper.createCarport(1,2,3,true,4,5,"ingen ønsker");
+        Carport carport = carportMapper.createCarport(1, 2, 3, true, 4, 5, "ingen ønsker");
 
         assertEquals(carport, carportMapper.getCarportById(4));
     }
@@ -149,7 +152,7 @@ class CarportMapperTest
         carportEdited.setHeight(300);
 
         assertTrue(carportMapper.updateCarport(carportEdited));
-        assertEquals(300,carportMapper.getCarportById(1).getHeight());
+        assertEquals(300, carportMapper.getCarportById(1).getHeight());
     }
 
     @Test
