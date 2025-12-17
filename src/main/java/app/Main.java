@@ -15,14 +15,12 @@ public class Main
     public static void main(String[] args)
     {
         // Initializing Javalin and Jetty webserver
-
         Javalin app = Javalin.create(config ->
         {
             config.staticFiles.add("/public");
             config.fileRenderer(new JavalinThymeleaf(ThymeleafConfig.templateEngine()));
             config.staticFiles.add("/templates/");
         }).start(7070);
-
 
         CarportMapper carportMapper = new CarportMapper(connectionPool);
         OrderMapper orderMapper = new OrderMapper(connectionPool);
@@ -45,7 +43,7 @@ public class Main
         CarportController carportController = new CarportController(carportService);
         DrawingController drawingController = new DrawingController(drawingService, calculatorService, orderService);
         ContactController contactController = new ContactController(customerService, orderService, drawingService, carportService);
-        OrderController orderController = new OrderController(orderService, orderDetailsService, emailService, employeeService, carportService,customerService);
+        OrderController orderController = new OrderController(orderService, orderDetailsService, emailService, employeeService, carportService, customerService);
 
         // Routing
         homeController.addRoutes(app);
