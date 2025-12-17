@@ -68,8 +68,12 @@ public class CarportServiceImpl implements CarportService
         //create new carport
         if (carport == null)
         {
-            return new Carport(validatedWidth, validatedLength, height, withShed,
-                    validatedShedWidth, validatedShedLength, validatedWishes);
+            if(withShed)
+            {
+                return new Carport(validatedWidth, validatedLength, height, withShed,
+                        validatedShedWidth, validatedShedLength, validatedWishes);
+            }
+            return new Carport(validatedWidth, validatedLength, height, withShed, validatedWishes);
         }
 
         //update existing carport
@@ -77,8 +81,11 @@ public class CarportServiceImpl implements CarportService
         carport.setLength(validatedLength);
         carport.setHeight(height);
         carport.setWithShed(withShed);
-        carport.setShedWidth(validatedShedWidth);
-        carport.setShedLength(validatedShedLength);
+        if(withShed)
+        {
+            carport.setShedWidth(validatedShedWidth);
+            carport.setShedLength(validatedShedLength);
+        }
         carport.setCustomerWishes(validatedWishes);
 
         return carport;

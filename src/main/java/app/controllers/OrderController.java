@@ -296,7 +296,7 @@ public class OrderController
                     carportService.parseOptionalDouble(ctx.formParam("width")),
                     carportService.parseOptionalDouble(ctx.formParam("length")),
                     carportService.parseOptionalDouble(ctx.formParam("height")),
-                    ctx.formParam("withShed") != null,
+                    Boolean.parseBoolean(ctx.formParam("withShed")),
                     carportService.parseOptionalDouble(ctx.formParam("shedWidth")),
                     carportService.parseOptionalDouble(ctx.formParam("shedLength")),
                     ctx.formParam("customerWishes")
@@ -314,6 +314,11 @@ public class OrderController
         catch (IllegalArgumentException e)
         {
             flashError(ctx, e.getMessage());
+            ctx.redirect("/orders/details/" + orderId);
+        }
+        catch (NullPointerException e)
+        {
+            flashError(ctx, "Alle felter skal være udfyldt.");
             ctx.redirect("/orders/details/" + orderId);
         }
     }
