@@ -38,7 +38,7 @@ public class ConnectionPool
             }
             else
             {
-                ds = createHikariConnectionPool("postgres", "postgres", "jdbc:postgresql://localhost:5432/%s?currentSchema=public", "erdetheltsort");
+                ds = createHikariConnectionPool("postgres", "postgres", "jdbc:postgresql://localhost:5432/%s?currentSchema=public", "fogcarport");
             }
             instance = new ConnectionPool();
         }
