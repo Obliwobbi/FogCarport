@@ -51,7 +51,7 @@ public class EmployeeMapper
         String sql = "SELECT * FROM employees WHERE email = ?";
 
         try (Connection connection = connectionPool.getConnection();
-            PreparedStatement ps = connection.prepareStatement(sql))
+             PreparedStatement ps = connection.prepareStatement(sql))
         {
             ps.setString(1, email);
             ResultSet rs = ps.executeQuery();

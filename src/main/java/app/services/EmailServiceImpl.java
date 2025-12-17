@@ -8,7 +8,6 @@ import jakarta.mail.MessagingException;
 import java.util.HashMap;
 import java.util.Map;
 
-
 public class EmailServiceImpl implements EmailService
 {
     GmailEmailSenderHTML sender;

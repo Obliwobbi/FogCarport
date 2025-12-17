@@ -97,7 +97,7 @@ public class DrawingController
 
             ctx.sessionAttribute("successMessage", null);
             ctx.sessionAttribute("successMessage", "Tegning opdateret");
-            ctx.redirect("/orders/details/" + orderId +  "/drawing");
+            ctx.redirect("/orders/details/" + orderId + "/drawing");
         }
         catch (DatabaseException e)
         {

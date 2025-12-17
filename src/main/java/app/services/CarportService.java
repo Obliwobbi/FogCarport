@@ -17,4 +17,3 @@ public interface CarportService
 
     Double parseOptionalDouble(String value);
 }
-

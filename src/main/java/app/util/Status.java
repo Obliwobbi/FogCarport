@@ -10,7 +10,8 @@ public enum Status
 
     private final String displayName;
 
-    Status(String displayName) {
+    Status(String displayName)
+    {
         this.displayName = displayName;
     }
 
@@ -19,9 +20,12 @@ public enum Status
         return displayName;
     }
 
-    public static Status fromDisplayName(String displayName) {
-        for (Status status : values()) {
-            if (status.displayName.equals(displayName)) {
+    public static Status fromDisplayName(String displayName)
+    {
+        for (Status status : values())
+        {
+            if (status.displayName.equals(displayName))
+            {
                 return status;
             }
         }

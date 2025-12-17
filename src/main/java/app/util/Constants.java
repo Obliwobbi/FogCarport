@@ -5,7 +5,7 @@ public final class Constants
     private Constants()
     {
     }
-    
+
     // Measurement constants
     public static final double OVERHANG_SMALL = 30;
     public static final double OVERHANG_LARGE = 70;
@@ -126,4 +126,3 @@ public final class Constants
     public static final int SCREW_LONG_MATERIAL_ID = 27;
     public static final int SCREW_UNIVERSAL_MATERIAL_ID = 24;
 }
-

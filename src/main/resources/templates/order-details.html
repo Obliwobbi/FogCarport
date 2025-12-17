@@ -70,7 +70,9 @@
                                     AFVENTER ACCEPT
                                 </option>
                                 <option value="PAID" th:selected="${order.status.name() == 'PAID'}">BETALT</option>
-                                <option value="IN_TRANSIT" th:selected="${order.status.name() == 'IN_TRANSIT'}">AFSENDT</option>
+                                <option value="IN_TRANSIT" th:selected="${order.status.name() == 'IN_TRANSIT'}">
+                                    AFSENDT
+                                </option>
                                 <option value="DONE" th:selected="${order.status.name() == 'DONE'}">AFSLUTTET
                                 </option>
                             </select>
@@ -400,7 +402,8 @@
                             </tr>
                             </tfoot>
                         </table>
-                        <form class="offer-buttons" method="post" th:action="@{/orders/send-offer/{id}(id=${order.orderId})}"
+                        <form class="offer-buttons" method="post"
+                              th:action="@{/orders/send-offer/{id}(id=${order.orderId})}"
                               onsubmit="return confirm('Er du sikker på du vil sende tilbud på ordren?')">
                             <button type="submit" class="button">Send Tilbud</button>
                         </form>

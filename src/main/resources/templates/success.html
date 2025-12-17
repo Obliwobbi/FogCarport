@@ -80,7 +80,8 @@
                             <strong>Skur længde</strong>
                             <span th:text="${carport.shedLength + ' cm'}"></span>
                         </div>
-                        <div class="info-item full-width" th:if="${carport.customerWishes != null and !carport.customerWishes.isEmpty()}">
+                        <div class="info-item full-width"
+                             th:if="${carport.customerWishes != null and !carport.customerWishes.isEmpty()}">
                             <strong>Dine ønsker</strong>
                             <span th:text="${carport.customerWishes}"></span>
                         </div>

@@ -12,7 +12,8 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderWithDetailsDTO {
+public class OrderWithDetailsDTO
+{
     private int orderId;
     private LocalDateTime orderDate;
     private Status status;
@@ -23,8 +24,10 @@ public class OrderWithDetailsDTO {
     private Customer customer;
     private Employee employee;
 
-    public double getTotalPrice() {
-        if (materialsLines == null || materialsLines.isEmpty()) {
+    public double getTotalPrice()
+    {
+        if (materialsLines == null || materialsLines.isEmpty())
+        {
             return 0.0;
         }
         return materialsLines.stream()

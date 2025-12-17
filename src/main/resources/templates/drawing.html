@@ -25,7 +25,8 @@
         <!-- Order view buttons -->
         <div class="button-align" th:if="${isOrderView and session.currentEmployee != null}">
             <a th:href="@{/orders/details/{id}(id=${orderId})}" class="button">Tilbage til ordre</a>
-            <form method="post" th:action="@{/orders/details/{id}/regenerate-drawing(id=${orderId})}" style="display: inline;">
+            <form method="post" th:action="@{/orders/details/{id}/regenerate-drawing(id=${orderId})}"
+                  style="display: inline;">
                 <button type="submit" class="button-a regenerate-button">Opdater tegning</button>
             </form>
         </div>

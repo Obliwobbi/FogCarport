@@ -263,7 +263,7 @@ public class OrderController
                     ctx.formParam("houseNumber"),
                     Integer.parseInt(ctx.formParam("zipcode")),
                     ctx.formParam("city")
-                    );
+            );
 
             customerService.updateCustomerInfo(validatedCustomer);
             flashSuccess(ctx, "Kunde information blev opdateret");

@@ -7,7 +7,6 @@ import java.util.HashMap;
 
 public class CalculatorServiceImpl implements CalculatorService
 {
-
     @Override
     public int calculatePosts(Carport carport)
     {
@@ -25,7 +24,7 @@ public class CalculatorServiceImpl implements CalculatorService
 
         if (withShed)
         {
-            result += (isFullWidth || shedLength > Constants.MAX_LENGTH_BLOCKING ) ? 3 : 4; //door and corners of shed, partial width sheds need 1 more corner
+            result += (isFullWidth || shedLength > Constants.MAX_LENGTH_BLOCKING) ? 3 : 4; //door and corners of shed, partial width sheds need 1 more corner
 
             if (shedWidth > Constants.MAX_LENGTH_BLOCKING)
             {
