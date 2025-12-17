@@ -10,12 +10,7 @@ import io.javalin.rendering.template.JavalinThymeleaf;
 
 public class Main
 {
-    private static final String USER = "postgres";
-    private static final String PASSWORD = "ModigsteFryser47";
-    private static final String URL = "jdbc:postgresql://164.92.247.68:5432/%s?currentSchema=public";
-    private static final String DB = "fogcarport";
-
-    private static final ConnectionPool connectionPool = ConnectionPool.getInstance(USER, PASSWORD, URL, DB);
+    private static final ConnectionPool connectionPool = ConnectionPool.getInstance();
 
     public static void main(String[] args)
     {
@@ -27,6 +22,7 @@ public class Main
             config.fileRenderer(new JavalinThymeleaf(ThymeleafConfig.templateEngine()));
             config.staticFiles.add("/templates/");
         }).start(7070);
+
 
         CarportMapper carportMapper = new CarportMapper(connectionPool);
         OrderMapper orderMapper = new OrderMapper(connectionPool);
@@ -49,7 +45,7 @@ public class Main
         CarportController carportController = new CarportController(carportService);
         DrawingController drawingController = new DrawingController(drawingService, calculatorService, orderService);
         ContactController contactController = new ContactController(customerService, orderService, drawingService, carportService);
-        OrderController orderController = new OrderController(orderService, orderDetailsService, emailService, employeeService, carportService, customerService);
+        OrderController orderController = new OrderController(orderService, orderDetailsService, emailService, employeeService, carportService,customerService);
 
         // Routing
         homeController.addRoutes(app);
