@@ -1,6 +1,5 @@
 package app.persistence;
 
-import app.entities.Carport;
 import app.entities.Customer;
 import app.exceptions.DatabaseException;
 
@@ -105,15 +104,15 @@ public class CustomerMapper
         try (Connection connection = connectionPool.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql))
         {
-            ps.setString(1,customer.getFirstName());
-            ps.setString(2,customer.getLastName());
-            ps.setString(3,customer.getEmail());
-            ps.setString(4,customer.getPhone());
-            ps.setString(5,customer.getStreet());
-            ps.setString(6,customer.getHouseNumber());
-            ps.setInt(7,customer.getZipcode());
-            ps.setString(8,customer.getCity());
-            ps.setInt(9,customer.getCustomerId());
+            ps.setString(1, customer.getFirstName());
+            ps.setString(2, customer.getLastName());
+            ps.setString(3, customer.getEmail());
+            ps.setString(4, customer.getPhone());
+            ps.setString(5, customer.getStreet());
+            ps.setString(6, customer.getHouseNumber());
+            ps.setInt(7, customer.getZipcode());
+            ps.setString(8, customer.getCity());
+            ps.setInt(9, customer.getCustomerId());
 
             int rowsAffected = ps.executeUpdate();
             if (rowsAffected >= 1)

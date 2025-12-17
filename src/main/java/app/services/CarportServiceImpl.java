@@ -3,13 +3,12 @@ package app.services;
 import app.entities.Carport;
 import app.exceptions.DatabaseException;
 import app.persistence.CarportMapper;
+import app.util.Constants;
 
 public class CarportServiceImpl implements CarportService
 {
-    private CarportMapper carportMapper;
-    double SMALL_MEDIUM_CARPORT = 330;
-    double OVERHANG_SMALL = 30;
-    double OVERHANG_LARGE = 70;
+    private final CarportMapper carportMapper;
+    double smallMediumThreshold = 330;
 
     public CarportServiceImpl(CarportMapper carportMapper)
     {
@@ -41,13 +40,69 @@ public class CarportServiceImpl implements CarportService
     }
 
     @Override
-    public double validateShedMeasurement(double carportMeasurement, double shedMeasurement)
+    public Carport validateAndBuildCarport(Carport carport, double width, double length, double height, boolean withShed, Double shedWidth, Double shedLength, String customerWishes)
+    {
+        //validate carport dimensions
+        double validatedWidth = validateMeasurementInput(width, Constants.MIN_CARPORT_WIDTH, Constants.MAX_CARPORT_WIDTH);
+        double validatedLength = validateMeasurementInput(length, Constants.MIN_CARPORT_LENGTH, Constants.MAX_CARPORT_LENGTH);
+
+        Double validatedShedWidth = null;
+        Double validatedShedLength = null;
+
+        if (withShed && shedWidth != null && shedLength != null)
+        {
+            //validate individual shed dimensions
+            validatedShedWidth = validateMeasurementInput(shedWidth, Constants.MIN_SHED_WIDTH, Constants.MAX_SHED_WIDTH);
+            validatedShedLength = validateMeasurementInput(shedLength, Constants.MIN_SHED_LENGTH, Constants.MAX_SHED_LENGTH);
+
+            //validate against carport size
+            validatedShedWidth = validateShedMeasurement(validatedWidth, validatedShedWidth);
+            validatedShedLength = validateShedMeasurement(validatedLength, validatedShedLength);
+
+            //validate total shed size (car space)
+            validateShedTotalSize(validatedLength, validatedWidth, validatedShedLength, validatedShedWidth);
+        }
+
+        String validatedWishes = validateStringInput(customerWishes);
+
+        //create new carport
+        if (carport == null)
+        {
+            if(withShed)
+            {
+                return new Carport(validatedWidth, validatedLength, height, withShed,
+                        validatedShedWidth, validatedShedLength, validatedWishes);
+            }
+            return new Carport(validatedWidth, validatedLength, height, withShed, validatedWishes);
+        }
+
+        //update existing carport
+        carport.setWidth(validatedWidth);
+        carport.setLength(validatedLength);
+        carport.setHeight(height);
+        carport.setWithShed(withShed);
+        if(withShed)
+        {
+            carport.setShedWidth(validatedShedWidth);
+            carport.setShedLength(validatedShedLength);
+        }
+        carport.setCustomerWishes(validatedWishes);
+
+        return carport;
+    }
+
+    public Double parseOptionalDouble(String value)
+    {
+        return (value != null && !value.isEmpty()) ? Double.parseDouble(value) : null;
+    }
+
+    private double validateShedMeasurement(double carportMeasurement, double shedMeasurement)
     {
         double deadZone = 40;
 
         //creates dead zone so if a shed is to close to the edge it resizes shed to match carport width
-        double maxShedSize = (carportMeasurement <= SMALL_MEDIUM_CARPORT) ? carportMeasurement - OVERHANG_SMALL : carportMeasurement - (OVERHANG_SMALL + deadZone);
-        double minShedSize = (carportMeasurement <= SMALL_MEDIUM_CARPORT) ? carportMeasurement - OVERHANG_LARGE : carportMeasurement - (OVERHANG_LARGE + deadZone);
+        double maxShedSize = (carportMeasurement <= smallMediumThreshold) ? carportMeasurement - Constants.OVERHANG_SMALL : carportMeasurement - (Constants.OVERHANG_SMALL + deadZone);
+        double minShedSize = (carportMeasurement <= smallMediumThreshold) ? carportMeasurement - Constants.OVERHANG_LARGE : carportMeasurement - (Constants.OVERHANG_LARGE + deadZone);
 
         if (shedMeasurement > maxShedSize)
         {
@@ -63,11 +118,9 @@ public class CarportServiceImpl implements CarportService
         }
     }
 
-    @Override
-    public boolean validateShedTotalSize(double carportLength, double carportWidth, double shedLength, double shedWidth)
+    private void validateShedTotalSize(double carportLength, double carportWidth, double shedLength, double shedWidth)
     {
-        double postOffset = (carportWidth >= SMALL_MEDIUM_CARPORT) ? OVERHANG_LARGE / 2 : OVERHANG_SMALL / 2;
-        double usableCarportWidth = carportWidth - (2 * postOffset);
+        double usableCarportWidth = (carportWidth >= smallMediumThreshold) ? carportWidth - Constants.OVERHANG_LARGE : carportWidth - Constants.OVERHANG_SMALL;
 
         double remainingCarportLength = carportLength - shedLength;
         double remainingCarportWidth = usableCarportWidth - shedWidth;
@@ -82,9 +135,70 @@ public class CarportServiceImpl implements CarportService
 
         if (!hasSpaceInFront && !hasSpaceBeside)
         {
-            throw new IllegalArgumentException("Der er ikke plads til bilen med nuværende skur mål. Minimum 240x240 cm til carport.");
+            double maxShedLengthForFront = carportLength - minCarSpace;
+            double maxShedWidthForSide = usableCarportWidth - minCarSpace;
+
+            String message = "Der er ikke plads til bilen med nuværende skur mål (minimum 240x240 cm kræves).";
+
+            if (remainingCarportLength < minCarSpace && remainingCarportWidth < minCarSpace)
+            {
+                message += String.format(" Skuret er for stort i begge retninger. Maksimal skur længde: %.0f cm. Maksimal skur bredde: %.0f cm.",
+                        maxShedLengthForFront, maxShedWidthForSide);
+            }
+            else if (remainingCarportLength < minCarSpace)
+            {
+                message += String.format(" Manglende plads foran skuret. Maksimal skur længde: %.0f cm.", maxShedLengthForFront);
+            }
+            else
+            {
+                message += String.format(" Manglende plads ved siden af skuret. Maksimal skur bredde: %.0f cm.", maxShedWidthForSide);
+            }
+
+            throw new IllegalArgumentException(message);
         }
-        return true;
+    }
+
+    private double validateMeasurementInput(double input, double min, double max)
+    {
+        //example with an input : 432, min : 150, max: 750
+
+        // interval = 30
+        double interval = Constants.CARPORT_MEASUREMENT_INTERVAL;
+
+        // input = 432, min = 150 → 432 < 150 is false, so we continue
+        if (input < min)
+        {
+            throw new IllegalArgumentException(input + " cm er under minimumsmål: " + min + " cm");
+        }
+
+        // (input - min) / interval
+        // (432 - 150) / 30 = 282 / 30 = 9.4
+        // cast to int → 9 (rounds down)
+        int stepsFromMin = (int) ((input - min) / interval);
+
+        // measurement = min + (stepsFromMin * interval)
+        //               150 + (9 * 30) = 150 + 270 = 420
+        double measurement = min + (stepsFromMin * interval);
+
+        // ensures value does not exceed max
+        // Math.min(420, 750) → 420
+        return Math.min(measurement, max);
+
+    }
+
+    private String validateStringInput(String input)
+    {
+        if (input == null || input.trim().isEmpty())
+        {
+            return "";
+        }
+
+        if (input.length() > 250)
+        {
+            throw new IllegalArgumentException("Teksten må maksimalt være 250 tegn. Nuværende længde: " + input.length());
+        }
+
+        return input;
     }
 }
 

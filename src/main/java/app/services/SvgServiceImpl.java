@@ -43,26 +43,26 @@ public class SvgServiceImpl implements SvgService
 
     public SvgServiceImpl(int x, int y, String viewBox, String width, String height)
     {
-        svg.append(String.format(Locale.US,SVG_TEMPLATE, x, y, viewBox, width, height));
+        svg.append(String.format(Locale.US, SVG_TEMPLATE, x, y, viewBox, width, height));
         svg.append(SVG_ARROW_DEFS);
     }
 
     @Override
     public void addRectangle(double x, double y, double height, double width, String style)
     {
-        svg.append(String.format(Locale.US,SVG_RECT_TEMPLATE, x, y, height, width, style));
+        svg.append(String.format(Locale.US, SVG_RECT_TEMPLATE, x, y, height, width, style));
     }
 
     @Override
     public void addLine(double x1, double y1, double x2, double y2, String style)
     {
-        svg.append(String.format(Locale.US,SVG_LINE_TEMPLATE, x1, y1, x2, y2, style));
+        svg.append(String.format(Locale.US, SVG_LINE_TEMPLATE, x1, y1, x2, y2, style));
     }
 
     @Override
     public void addArrow(double x1, double y1, double x2, double y2, String style)
     {
-        svg.append(String.format(Locale.US,SVG_ARROW_TEMPLATE, x1, y1, x2, y2, style));
+        svg.append(String.format(Locale.US, SVG_ARROW_TEMPLATE, x1, y1, x2, y2, style));
     }
 
     @Override
@@ -71,11 +71,11 @@ public class SvgServiceImpl implements SvgService
         svg.append(String.format(SVG_TEXT_TEMPLATE, x, y, rotation, text));
     }
 
-   @Override
-   public void addSvg(SvgServiceImpl innerSvg)
-   {
-       svg.append(innerSvg.toString());
-   }
+    @Override
+    public void addSvg(SvgServiceImpl innerSvg)
+    {
+        svg.append(innerSvg.toString());
+    }
 
     @Override
     public String toString()

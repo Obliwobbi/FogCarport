@@ -5,7 +5,8 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class Customer {
+public class Customer
+{
     private int customerId;
     private String firstName;
     private String lastName;

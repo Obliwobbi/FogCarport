@@ -6,10 +6,11 @@ import app.entities.Customer;
 import app.entities.Employee;
 import app.entities.MaterialsLine;
 import app.exceptions.DatabaseException;
-import app.services.OrderDetailsService;
-import app.services.OrderService;
+import app.services.*;
+import app.util.Status;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
+import jakarta.mail.MessagingException;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -19,17 +20,28 @@ public class OrderController
 {
     private final OrderService orderService;
     private final OrderDetailsService orderDetailsService;
+    private final EmailService emailService;
+    private final EmployeeService employeeService;
+    private final CarportService carportService;
+    private final CustomerService customerService;
 
-    public OrderController(OrderService orderService, OrderDetailsService orderDetailsService)
+    public OrderController(OrderService orderService, OrderDetailsService orderDetailsService, EmailService emailService, EmployeeService employeeService, CarportService carportService, CustomerService customerService)
     {
         this.orderService = orderService;
         this.orderDetailsService = orderDetailsService;
+        this.emailService = emailService;
+        this.employeeService = employeeService;
+        this.carportService = carportService;
+        this.customerService = customerService;
     }
 
     public void addRoutes(Javalin app)
     {
+        app.get("/login", this::showLogin);
         app.get("/orders", this::showOrders);
         app.get("/orders/details/{id}", this::showOrderDetails);
+
+        app.post("/login", this::authenticateLogin);
 
         app.post("/orders/delete/{id}", this::deleteOrder);
 
@@ -40,10 +52,83 @@ public class OrderController
 
         app.post("/orders/details/{id}/stykliste", this::generateMaterialList);
         app.post("/orders/details/{id}/regenerate-stykliste", this::regenerateMaterialList);
+
+        app.post("/orders/send-offer/{id}", this::sendOffer);
+    }
+
+    private void showLogin(Context ctx)
+    {
+        ctx.render("login");
+    }
+
+    private void authenticateLogin(Context ctx)
+    {
+        String email = ctx.formParam("email");
+        String password = ctx.formParam("password");
+
+        try
+        {
+            Employee employee = employeeService.authenticateEmployee(email, password);
+            ctx.sessionAttribute("currentEmployee", employee);
+            ctx.redirect("/orders");
+        }
+        catch (DatabaseException e)
+        {
+            flashError(ctx, "Forkert email eller password");
+            ctx.render("login");
+        }
+    }
+
+    private void showOrders(Context ctx)
+    {
+        if (!orderService.requireEmployee(ctx)) return;
+
+        try
+        {
+            String statusFilter = ctx.queryParam("status");
+
+            List<OrderWithDetailsDTO> newOrders = orderService.getOrdersByStatusDTO(Status.NEW);
+
+            List<OrderWithDetailsDTO> filteredOrders;
+            if (statusFilter != null && !statusFilter.isEmpty() && !statusFilter.equals("ALL"))
+            {
+                filteredOrders = orderService.getOrdersByStatusDTO(Status.valueOf(statusFilter));
+            }
+            else
+            {
+                filteredOrders = new ArrayList<>();
+                filteredOrders.addAll(orderService.getOrdersByStatusDTO(Status.PENDING));
+                filteredOrders.addAll(orderService.getOrdersByStatusDTO(Status.PAID));
+                filteredOrders.addAll(orderService.getOrdersByStatusDTO(Status.IN_TRANSIT));
+                filteredOrders.addAll(orderService.getOrdersByStatusDTO(Status.DONE));
+
+            }
+            ctx.attribute("newOrders", newOrders);
+            ctx.attribute("filteredOrders", filteredOrders);
+            ctx.attribute("selectedStatus", statusFilter != null ? statusFilter : "ALL");
+            ctx.attribute("allStatuses", Status.values());
+
+            consumeFlash(ctx);
+            ctx.render("orders.html");
+        }
+        catch (DatabaseException e)
+        {
+            ctx.attribute("errorMessage", "Der opstod en fejl ved hentning af ordrer");
+            ctx.attribute("paidOrders", new ArrayList<>());
+            ctx.attribute("inTransitOrders", new ArrayList<>());
+            ctx.attribute("doneOrders", new ArrayList<>());
+            ctx.attribute("newOrders", new ArrayList<>());
+            ctx.attribute("pendingOrders", new ArrayList<>());
+
+            consumeFlash(ctx);
+            ctx.render("orders.html");
+        }
     }
 
     private void showOrderDetails(Context ctx)
     {
+        if (!orderService.requireEmployee(ctx)) return;
+
         String orderIdString = ctx.pathParam("id");
         String editSection = ctx.queryParam("edit");
 
@@ -53,12 +138,12 @@ public class OrderController
             OrderWithDetailsDTO order = orderService.getOrderwithDetails(orderId);
             if (order == null)
             {
-                ctx.attribute("errorMessage", "Ordre ikke fundet");
+                flashError(ctx, "Ordren blev ikke fundet");
                 ctx.redirect("/orders");
                 return;
             }
             List<MaterialsLine> materialsLines = order.getMaterialsLines();
-            List<Employee> employees = orderService.getAllEmployees();
+            List<Employee> employees = employeeService.getAllEmployees();
 
             ctx.attribute("order", order);
             ctx.attribute("employees", employees);
@@ -66,27 +151,63 @@ public class OrderController
             ctx.attribute("hasMaterialsList", materialsLines != null && !materialsLines.isEmpty());
             ctx.attribute("editSection", editSection);
 
+            // Transfer session messages to context attributes and clear them
+            consumeFlash(ctx);
             ctx.render("order-details.html");
         }
         catch (NumberFormatException e)
         {
-            ctx.attribute("errorMessage", "Ugyldigt ordre ID");
+            flashError(ctx, "Ugyldigt ordre ID");
             ctx.redirect("/orders");
         }
         catch (NullPointerException e)
         {
-            ctx.attribute("errorMessage", "Ordre har ikke materiale liste");
+            flashError(ctx, "Ordren har ikke en materiale liste");
             ctx.redirect("/orders");
         }
         catch (DatabaseException e)
         {
-            ctx.attribute("errorMessage", e.getMessage());
+            flashError(ctx, "Der opstod en fejl ved hentning af ordren");
+            ctx.redirect("/orders");
+        }
+    }
+
+    private void deleteOrder(Context ctx)
+    {
+        if (!orderService.requireEmployee(ctx)) return;
+
+        String orderIdStr = ctx.pathParam("id");
+
+        try
+        {
+            int orderId = Integer.parseInt(orderIdStr);
+            if (orderService.deleteOrder(orderId))
+            {
+                flashSuccess(ctx, "Ordren blev slettet");
+                ctx.redirect("/orders");
+            }
+            else
+            {
+                flashError(ctx, "Kunne ikke slette ordren. Prøv igen senere.");
+                ctx.redirect("/orders");
+            }
+        }
+        catch (NumberFormatException e)
+        {
+            flashError(ctx, "Ugyldigt ordre ID");
+            ctx.redirect("/orders");
+        }
+        catch (DatabaseException e)
+        {
+            flashError(ctx, "Kunne ikke slette ordren. Prøv igen senere.");
             ctx.redirect("/orders");
         }
     }
 
     private void updateOrderInfo(Context ctx)
     {
+        if (!orderService.requireEmployee(ctx)) return;
+
         int orderId = Integer.parseInt(ctx.pathParam("id"));
         try
         {
@@ -97,7 +218,7 @@ public class OrderController
             String employeeIdString = ctx.formParam("employeeId");
 
 
-            orderService.updateOrderStatus(orderId, status);
+            orderService.updateOrderStatus(orderId, Status.valueOf(status));
             if (deliveryDate != null)
             {
                 orderService.updateOrderDeliveryDate(orderId, deliveryDate.atStartOfDay().plusHours(12));
@@ -112,91 +233,101 @@ public class OrderController
                 orderService.updateOrderEmployee(orderId, 0);
             }
 
-            ctx.redirect("/orders/details/" + orderId + "?success=order");
+            flashSuccess(ctx, "Ordre information blev opdateret");
+            ctx.redirect("/orders/details/" + orderId);
         }
         catch (DatabaseException e)
         {
-            ctx.redirect("/orders/details/" + orderId + "?error=" + e.getMessage());
+            flashError(ctx, "Kunne ikke opdatere ordre information. Prøv igen senere.");
+            ctx.redirect("/orders/details/" + orderId);
         }
     }
 
     private void updateCustomerInfo(Context ctx)
     {
+        if (!orderService.requireEmployee(ctx)) return;
+
         int orderId = Integer.parseInt(ctx.pathParam("id"));
 
         try
         {
             OrderWithDetailsDTO order = orderService.getOrderwithDetails(orderId);
-            Customer customer = order.getCustomer();
 
-            customer.setFirstName(ctx.formParam("firstName"));
-            customer.setLastName(ctx.formParam("lastName"));
-            customer.setEmail(ctx.formParam("email"));
-            customer.setPhone(ctx.formParam("phone"));
-            customer.setStreet(ctx.formParam("street"));
-            customer.setHouseNumber(ctx.formParam("houseNumber"));
-            customer.setZipcode(Integer.parseInt(ctx.formParam("zipcode")));
-            customer.setCity(ctx.formParam("city"));
+            Customer validatedCustomer = customerService.validateCustomer(
+                    order.getCustomer(),
+                    ctx.formParam("firstName"),
+                    ctx.formParam("lastName"),
+                    ctx.formParam("email"),
+                    ctx.formParam("phone"),
+                    ctx.formParam("street"),
+                    ctx.formParam("houseNumber"),
+                    Integer.parseInt(ctx.formParam("zipcode")),
+                    ctx.formParam("city")
+            );
 
-            orderService.updateCustomerInfo(customer);
-            ctx.redirect("/orders/details/" + orderId + "?success=customer");
+            customerService.updateCustomerInfo(validatedCustomer);
+            flashSuccess(ctx, "Kunde information blev opdateret");
+            ctx.redirect("/orders/details/" + orderId);
 
         }
         catch (DatabaseException e)
         {
-            ctx.attribute("errorMessage", e.getMessage());
-            ctx.redirect("/orders/details/" + orderId + "?error=" + e.getMessage());
+            flashError(ctx, "Kunne ikke opdatere kunde information. Prøv igen senere.");
+            ctx.redirect("/orders/details/" + orderId);
+        }
+        catch (IllegalArgumentException e)
+        {
+            flashError(ctx, e.getMessage());
+            ctx.redirect("/orders/details/" + orderId);
         }
     }
 
     private void updateCarportInfo(Context ctx)
     {
+        if (!orderService.requireEmployee(ctx)) return;
+
         int orderId = Integer.parseInt(ctx.pathParam("id"));
         try
         {
             OrderWithDetailsDTO order = orderService.getOrderwithDetails(orderId);
-            Carport carport = order.getCarport();
 
-            double carportWidth = Double.parseDouble(ctx.formParam("width"));
-            double carportLength = Double.parseDouble(ctx.formParam("length"));
-            double carportHeight = Double.parseDouble(ctx.formParam("height"));
-            boolean withShed = Boolean.parseBoolean(ctx.formParam("withShed"));
+            Carport validatedCarport = carportService.validateAndBuildCarport(
+                    order.getCarport(),
+                    carportService.parseOptionalDouble(ctx.formParam("width")),
+                    carportService.parseOptionalDouble(ctx.formParam("length")),
+                    carportService.parseOptionalDouble(ctx.formParam("height")),
+                    Boolean.parseBoolean(ctx.formParam("withShed")),
+                    carportService.parseOptionalDouble(ctx.formParam("shedWidth")),
+                    carportService.parseOptionalDouble(ctx.formParam("shedLength")),
+                    ctx.formParam("customerWishes")
+            );
 
-            Integer shedWidth = null;
-            Integer shedLength = null;
-            if (withShed)
-            {
-                String shedWidthString = ctx.formParam("shedWidth");
-                String shedLengthString = ctx.formParam("shedLength");
-                shedWidth = (shedWidthString != null && !shedWidthString.isEmpty())
-                        ? Integer.parseInt(shedWidthString) : null;
-                shedLength = (shedLengthString != null && !shedLengthString.isEmpty())
-                        ? Integer.parseInt(shedLengthString) : null;
-            }
-            String customerWishes = ctx.formParam("customerWishes");
-
-            carport.setWidth(carportWidth);
-            carport.setLength(carportLength);
-            carport.setHeight(carportHeight);
-            carport.setWithShed(withShed);
-            if (carport.isWithShed())
-            {
-                carport.setShedWidth(shedWidth);
-                carport.setShedLength(shedLength);
-            }
-            carport.setCustomerWishes(customerWishes);
-
-            orderService.updateCarport(carport);
-            ctx.redirect("/orders/details/" + orderId + "?success=carport");
+            carportService.updateCarport(validatedCarport);
+            flashSuccess(ctx, "Carport information blev opdateret");
+            ctx.redirect("/orders/details/" + orderId);
         }
         catch (DatabaseException e)
         {
-            ctx.redirect("/orders/details/" + orderId + "?error=" + e.getMessage());
+            flashError(ctx, "Kunne ikke opdatere carport information. Prøv igen senere.");
+            ctx.redirect("/orders/details/" + orderId);
+        }
+        catch (IllegalArgumentException e)
+        {
+            flashError(ctx, e.getMessage());
+            ctx.redirect("/orders/details/" + orderId);
+        }
+        catch (NullPointerException e)
+        {
+            flashError(ctx, "Alle felter skal være udfyldt.");
+            ctx.redirect("/orders/details/" + orderId);
         }
     }
 
+
     private void updateMaterialPrices(Context ctx)
     {
+        if (!orderService.requireEmployee(ctx)) return;
+
         int orderId = Integer.parseInt(ctx.pathParam("id"));
 
         try
@@ -225,16 +356,20 @@ public class OrderController
                 }
             }
             orderService.updateOrderTotalPrice(orderId);
-            ctx.redirect("/orders/details/" + orderId + "?success=prices");
+            flashSuccess(ctx, "Priser blev opdateret");
+            ctx.redirect("/orders/details/" + orderId);
         }
         catch (DatabaseException e)
         {
-            ctx.redirect("/orders/details/" + orderId + "?error=" + e.getMessage());
+            flashError(ctx, "Kunne ikke opdatere priser. Prøv igen senere.");
+            ctx.redirect("/orders/details/" + orderId);
         }
     }
 
     private void generateMaterialList(Context ctx)
     {
+        if (!orderService.requireEmployee(ctx)) return;
+
         int orderId = Integer.parseInt(ctx.pathParam("id"));
 
         try
@@ -245,23 +380,26 @@ public class OrderController
             if (orderDetailsService.addMaterialListToOrder(orderId, carport))
             {
                 orderService.updateOrderTotalPrice(orderId);
-                ctx.attribute("successMessage", "Materiale liste blev genereret");
+                flashSuccess(ctx, "Materiale listen blev genereret");
                 ctx.redirect("/orders/details/" + orderId);
             }
             else
             {
-                ctx.attribute("errorMessage", "Materialer er allerede generet for denne ordre");
+                flashError(ctx, "Materiale listen er allerede genereret for denne ordre");
                 ctx.redirect("/orders/details/" + orderId);
             }
         }
         catch (DatabaseException e)
         {
-            ctx.attribute("errorMessage", "Kunne ikke oprette materiale liste: " + e.getMessage());
+            flashError(ctx, "Kunne ikke oprette materiale liste. Prøv igen senere.");
+            ctx.redirect("/orders/details/" + orderId);
         }
     }
 
     private void regenerateMaterialList(Context ctx)
     {
+        if (!orderService.requireEmployee(ctx)) return;
+
         int orderId = Integer.parseInt(ctx.pathParam("id"));
 
         try
@@ -270,73 +408,63 @@ public class OrderController
 
             orderDetailsService.regenerateMaterialList(orderId, order.getCarport());
 
-            ctx.redirect("/orders/details/" + orderId + "?success=carport");
+            flashSuccess(ctx, "Materiale listen blev opdateret");
+            ctx.redirect("/orders/details/" + orderId);
         }
         catch (DatabaseException e)
         {
-            ctx.attribute("errorMessage", "Kunne ikke regenerere materiale liste");
-            ctx.redirect("/orders/details/" + orderId + "?error=" + e.getMessage());
+            flashError(ctx, "Kunne ikke opdatere materiale listen. Prøv igen senere.");
+            ctx.redirect("/orders/details/" + orderId);
         }
     }
 
-    private void showOrders(Context ctx)
+    private void sendOffer(Context ctx)
     {
-        try
-        {
-            List<OrderWithDetailsDTO> newOrders = orderService.getOrdersByStatusDTO("NY ORDRE");
-            List<OrderWithDetailsDTO> pendingOrders = orderService.getOrdersByStatusDTO("AFVENTER ACCEPT");
-            List<OrderWithDetailsDTO> paidOrders = orderService.getOrdersByStatusDTO("BETALT");
-            List<OrderWithDetailsDTO> inTransitOrders = orderService.getOrdersByStatusDTO("AFSENDT");
-            List<OrderWithDetailsDTO> doneOrders = orderService.getOrdersByStatusDTO("AFSLUTTET");
+        if (!orderService.requireEmployee(ctx)) return;
 
-            ctx.attribute("newOrders", newOrders);
-            ctx.attribute("pendingOrders", pendingOrders);
-            ctx.attribute("paidOrders", paidOrders);
-            ctx.attribute("inTransitOrders", inTransitOrders);
-            ctx.attribute("doneOrders", doneOrders);
-
-            ctx.render("orders.html");
-        }
-        catch (DatabaseException e)
-        {
-            ctx.attribute("orderErrorMessage", e.getMessage());
-            ctx.attribute("paidOrders", new ArrayList<>());
-            ctx.attribute("inTransitOrders", new ArrayList<>());
-            ctx.attribute("doneOrders", new ArrayList<>());
-            ctx.attribute("newOrders", new ArrayList<>());
-            ctx.attribute("pendingOrders", new ArrayList<>());
-
-            ctx.render("orders.html");
-        }
-    }
-
-    private void deleteOrder(Context ctx) throws DatabaseException
-    {
-        String orderIdStr = ctx.pathParam("id");
+        int orderId = Integer.parseInt(ctx.pathParam("id"));
 
         try
         {
-            int orderId = Integer.parseInt(orderIdStr);
-            if (orderService.deleteOrder(orderId))
-            {
-                ctx.redirect("/orders");
-                ctx.attribute("successMessage", "Du har slette ordren med id " + orderId);
-            }
-            else
-            {
-                ctx.attribute("errorMessage", "Kunne ikke slette ordren");
-                ctx.redirect("/orders");
-            }
+            OrderWithDetailsDTO order = orderService.getOrderwithDetails(orderId);
+            emailService.sendCarportOffer(order);
+            flashSuccess(ctx, "Tilbuddet blev sendt til kunden!");
+            ctx.redirect("/orders/details/" + orderId);
         }
-        catch (NumberFormatException e)
+        catch (DatabaseException | MessagingException e)
         {
-            ctx.attribute("errorMessage", "Kunne ikke parse tallet");
-            ctx.redirect("/orders");
-        }
-        catch (DatabaseException e)
-        {
-            ctx.attribute("errorMessage", e.getMessage());
-            ctx.redirect("/orders");
+            flashError(ctx, "Kunne ikke sende email til kunden. Prøv igen senere.");
+            ctx.redirect("/orders/details/" + orderId);
         }
     }
+
+    private void flashSuccess(Context ctx, String msg)
+    {
+        ctx.sessionAttribute("successMessage", msg);
+        ctx.sessionAttribute("errorMessage", null);
+    }
+
+    private void flashError(Context ctx, String msg)
+    {
+        ctx.sessionAttribute("errorMessage", msg);
+        ctx.sessionAttribute("successMessage", null);
+    }
+
+    private void consumeFlash(Context ctx)
+    {
+        String sessionSuccessMessage = ctx.sessionAttribute("successMessage");
+        if (sessionSuccessMessage != null)
+        {
+            ctx.attribute("successMessage", sessionSuccessMessage);
+            ctx.sessionAttribute("successMessage", null);
+        }
+
+        String sessionErrorMessage = ctx.sessionAttribute("errorMessage");
+        if (sessionErrorMessage != null)
+        {
+            ctx.attribute("errorMessage", sessionErrorMessage);
+            ctx.sessionAttribute("errorMessage", null);
+        }
+    }
+
 }

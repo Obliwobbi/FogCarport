@@ -44,12 +44,11 @@ public class ContactController
 
         try
         {
-            String email = customerService.validateEmail(ctx.formParam("email"));
-
-            customer = customerService.registerNewCustomer(
+            customer = customerService.validateCustomer(
+                    null,
                     ctx.formParam("firstname"),
                     ctx.formParam("lastname"),
-                    email,
+                    ctx.formParam("email"),
                     ctx.formParam("phonenumber"),
                     ctx.formParam("street"),
                     ctx.formParam("housenumber"),
@@ -97,6 +96,12 @@ public class ContactController
             ctx.attribute("errorMessage", "Der opstod en uventet fejl, prøv igen");
             ctx.render("contact.html");
         }
+        catch (NumberFormatException e)
+        {
+            orderFailure(drawing, carport, customer);
+            ctx.attribute("errorMessage", "Postnummer & Telefonnummer  skal være et gyldigt tal");
+            ctx.render("contact.html");
+        }
         catch (IllegalArgumentException e)
         {
             orderFailure(drawing, carport, customer);
@@ -106,7 +111,7 @@ public class ContactController
         catch (NullPointerException e)
         {
             orderFailure(drawing, carport, customer);
-            ctx.attribute("errorMessage", "Udfyld venligtst alle Felterne");
+            ctx.attribute("errorMessage", "Udfyld venligtst alle felterne");
             ctx.render("contact.html");
         }
         catch (Exception e)
@@ -160,7 +165,7 @@ public class ContactController
         }
         catch (DatabaseException e)
         {
-            //TODO Should probably be logged
+            //TODO Should be logged
             System.err.println("Cleanup failed: " + e.getMessage());
         }
     }

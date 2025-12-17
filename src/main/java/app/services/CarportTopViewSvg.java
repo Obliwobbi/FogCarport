@@ -1,6 +1,7 @@
 package app.services;
 
 import app.entities.Carport;
+import app.util.Constants;
 
 import java.util.Locale;
 
@@ -35,8 +36,8 @@ public class CarportTopViewSvg
     {
         double carportWidth = carport.getWidth();
 
-        MAX_OVERHANG = (carportWidth >= 330) ? 70 : 35;  //smaller overhang on smaller carports to give space for car
-        TOP_PLATE_OFFSET = (carportWidth >= 330) ? 35 : 15; //aligns Top Plate with Posts
+        MAX_OVERHANG = (carportWidth >= Constants.OVERHANG_THRESHOLD) ? Constants.OVERHANG_LARGE : Constants.OVERHANG_SMALL;  //smaller overhang on smaller carports to give space for car
+        TOP_PLATE_OFFSET = (carportWidth >= Constants.OVERHANG_THRESHOLD) ? (Constants.OVERHANG_LARGE / 2) : (Constants.OVERHANG_SMALL / 2); //aligns Top Plate with Posts
 
         POST_OFFSET_Y_TOP = TOP_PLATE_OFFSET - 2.5;
         POST_OFFSET_Y_BOTTOM = TOP_PLATE_OFFSET + 2.5;
@@ -138,7 +139,8 @@ public class CarportTopViewSvg
             double spaceBetweenShedInnerPostAndFirstCarportPost = shedInnerCornerPostXPosition - Constants.POST_OFFSET_X_LARGE;
             if (spaceBetweenShedInnerPostAndFirstCarportPost > Constants.MAX_LENGTH_BLOCKING)
             {
-                double middlePostUnderTopPlatesX = Constants.POST_OFFSET_X_LARGE + (spaceBetweenShedInnerPostAndFirstCarportPost / 2);
+                double spaceBetweenPosts = (carportLength - Constants.POST_OFFSET_EDGE_BUFFER) / 2;
+                double middlePostUnderTopPlatesX = (shedLength <= 300 && carportLength > 510) ? (Constants.POST_OFFSET_X_LARGE + spaceBetweenPosts) : Constants.POST_OFFSET_X_LARGE + (spaceBetweenShedInnerPostAndFirstCarportPost / 2); //300 and 510 are for cosmetic reasons so posts are placed at exactly the same places
                 svgService.addRectangle(middlePostUnderTopPlatesX, POST_OFFSET_Y_TOP, Constants.POST_SIZE, Constants.POST_SIZE, Constants.STYLE); // UPPER POST BETWEEN FRONT AND SHED CORNER
 
                 if (isFullWidth)

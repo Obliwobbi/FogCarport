@@ -1,20 +1,24 @@
 package app.entities;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
-public class Employee {
+public class Employee
+{
     private int employeeId;
     private String name;
     private String email;
+    private String password;
     private String phone;
+
+    public Employee(int employeeId, String name, String email, String phone)
+    {
+        this.employeeId = employeeId;
+        this.name = name;
+        this.email = email;
+        this.phone = phone;
+    }
 }
 
