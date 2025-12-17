@@ -13,7 +13,6 @@ import java.util.Properties;
 
 public class GmailEmailSenderHTML
 {
-
     private final String username;
     private final String password;
     private final TemplateEngine templateEngine;
