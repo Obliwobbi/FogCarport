@@ -25,18 +25,26 @@ skinparam class {
 
     BackgroundColor<<util>> Lavender
     BorderColor<<util>> Purple
+
+    BackgroundColor<<config>> Wheat
+    BorderColor<<config>> Orange
+
+    BackgroundColor<<exception>> LightPink
+    BorderColor<<exception>> Crimson
 }
 
 ' Legend
 legend top left
 |= Color |= Layer |= Description |
-|<back:AliceBlue>   </back>| Controller | Presentation layer - handles HTTP requests |
-|<back:PaleGreen>   </back>| Service Interface | Contracts for business logic |
-|<back:Honeydew>   </back>| Service Implementation | Business logic layer |
-|<back:LemonChiffon>   </back>| Persistence | Data access layer - mappers and connection pool |
-|<back:White>   </back>| Entity | Domain model objects |
-|<back:LightCyan>   </back>| DTO | Data Transfer Objects |
-|<back:Lavender>   </back>| Utility | Helper classes |
+|<back:AliceBlue>   </back>| Controller | Presentation layer - handles HTTP requests (app.controllers) |
+|<back:PaleGreen>   </back>| Service Interface | Contracts for business logic (app.services) |
+|<back:Honeydew>   </back>| Service Implementation | Business logic layer (app.services) |
+|<back:LemonChiffon>   </back>| Persistence | Data access layer - mappers and connection pool (app.persistence) |
+|<back:White>   </back>| Entity | Domain model objects (app.entities) |
+|<back:LightCyan>   </back>| DTO | Data Transfer Objects (app.dto) |
+|<back:Lavender>   </back>| Utility | Helper classes (app.util, app.services) |
+|<back:Wheat>   </back>| Config | Configuration classes (app.config) |
+|<back:LightPink>   </back>| Exception | Custom exceptions (app.exceptions) |
 endlegend
 
 ' ============================================
@@ -58,6 +66,8 @@ interface DrawingService <<interface>>
 interface CalculatorService <<interface>>
 interface OrderDetailsService <<interface>>
 interface SvgService <<interface>>
+interface EmailService <<interface>>
+interface EmployeeService <<interface>>
 
 ' ============================================
 ' SERVICE IMPLEMENTATIONS
@@ -69,12 +79,26 @@ class DrawingServiceImpl <<service>>
 class CalculatorServiceImpl <<service>>
 class OrderDetailsServiceImpl <<service>>
 class SvgServiceImpl <<service>>
+class EmailServiceImpl <<service>>
+class EmployeeServiceImpl <<service>>
 
 ' ============================================
 ' UTILITY CLASSES
 ' ============================================
 class CarportTopViewSvg <<util>>
 class Constants <<util>>
+class Status <<util>>
+class GmailEmailSenderHTML <<util>>
+
+' ============================================
+' CONFIGURATION CLASSES
+' ============================================
+class ThymeleafConfig <<config>>
+
+' ============================================
+' EXCEPTION CLASSES
+' ============================================
+class DatabaseException <<exception>>
 
 ' ============================================
 ' MAPPERS
@@ -142,6 +166,10 @@ DrawingController ..> OrderService : uses
 
 OrderController ..> OrderService : uses
 OrderController ..> OrderDetailsService : uses
+OrderController ..> EmailService : uses
+OrderController ..> EmployeeService : uses
+OrderController ..> CarportService : uses
+OrderController ..> CustomerService : uses
 
 ' ============================================
 ' SERVICE INTERFACE IMPLEMENTATIONS
@@ -153,39 +181,45 @@ DrawingService <|.. DrawingServiceImpl : implements
 CalculatorService <|.. CalculatorServiceImpl : implements
 OrderDetailsService <|.. OrderDetailsServiceImpl : implements
 SvgService <|.. SvgServiceImpl : implements
+EmailService <|.. EmailServiceImpl : implements
+EmployeeService <|.. EmployeeServiceImpl : implements
 
 ' ============================================
 ' SERVICE → MAPPER DEPENDENCIES
 ' ============================================
 ' Carport Service
 CarportServiceImpl ..> CarportMapper : uses
-CarportServiceImpl ..> DrawingMapper : uses
-CarportServiceImpl ..> CalculatorService : uses
+CarportServiceImpl ..> Constants : uses
 
 ' Order Service
 OrderServiceImpl ..> OrderMapper : uses
-OrderServiceImpl ..> MaterialsLinesMapper : uses
 
 ' Customer Service
 CustomerServiceImpl ..> CustomerMapper : uses
 
 ' Drawing Service
 DrawingServiceImpl ..> DrawingMapper : uses
+DrawingServiceImpl ..> SvgService : uses
+DrawingServiceImpl ..> CalculatorService : uses
+DrawingServiceImpl ..> CarportTopViewSvg : uses
 
 ' Order Details Service
-OrderDetailsServiceImpl ..> OrderMapper : uses
 OrderDetailsServiceImpl ..> MaterialsLinesMapper : uses
 OrderDetailsServiceImpl ..> MaterialMapper : uses
-OrderDetailsServiceImpl ..> CarportMapper : uses
-OrderDetailsServiceImpl ..> DrawingMapper : uses
-OrderDetailsServiceImpl ..> CustomerMapper : uses
-OrderDetailsServiceImpl ..> EmployeeMapper : uses
+OrderDetailsServiceImpl ..> CalculatorService : uses
 
 ' Calculator Service
-CalculatorServiceImpl ..> MaterialMapper : uses
+CalculatorServiceImpl ..> Carport : uses
+CalculatorServiceImpl ..> Constants : uses
 
 ' SVG Service
-SvgServiceImpl ..> CarportTopViewSvg : uses
+' SvgServiceImpl has no external dependencies
+
+' Employee Service
+EmployeeServiceImpl ..> EmployeeMapper : uses
+
+' Email Service
+EmailServiceImpl ..> GmailEmailSenderHTML : uses
 
 ' ============================================
 ' MAPPER → ENTITY CREATION
@@ -198,6 +232,9 @@ OrderMapper ..> Order : <<creates>>
 MaterialMapper ..> Material : <<creates>>
 MaterialsLinesMapper ..> MaterialsLine : <<creates>>
 
+' OrderMapper internally uses MaterialsLinesMapper
+OrderMapper ..> MaterialsLinesMapper : uses
+
 ' ============================================
 ' MAPPER → DATABASE CONNECTION
 ' ============================================
@@ -208,6 +245,22 @@ DrawingMapper ..> ConnectionPool : uses
 OrderMapper ..> ConnectionPool : uses
 MaterialMapper ..> ConnectionPool : uses
 MaterialsLinesMapper ..> ConnectionPool : uses
+
+' ============================================
+' UTILITY AND CONFIG DEPENDENCIES
+' ============================================
+CarportTopViewSvg ..> Carport : uses
+CarportTopViewSvg ..> CalculatorService : uses
+CarportTopViewSvg ..> SvgService : uses
+CarportTopViewSvg ..> Constants : uses
+
+CarportServiceImpl ..> Constants : uses
+OrderDetailsServiceImpl ..> Constants : uses
+
+GmailEmailSenderHTML ..> ThymeleafConfig : uses
+
+Order ..> Status : uses
+OrderWithDetailsDTO ..> Status : uses
 
 @enduml
 
