@@ -12,6 +12,7 @@ import io.javalin.Javalin;
 import io.javalin.http.Context;
 import jakarta.mail.MessagingException;
 
+import java.io.UnsupportedEncodingException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -431,7 +432,7 @@ public class OrderController
             flashSuccess(ctx, "Tilbuddet blev sendt til kunden!");
             ctx.redirect("/orders/details/" + orderId);
         }
-        catch (DatabaseException | MessagingException e)
+        catch (DatabaseException | MessagingException | UnsupportedEncodingException e)
         {
             flashError(ctx, "Kunne ikke sende email til kunden. Prøv igen senere.");
             ctx.redirect("/orders/details/" + orderId);

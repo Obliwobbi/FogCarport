@@ -42,7 +42,7 @@ public class GmailEmailSenderHTML
         return templateEngine.process(templateName, context);
     }
 
-    public void sendHtmlEmail(String to, String subject, String htmlBody) throws MessagingException
+    public void sendHtmlEmail(String to, String subject, String htmlBody) throws MessagingException, UnsupportedEncodingException
     {
         Properties props = new Properties();
         props.put("mail.smtp.host", System.getenv("MAIL_SMTP_HOST"));
@@ -63,11 +63,9 @@ public class GmailEmailSenderHTML
 
         Message message = new MimeMessage(session);
 
-        try {
-            message.setFrom(new InternetAddress(VERIFIED_SENDER_EMAIL, VERIFIED_SENDER_NAME, "UTF-8"));
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException("Failed to encode sender name", e);
-        }
+
+        message.setFrom(new InternetAddress(VERIFIED_SENDER_EMAIL, VERIFIED_SENDER_NAME, "UTF-8"));
+
 
         message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to));
         message.setSubject(subject);

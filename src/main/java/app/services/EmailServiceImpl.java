@@ -5,6 +5,7 @@ import app.util.GmailEmailSenderHTML;
 import app.util.Status;
 import jakarta.mail.MessagingException;
 
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,7 +19,7 @@ public class EmailServiceImpl implements EmailService
     }
 
     @Override
-    public void sendCarportOffer(OrderWithDetailsDTO orderDetails) throws MessagingException
+    public void sendCarportOffer(OrderWithDetailsDTO orderDetails) throws MessagingException, UnsupportedEncodingException
     {
         int orderId = orderDetails.getOrderId();
         String email = orderDetails.getCustomer().getEmail();
