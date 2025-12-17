@@ -16,8 +16,8 @@ import static org.junit.jupiter.api.Assertions.*;
 class MaterialsLinesMapperTest
 {
     private final static String USER = "postgres";
-    private static final String PASSWORD = "ModigsteFryser47";
-    private static final String URL = "jdbc:postgresql://164.92.247.68:5432/%s?currentSchema=test";
+    private static final String PASSWORD = "postgres";
+    private static final String URL = "jdbc:postgresql://localhost:5432/%s?currentSchema=test";
     private static final String DB = "fogcarport";
 
     private static ConnectionPool connectionPool;
@@ -216,12 +216,12 @@ class MaterialsLinesMapperTest
                 // Insert test orders
                 stmt.execute("""
                         INSERT INTO test.orders (order_id, order_date, status, delivery_date, drawing_id, carport_id, customer_id, total_price, employee_id)
-                        VALUES (1, '2024-01-15 10:30:00', 'AFVENTER ACCEPT', '2024-02-15 10:00:00', 1, 1, 1, 0.00,1)
+                        VALUES (1, '2024-01-15 10:30:00', 'PENDING', '2024-02-15 10:00:00', 1, 1, 1, 0.00,1)
                         """);
 
                 stmt.execute("""
                         INSERT INTO test.orders (order_id, order_date, status, delivery_date, drawing_id, carport_id, customer_id, total_price, employee_id)
-                        VALUES (2, '2024-01-10 14:20:00', 'BETALT', '2024-02-10 12:00:00', 1, 1, 1, 6484.00,2)
+                        VALUES (2, '2024-01-10 14:20:00', 'PAID', '2024-02-10 12:00:00', 1, 1, 1, 6484.00,2)
                         """);
 
                 // Insert test materials lines

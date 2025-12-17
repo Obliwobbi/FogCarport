@@ -17,9 +17,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class OrderDetailsServiceImplTest
 {
-    private static final String USER = "postgres";
-    private static final String PASSWORD = "ModigsteFryser47";
-    private static final String URL = "jdbc:postgresql://164.92.247.68:5432/%s?currentSchema=test";
+    private final static String USER = "postgres";
+    private static final String PASSWORD = "postgres";
+    private static final String URL = "jdbc:postgresql://localhost:5432/%s?currentSchema=test";
     private static final String DB = "fogcarport";
 
     private static ConnectionPool connectionPool;

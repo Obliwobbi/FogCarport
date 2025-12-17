@@ -19,9 +19,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class OrderMapperTest
 {
-    private static final String USER = "postgres";
-    private static final String PASSWORD = "ModigsteFryser47";
-    private static final String URL = "jdbc:postgresql://164.92.247.68:5432/%s?currentSchema=test";
+    private final static String USER = "postgres";
+    private static final String PASSWORD = "postgres";
+    private static final String URL = "jdbc:postgresql://localhost:5432/%s?currentSchema=test";
     private static final String DB = "fogcarport";
 
     private static ConnectionPool connectionPool;
@@ -330,7 +330,7 @@ class OrderMapperTest
     @Test
     void updateEmployee() throws DatabaseException
     {
-        Order orderBefore =  orderMapper.getOrderById(1);
+        Order orderBefore = orderMapper.getOrderById(1);
         orderMapper.updateOrderEmployee(1, 2);
         Order orderAfter = orderMapper.getOrderById(1);
         assertEquals(0, orderBefore.getEmployeeId());
@@ -343,6 +343,6 @@ class OrderMapperTest
     {
         orderMapper.setOrderEmployeeNull(2);
         Order order = orderMapper.getOrderById(2);
-        assertEquals(0,order.getEmployeeId());
+        assertEquals(0, order.getEmployeeId());
     }
 }
