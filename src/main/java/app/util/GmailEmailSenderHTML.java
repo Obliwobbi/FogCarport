@@ -7,6 +7,7 @@ import jakarta.mail.internet.MimeMessage;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Map;
 import java.util.Properties;
 
@@ -16,6 +17,9 @@ public class GmailEmailSenderHTML
     private final String username;
     private final String password;
     private final TemplateEngine templateEngine;
+
+    private static final String VERIFIED_SENDER_EMAIL = System.getenv("MAIL_FROM_ADDRESS");
+    private static final String VERIFIED_SENDER_NAME = System.getenv("MAIL_FROM_NAME");
 
     public GmailEmailSenderHTML()
     {
@@ -42,10 +46,13 @@ public class GmailEmailSenderHTML
     public void sendHtmlEmail(String to, String subject, String htmlBody) throws MessagingException
     {
         Properties props = new Properties();
-        props.put("mail.smtp.auth", "true");
+        props.put("mail.smtp.host", System.getenv("MAIL_SMTP_HOST"));
+        props.put("mail.smtp.port", System.getenv("MAIL_SMTP_PORT"));
         props.put("mail.smtp.starttls.enable", "true");
-        props.put("mail.smtp.host", "smtp.gmail.com");
-        props.put("mail.smtp.port", "587");
+        props.put("mail.smtp.auth", "true");
+        props.put("mail.smtp.ssl.trust", System.getenv("MAIL_SMTP_HOST"));
+        props.put("mail.debug", "true");
+        props.put("mail.smtp.debug", "true");
 
         Session session = Session.getInstance(props, new Authenticator()
         {
@@ -56,7 +63,13 @@ public class GmailEmailSenderHTML
         });
 
         Message message = new MimeMessage(session);
-        message.setFrom(new InternetAddress(username));
+
+        try {
+            message.setFrom(new InternetAddress(VERIFIED_SENDER_EMAIL, VERIFIED_SENDER_NAME, "UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException("Failed to encode sender name", e);
+        }
+
         message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to));
         message.setSubject(subject);
         message.setContent(htmlBody, "text/html; charset=UTF-8");
