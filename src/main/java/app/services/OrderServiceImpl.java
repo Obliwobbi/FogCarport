@@ -4,49 +4,25 @@ import app.dto.OrderWithDetailsDTO;
 import app.entities.*;
 import app.exceptions.DatabaseException;
 import app.persistence.*;
+import app.util.Status;
+import io.javalin.http.Context;
 
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class OrderServiceImpl implements OrderService
 {
-    private OrderMapper orderMapper;
-    private CarportMapper carportMapper;
-    private DrawingMapper drawingMapper;
-    private CustomerMapper customerMapper;
-    private EmployeeMapper employeeMapper;
-    private MaterialsLinesMapper materialsLinesMapper;
+    private final OrderMapper orderMapper;
 
-    public OrderServiceImpl(OrderMapper orderMapper, CarportMapper carportMapper, DrawingMapper drawingMapper, CustomerMapper customerMapper, EmployeeMapper employeeMapper, MaterialsLinesMapper materialsLinesMapper)
+    public OrderServiceImpl(OrderMapper orderMapper)
     {
         this.orderMapper = orderMapper;
-        this.carportMapper = carportMapper;
-        this.drawingMapper = drawingMapper;
-        this.customerMapper = customerMapper;
-        this.employeeMapper = employeeMapper;
-        this.materialsLinesMapper = materialsLinesMapper;
     }
 
     @Override
     public OrderWithDetailsDTO getOrderwithDetails(int orderId) throws DatabaseException
     {
-        Order order = orderMapper.getOrderById(orderId);
-        Drawing drawing = drawingMapper.getDrawingById(order.getDrawingId());
-        Carport carport = carportMapper.getCarportById(order.getCarportId());
-        Customer customer = customerMapper.getCustomerByID(order.getCustomerId());
-        Employee employee = employeeMapper.getEmployeeById(order.getEmployeeId());
-        List<MaterialsLine> materialsLines = materialsLinesMapper.getMaterialLinesByOrderId(orderId);
-
-        return new OrderWithDetailsDTO(orderId,
-                order.getOrderDate(),
-                order.getStatus(),
-                order.getDeliveryDate(),
-                drawing,
-                materialsLines,
-                carport,
-                customer,
-                employee);
+        return orderMapper.getOrderWithDetailsByIdDTO(orderId);
     }
 
     @Override
@@ -69,13 +45,7 @@ public class OrderServiceImpl implements OrderService
     }
 
     @Override
-    public List<Employee> getAllEmployees() throws DatabaseException
-    {
-        return employeeMapper.getAllEmployees();
-    }
-
-    @Override
-    public void updateOrderStatus(int orderId, String status) throws DatabaseException
+    public void updateOrderStatus(int orderId, Status status) throws DatabaseException
     {
         orderMapper.updateOrderStatus(orderId, status);
     }
@@ -83,7 +53,7 @@ public class OrderServiceImpl implements OrderService
     @Override
     public void updateOrderEmployee(int orderId, int employeeId) throws DatabaseException
     {
-        if(employeeId != 0)
+        if (employeeId != 0)
         {
             orderMapper.updateOrderEmployee(orderId, employeeId);
         }
@@ -100,18 +70,6 @@ public class OrderServiceImpl implements OrderService
     }
 
     @Override
-    public void updateCustomerInfo(Customer customer) throws DatabaseException
-    {
-        customerMapper.updateCustomerInfo(customer);
-    }
-
-    @Override
-    public void updateCarport(Carport carport) throws DatabaseException
-    {
-        carportMapper.updateCarport(carport);
-    }
-
-    @Override
     public void updateOrderTotalPrice(int orderId) throws DatabaseException
     {
         double totalPrice = getOrderwithDetails(orderId).getTotalPrice();
@@ -119,17 +77,20 @@ public class OrderServiceImpl implements OrderService
     }
 
     @Override
-    public List<Order> getOrdersByStatus(String status) throws DatabaseException
-    {
-        return orderMapper.getAllOrders().stream()
-                .filter(order -> order.getStatus().equals(status))
-                .sorted(Comparator.comparing(Order::getOrderDate))
-                .collect(Collectors.toList());
-    }
-
-    public List<OrderWithDetailsDTO> getOrdersByStatusDTO(String status) throws DatabaseException
+    public List<OrderWithDetailsDTO> getOrdersByStatusDTO(Status status) throws DatabaseException
     {
         return orderMapper.getAllOrdersByStatus(status);
+    }
+
+    @Override
+    public boolean requireEmployee(Context ctx)
+    {
+        if (ctx.sessionAttribute("currentEmployee") == null)
+        {
+            ctx.redirect("/");
+            return false;
+        }
+        return true;
     }
 }
 

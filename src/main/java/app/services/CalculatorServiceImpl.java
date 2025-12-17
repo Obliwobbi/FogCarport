@@ -7,8 +7,6 @@ import java.util.HashMap;
 
 public class CalculatorServiceImpl implements CalculatorService
 {
-    private double MAX_OVERHANG;
-
     @Override
     public int calculatePosts(Carport carport)
     {
@@ -18,7 +16,7 @@ public class CalculatorServiceImpl implements CalculatorService
         double shedLength = carport.getShedLength();
         boolean withShed = carport.isWithShed();
 
-        MAX_OVERHANG = (carportWidth >= 330) ? 70 : 35; //smaller overhang on smaller carports to give space for car
+        double MAX_OVERHANG = (carportWidth >= Constants.OVERHANG_THRESHOLD) ? Constants.OVERHANG_LARGE : Constants.OVERHANG_SMALL; //smaller overhang on smaller carports to give space for car
 
         boolean isFullWidth = shedWidth >= (carportWidth - MAX_OVERHANG);
 
@@ -26,7 +24,7 @@ public class CalculatorServiceImpl implements CalculatorService
 
         if (withShed)
         {
-            result += (isFullWidth || shedLength > Constants.MAX_LENGTH_BLOCKING ) ? 3 : 4; //door and corners of shed, partial width sheds need 1 more corner
+            result += (isFullWidth || shedLength > Constants.MAX_LENGTH_BLOCKING) ? 3 : 4; //door and corners of shed, partial width sheds need 1 more corner
 
             if (shedWidth > Constants.MAX_LENGTH_BLOCKING)
             {

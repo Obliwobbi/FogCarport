@@ -5,8 +5,11 @@ public final class Constants
     private Constants()
     {
     }
-    
+
     // Measurement constants
+    public static final double OVERHANG_SMALL = 30;
+    public static final double OVERHANG_LARGE = 70;
+    public static final double OVERHANG_THRESHOLD = 330;
     public static final double MIN_CARPORT_WIDTH = 240;
     public static final double MAX_CARPORT_WIDTH = 600;
     public static final double MIN_CARPORT_LENGTH = 240;
@@ -123,4 +126,3 @@ public final class Constants
     public static final int SCREW_LONG_MATERIAL_ID = 27;
     public static final int SCREW_UNIVERSAL_MATERIAL_ID = 24;
 }
-

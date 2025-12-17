@@ -3,6 +3,8 @@ package app.services;
 import app.dto.OrderWithDetailsDTO;
 import app.entities.*;
 import app.exceptions.DatabaseException;
+import app.util.Status;
+import io.javalin.http.Context;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -17,22 +19,16 @@ public interface OrderService
 
     boolean deleteOrder(int orderId) throws DatabaseException;
 
-    void updateOrderStatus(int orderId, String status) throws DatabaseException;
-
-    List<Employee> getAllEmployees() throws DatabaseException;
+    void updateOrderStatus(int orderId, Status status) throws DatabaseException;
 
     void updateOrderEmployee(int orderId, int employeeId) throws DatabaseException;
 
     void updateOrderDeliveryDate(int orderId, LocalDateTime deliveryDate) throws DatabaseException;
 
-    void updateCustomerInfo(Customer customer) throws DatabaseException;
-
-    void updateCarport(Carport carport) throws DatabaseException;
-
     void updateOrderTotalPrice(int orderId) throws DatabaseException;
 
-    List<Order> getOrdersByStatus(String status) throws DatabaseException;
+    List<OrderWithDetailsDTO> getOrdersByStatusDTO(Status status) throws DatabaseException;
 
-    List<OrderWithDetailsDTO> getOrdersByStatusDTO(String status) throws DatabaseException;
+    boolean requireEmployee(Context ctx);
 }
 

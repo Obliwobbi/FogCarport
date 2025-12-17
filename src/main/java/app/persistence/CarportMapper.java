@@ -5,7 +5,6 @@ import app.exceptions.DatabaseException;
 
 import java.sql.*;
 
-
 public class CarportMapper
 {
     private final ConnectionPool connectionPool;

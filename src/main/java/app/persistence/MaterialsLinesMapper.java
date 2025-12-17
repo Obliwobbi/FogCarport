@@ -58,23 +58,27 @@ public class MaterialsLinesMapper
         }
     }
 
-    public List<MaterialsLine> getMaterialLinesByOrderId(int orderId) throws DatabaseException {
+    public List<MaterialsLine> getMaterialLinesByOrderId(int orderId) throws DatabaseException
+    {
         List<MaterialsLine> materialLines = new ArrayList<>();
         String sql = """
-            SELECT ml.line_id, ml.quantity, ml.unit_price, ml.line_price,
-                   m.id, m.name, m.description, m.unit, m.unit_type,
-                   m.material_length, m.material_width, m.material_height, m.price
-            FROM materials_lines ml
-            LEFT JOIN materials m ON ml.material_id = m.id
-            WHERE ml.order_id = ?
-            ORDER BY ml.line_id
-            """;
+                SELECT ml.line_id, ml.quantity, ml.unit_price, ml.line_price,
+                       m.id, m.name, m.description, m.unit, m.unit_type,
+                       m.material_length, m.material_width, m.material_height, m.price
+                FROM materials_lines ml
+                LEFT JOIN materials m ON ml.material_id = m.id
+                WHERE ml.order_id = ?
+                ORDER BY ml.line_id
+                """;
 
         try (Connection connection = connectionPool.getConnection();
-             PreparedStatement ps = connection.prepareStatement(sql)) {
+             PreparedStatement ps = connection.prepareStatement(sql))
+        {
             ps.setInt(1, orderId);
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
+            try (ResultSet rs = ps.executeQuery())
+            {
+                while (rs.next())
+                {
                     Material material = new Material(
                             rs.getInt("id"),
                             rs.getString("name"),
@@ -97,21 +101,22 @@ public class MaterialsLinesMapper
                     materialLines.add(line);
                 }
             }
-        } catch (SQLException e) {
+        }
+        catch (SQLException e)
+        {
             throw new DatabaseException("Fejl ved hentning af materialelinjer: " + e.getMessage());
         }
         return materialLines;
     }
 
 
-
     public void updateMaterialLinePrice(int lineId, double unitPrice, int quantity) throws DatabaseException
     {
         String sql = """
-            UPDATE materials_lines
-            SET unit_price = ?, line_price = ?
-            WHERE line_id = ?
-            """;
+                UPDATE materials_lines
+                SET unit_price = ?, line_price = ?
+                WHERE line_id = ?
+                """;
 
         double linePrice = unitPrice * quantity;
 
@@ -150,7 +155,8 @@ public class MaterialsLinesMapper
             {
 
                 return true;
-            } else
+            }
+            else
             {
                 throw new DatabaseException("Ingen material line fundet med id: " + line.getLineId());
             }

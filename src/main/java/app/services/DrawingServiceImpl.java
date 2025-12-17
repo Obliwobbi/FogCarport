@@ -19,7 +19,7 @@ public class DrawingServiceImpl implements DrawingService
     @Override
     public String showDrawing(Carport carport, CalculatorService calculatorService)
     {
-        SvgService svgService = new SvgServiceImpl(0, 0, String.format(Locale.US,"0 0 %.1f %.1f", (carport.getLength()), carport.getWidth()), "100%", "auto");
+        SvgService svgService = new SvgServiceImpl(0, 0, String.format(Locale.US, "0 0 %.1f %.1f", (carport.getLength()), carport.getWidth()), "100%", "auto");
 
         CarportTopViewSvg carportSvg = new CarportTopViewSvg(carport, calculatorService, svgService);
 

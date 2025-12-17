@@ -11,7 +11,7 @@
 <div th:replace="~{fragments :: headerFragment}"></div>
 
 <main>
-    <section class="body-style align-items-center" >
+    <section class="body-style align-items-center">
         <h1 class="center-text">Indtast mål til din carport</h1>
         <form class="carport-form" th:action="@{/carport/create-carport}" method="post">
 
@@ -70,10 +70,12 @@
                 <label for="withShed">Redskabskur</label>
 
                 <div class="shed-fields">
-                    <p>Bemærk! Der indregnes et  15 cm. tagudhæng på hver side af små carporte på/under 330 cm og 35 cm. på større carporte. <br>
-                    Eksempel: For en carport på 480x480, er maksimum længden eller bredden på et skur 410 cm. <br>
-                    Efterlad 240 cm. på enten siden eller længden af skuret, for at have plads til bil: 240x240.<br>
-                    Hvis det er for lidt plads til gennemgang på siden af skuret, vil skur bredden automatisk blive tilpasset max bredden på carport. <br>
+                    <p>Der medregnes tagudhæng på 15 cm pr. side for carporte op til 330 cm og 35 cm pr. side for større
+                        carporte.
+                        Eksempel: En carport på 480 × 480 cm giver en maksimal skur-bredde på 410 cm.
+                        Der skal fritholdes 240 cm på enten længde- eller breddesiden til bil (240 × 240 cm).
+                        Hvis skurmålet overskrider carportmål , tilpasses skurets bredde/længde automatisk til
+                        carportens maksimale bredde/længde.<br>
                     </p>
                     <label for="shedWidth">Skur bredde:</label>
                     <div class="shed-selects">

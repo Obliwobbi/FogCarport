@@ -51,9 +51,11 @@ public class DrawingController
 
     private void showOrderDrawing(Context ctx)
     {
+        if (!orderService.requireEmployee(ctx)) return;
+        int orderId = Integer.parseInt(ctx.pathParam("id"));
+
         try
         {
-            int orderId = Integer.parseInt(ctx.pathParam("id"));
             OrderWithDetailsDTO order = orderService.getOrderwithDetails(orderId);
 
             String svgData;
@@ -73,15 +75,19 @@ public class DrawingController
         }
         catch (DatabaseException e)
         {
-            ctx.redirect("/orders?error=" + e.getMessage());
+            ctx.sessionAttribute("errorMessage", "Fejl ved hentning af tegning fra databasen. Prøv igen senere");
+            ctx.redirect("/orders/details/" + orderId);
         }
     }
 
     private void regenerateDrawing(Context ctx)
     {
+        if (!orderService.requireEmployee(ctx)) return;
+
+        int orderId = Integer.parseInt(ctx.pathParam("id"));
+
         try
         {
-            int orderId = Integer.parseInt(ctx.pathParam("id"));
             OrderWithDetailsDTO order = orderService.getOrderwithDetails(orderId);
 
             String newSvg = drawingService.showDrawing(order.getCarport(), calculatorService);
@@ -89,11 +95,14 @@ public class DrawingController
 
             drawingService.updateDrawing(updatedDrawing);
 
-            ctx.redirect("/orders/details/" + orderId + "/drawing?success=Tegning opdateret");
+            ctx.sessionAttribute("successMessage", null);
+            ctx.sessionAttribute("successMessage", "Tegning opdateret");
+            ctx.redirect("/orders/details/" + orderId + "/drawing");
         }
         catch (DatabaseException e)
         {
-            ctx.redirect("/orders/details/" + ctx.pathParam("id") + "?error=" + e.getMessage());
+            ctx.sessionAttribute("errorMessage", "Tegning blev ikke odpateret");
+            ctx.redirect("/orders/details/" + orderId);
         }
     }
 }

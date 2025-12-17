@@ -44,7 +44,8 @@ public class ContactController
 
         try
         {
-            customer = customerService.registerNewCustomer(
+            customer = customerService.validateCustomer(
+                    null,
                     ctx.formParam("firstname"),
                     ctx.formParam("lastname"),
                     ctx.formParam("email"),
@@ -98,7 +99,7 @@ public class ContactController
         catch (NumberFormatException e)
         {
             orderFailure(drawing, carport, customer);
-            ctx.attribute("errorMessage", "Postnummer skal være et gyldigt tal");
+            ctx.attribute("errorMessage", "Postnummer & Telefonnummer  skal være et gyldigt tal");
             ctx.render("contact.html");
         }
         catch (IllegalArgumentException e)
@@ -164,7 +165,7 @@ public class ContactController
         }
         catch (DatabaseException e)
         {
-            //TODO Should probably be logged
+            //TODO Should be logged
             System.err.println("Cleanup failed: " + e.getMessage());
         }
     }
