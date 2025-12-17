@@ -9,6 +9,7 @@ public final class Constants
     // Measurement constants
     public static final double OVERHANG_SMALL = 30;
     public static final double OVERHANG_LARGE = 70;
+    public static final double OVERHANG_THRESHOLD = 330;
     public static final double MIN_CARPORT_WIDTH = 240;
     public static final double MAX_CARPORT_WIDTH = 600;
     public static final double MIN_CARPORT_LENGTH = 240;
