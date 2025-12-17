@@ -153,18 +153,30 @@ public class CarportServiceImpl implements CarportService
 
     private double validateMeasurementInput(double input, double min, double max)
     {
+        //example with an input : 432, min : 150, max: 750
+
+        // interval = 30
         double interval = Constants.CARPORT_MEASUREMENT_INTERVAL;
 
+        // input = 432, min = 150 → 432 < 150 is false, so we continue
         if (input < min)
         {
             throw new IllegalArgumentException(input + " cm er under minimumsmål: " + min + " cm");
         }
 
+        // (input - min) / interval
+        // (432 - 150) / 30 = 282 / 30 = 9.4
+        // cast to int → 9 (rounds down)
         int stepsFromMin = (int) ((input - min) / interval);
 
+        // measurement = min + (stepsFromMin * interval)
+        //               150 + (9 * 30) = 150 + 270 = 420
         double measurement = min + (stepsFromMin * interval);
 
+        // ensures value does not exceed max
+        // Math.min(420, 750) → 420
         return Math.min(measurement, max);
+
     }
 
     private String validateStringInput(String input)
