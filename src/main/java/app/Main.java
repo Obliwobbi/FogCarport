@@ -19,7 +19,6 @@ public class Main
         {
             config.staticFiles.add("/public");
             config.fileRenderer(new JavalinThymeleaf(ThymeleafConfig.templateEngine()));
-            config.staticFiles.add("/templates/");
         }).start(7070);
 
         CarportMapper carportMapper = new CarportMapper(connectionPool);
