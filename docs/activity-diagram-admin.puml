@@ -1,0 +1,64 @@
+@startuml activity-diagram-admin
+!theme plain
+title FogCarport Application - Admin/Employee Activity Diagram
+
+skinparam activityBorderColor #000000
+skinparam activityBackgroundColor #E8F4F8
+skinparam activityDiamondBorderColor #000000
+skinparam activityDiamondBackgroundColor #FFE4B5
+skinparam noteBorderColor #000000
+skinparam noteBackgroundColor #FFFFCC
+
+start
+
+repeat
+    :View **orders.html**;
+    note left: GET /orders
+
+    if (Delete Order?) then (yes)
+        :Delete Order;
+        note left: POST /orders/delete/{id}
+
+    else (no)
+        :Select Order;
+
+        :View **order-details.html**;
+        note left: GET /orders/details/{id}
+
+        if (Action?) then (Update Data)
+            :Perform Update;
+            note left
+                POST /orders/update
+                POST /customer/update
+                POST /carport/update
+                POST /materials/generate
+                POST /prices/update
+            end note
+
+        elseif (View Drawing) then
+            :View **drawing.html**;
+            note left
+                GET /orders/drawing/{id}
+                POST /drawing/regenerate
+            end note
+
+        else (Done)
+        endif
+
+        if (Send Offer?) then (yes)
+            :Send Offer to Customer;
+            note left
+                POST /orders/send-offer/{id}
+                (Optional action)
+            end note
+        else (no)
+        endif
+
+    endif
+
+repeat while (Continue?) is (yes)
+->no;
+
+stop
+
+@enduml

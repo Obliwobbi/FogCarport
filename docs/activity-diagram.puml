@@ -1,0 +1,91 @@
+@startuml activity-diagram
+!theme plain
+title FogCarport Application - Activity Diagram
+
+skinparam activityBorderColor #000000
+skinparam activityBackgroundColor #E8F4F8
+skinparam activityDiamondBorderColor #000000
+skinparam activityDiamondBackgroundColor #FFE4B5
+
+|Customer|
+start
+:Browse Carport Site;
+
+:Navigate to Carport Builder;
+
+repeat
+    :View **carport.html**\n(Configure Carport);
+    note right
+        Route: GET /carport
+        User inputs:
+        - Width, Length, Height
+        - With/Without Shed
+        - Customer Wishes
+    end note
+
+    :Submit Carport Configuration;
+
+    |System|
+    :Process Carport Data;
+    note right
+        Route: POST /carport/create-carport
+        Validates measurements
+        Stores in session
+    end note
+
+repeat while (Validation Success?) is (no: Fix Input) not (yes)
+
+|Customer|
+:View **drawing.html**\n(SVG Drawing Preview);
+note right
+    Route: GET /drawing
+    Displays carport drawing
+    Generated SVG top view
+end note
+
+:Approve Drawing;
+
+    repeat
+        :View **contact.html**\n(Enter Contact Info);
+        note right
+            Route: GET /contact
+            Customer information form:
+            - Name, Email, Phone
+            - Address Details
+        end note
+
+        :Submit Order;
+
+        |System|
+        :Create Order in Database;
+        note right
+            Route: POST /contact/create-order
+            Creates: Customer, Carport,
+            Drawing, Order records
+        end note
+
+    repeat while (Order Creation Success?) is (no: Retry) not (yes)
+
+    |Customer|
+    :View **success.html**\n(Order Confirmation);
+    note right
+        Route: GET /success
+        Shows order ID
+        and confirmation details
+    end note
+
+    :Click Return Home;
+
+    |System|
+    :Clear Session;
+    note right
+        Route: POST /success/return-home
+    end note
+
+    |Customer|
+    :Back to **index.html**;
+    stop
+
+
+@enduml
+

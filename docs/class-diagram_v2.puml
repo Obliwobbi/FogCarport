@@ -1,122 +1,266 @@
-@startuml Domain Model
+@startuml FogCarport Class Diagram - Flat Structure
+!theme plain
 skinparam classAttributeIconSize 0
-skinparam packageStyle rectangle
+skinparam linetype ortho
 
-package "app.entities" {
-    class Customer {
-    }
+' Color coding by architectural layer
+skinparam class {
+    BackgroundColor<<controller>> AliceBlue
+    BorderColor<<controller>> DodgerBlue
 
-    class Employee {
-    }
+    BackgroundColor<<service>> Honeydew
+    BorderColor<<service>> ForestGreen
 
-    class Carport {
-    }
+    BackgroundColor<<interface>> PaleGreen
+    BorderColor<<interface>> SeaGreen
 
-    class Drawing {
-    }
+    BackgroundColor<<persistence>> LemonChiffon
+    BorderColor<<persistence>> Goldenrod
 
-    class Order {
-    }
+    BackgroundColor<<entity>> White
+    BorderColor<<entity>> Gray
 
-    class BillOfMaterials {
-    }
+    BackgroundColor<<dto>> LightCyan
+    BorderColor<<dto>> DarkCyan
 
-    class MaterialsLine {
-    }
+    BackgroundColor<<util>> Lavender
+    BorderColor<<util>> Purple
 
-    class Material {
-    }
+    BackgroundColor<<config>> Wheat
+    BorderColor<<config>> Orange
+
+    BackgroundColor<<exception>> LightPink
+    BorderColor<<exception>> Crimson
 }
 
-package "app.persistence" {
-    class CustomerMapper {
-    }
+' Legend
+legend top left
+|= Color |= Layer |= Description |
+|<back:AliceBlue>   </back>| Controller | Presentation layer - handles HTTP requests (app.controllers) |
+|<back:PaleGreen>   </back>| Service Interface | Contracts for business logic (app.services) |
+|<back:Honeydew>   </back>| Service Implementation | Business logic layer (app.services) |
+|<back:LemonChiffon>   </back>| Persistence | Data access layer - mappers and connection pool (app.persistence) |
+|<back:White>   </back>| Entity | Domain model objects (app.entities) |
+|<back:LightCyan>   </back>| DTO | Data Transfer Objects (app.dto) |
+|<back:Lavender>   </back>| Utility | Helper classes (app.util, app.services) |
+|<back:Wheat>   </back>| Config | Configuration classes (app.config) |
+|<back:LightPink>   </back>| Exception | Custom exceptions (app.exceptions) |
+endlegend
 
-    class MaterialMapper {
-    }
+' ============================================
+' CONTROLLERS
+' ============================================
+class HomeController <<controller>>
+class OrderController <<controller>>
+class CarportController <<controller>>
+class ContactController <<controller>>
+class DrawingController <<controller>>
 
-    class OrderMapper {
-    }
+' ============================================
+' SERVICE INTERFACES
+' ============================================
+interface CarportService <<interface>>
+interface OrderService <<interface>>
+interface CustomerService <<interface>>
+interface DrawingService <<interface>>
+interface CalculatorService <<interface>>
+interface OrderDetailsService <<interface>>
+interface SvgService <<interface>>
+interface EmailService <<interface>>
+interface EmployeeService <<interface>>
 
-    class CarportMapper{
-    }
+' ============================================
+' SERVICE IMPLEMENTATIONS
+' ============================================
+class CarportServiceImpl <<service>>
+class OrderServiceImpl <<service>>
+class CustomerServiceImpl <<service>>
+class DrawingServiceImpl <<service>>
+class CalculatorServiceImpl <<service>>
+class OrderDetailsServiceImpl <<service>>
+class SvgServiceImpl <<service>>
+class EmailServiceImpl <<service>>
+class EmployeeServiceImpl <<service>>
 
-    class DrawingMapper{
-    }
+' ============================================
+' UTILITY CLASSES
+' ============================================
+class CarportTopViewSvg <<util>>
+class Constants <<util>>
+class Status <<util>>
+class GmailEmailSenderHTML <<util>>
 
-}
+' ============================================
+' CONFIGURATION CLASSES
+' ============================================
+class ThymeleafConfig <<config>>
 
-package "app.controllers" {
-    class OrderController{
-    }
+' ============================================
+' EXCEPTION CLASSES
+' ============================================
+class DatabaseException <<exception>>
 
-    class CarportController{
-    }
+' ============================================
+' MAPPERS
+' ============================================
+class CustomerMapper <<persistence>>
+class EmployeeMapper <<persistence>>
+class MaterialMapper <<persistence>>
+class OrderMapper <<persistence>>
+class CarportMapper <<persistence>>
+class DrawingMapper <<persistence>>
+class MaterialsLinesMapper <<persistence>>
+class ConnectionPool <<persistence>>
 
-    class ContactController{
-    }
+' ============================================
+' DTO
+' ============================================
+class OrderWithDetailsDTO <<dto>>
 
-    class DrawingController{
-    }
+' ============================================
+' ENTITIES
+' ============================================
+class Customer <<entity>>
+class Employee <<entity>>
+class Carport <<entity>>
+class Drawing <<entity>>
+class Order <<entity>>
+class MaterialsLine <<entity>>
+class Material <<entity>>
 
-}
+' ============================================
+' ENTITY DOMAIN RELATIONSHIPS
+' ============================================
+Order "1" *-- "1" Drawing : contains
+Order "1" *-- "1" Carport : contains
+Order "1" *-- "0..*" MaterialsLine : has
+MaterialsLine "0..*" *-- "1" Material : uses
 
-package "app.services" {
-    interface CarportService {
-    }
+Order "0..*" -- "1" Customer : placed by
+Order "0..*" -- "0..1" Employee : managed by
 
-    class CarportServiceImpl{
-    }
+' ============================================
+' DTO COMPOSITION
+' ============================================
+OrderWithDetailsDTO "1" o-- "1" Drawing
+OrderWithDetailsDTO "1" o-- "1" Carport
+OrderWithDetailsDTO "1" o-- "1" Customer
+OrderWithDetailsDTO "1" o-- "0..1" Employee
+OrderWithDetailsDTO "1" o-- "0..*" MaterialsLine
 
-    interface OrderService {
-    }
+' ============================================
+' CONTROLLER → SERVICE DEPENDENCIES
+' ============================================
+' HomeController - no service dependencies (only renders static page)
 
-    class OrderServiceImpl{
-    }
+ContactController ..> CustomerService : uses
+ContactController ..> OrderService : uses
+ContactController ..> DrawingService : uses
+ContactController ..> CarportService : uses
 
-    interface CustomerService{
-    }
+CarportController ..> CarportService : uses
 
-    class CustomerServiceImpl{
-    }
-}
+DrawingController ..> DrawingService : uses
+DrawingController ..> CalculatorService : uses
+DrawingController ..> OrderService : uses
 
-ContactController -> CustomerService
-ContactController -> OrderService
+OrderController ..> OrderService : uses
+OrderController ..> OrderDetailsService : uses
+OrderController ..> EmailService : uses
+OrderController ..> EmployeeService : uses
+OrderController ..> CarportService : uses
+OrderController ..> CustomerService : uses
 
-CustomerService --> CustomerServiceImpl
-CustomerMapper <-- CustomerServiceImpl
-CustomerMapper ..> Customer : Creates
-Customer ..> Order : Creates
+' ============================================
+' SERVICE INTERFACE IMPLEMENTATIONS
+' ============================================
+CarportService <|.. CarportServiceImpl : implements
+OrderService <|.. OrderServiceImpl : implements
+CustomerService <|.. CustomerServiceImpl : implements
+DrawingService <|.. DrawingServiceImpl : implements
+CalculatorService <|.. CalculatorServiceImpl : implements
+OrderDetailsService <|.. OrderDetailsServiceImpl : implements
+SvgService <|.. SvgServiceImpl : implements
+EmailService <|.. EmailServiceImpl : implements
+EmployeeService <|.. EmployeeServiceImpl : implements
 
+' ============================================
+' SERVICE → MAPPER DEPENDENCIES
+' ============================================
+' Carport Service
+CarportServiceImpl ..> CarportMapper : uses
+CarportServiceImpl ..> Constants : uses
 
-CarportController --> CarportService
-CarportService --> CarportServiceImpl
-CarportServiceImpl ..> Drawing : Creates
-CarportServiceImpl ..> Carport : Creates
+' Order Service
+OrderServiceImpl ..> OrderMapper : uses
 
-DrawingController -> CarportService
+' Customer Service
+CustomerServiceImpl ..> CustomerMapper : uses
 
+' Drawing Service
+DrawingServiceImpl ..> DrawingMapper : uses
+DrawingServiceImpl ..> SvgService : uses
+DrawingServiceImpl ..> CalculatorService : uses
+DrawingServiceImpl ..> CarportTopViewSvg : uses
 
-OrderServiceImpl --> MaterialMapper
-OrderController --> OrderService
-OrderService --> OrderServiceImpl
-OrderMapper <-- OrderServiceImpl
-OrderMapper ..> Order : Creates
-Order *-- Drawing
-Order *-- Carport
+' Order Details Service
+OrderDetailsServiceImpl ..> MaterialsLinesMapper : uses
+OrderDetailsServiceImpl ..> MaterialMapper : uses
+OrderDetailsServiceImpl ..> CalculatorService : uses
 
+' Calculator Service
+CalculatorServiceImpl ..> Carport : uses
+CalculatorServiceImpl ..> Constants : uses
 
-BillOfMaterials *- MaterialsLine
-MaterialsLine *-- Material
+' SVG Service
+' SvgServiceImpl has no external dependencies
 
+' Employee Service
+EmployeeServiceImpl ..> EmployeeMapper : uses
 
-MaterialMapper ..> Material : Creates
+' Email Service
+EmailServiceImpl ..> GmailEmailSenderHTML : uses
 
+' ============================================
+' MAPPER → ENTITY CREATION
+' ============================================
+CustomerMapper ..> Customer : <<creates>>
+EmployeeMapper ..> Employee : <<creates>>
+CarportMapper ..> Carport : <<creates>>
+DrawingMapper ..> Drawing : <<creates>>
+OrderMapper ..> Order : <<creates>>
+MaterialMapper ..> Material : <<creates>>
+MaterialsLinesMapper ..> MaterialsLine : <<creates>>
 
-Employee ..> Order : Updates
+' OrderMapper internally uses MaterialsLinesMapper
+OrderMapper ..> MaterialsLinesMapper : uses
 
+' ============================================
+' MAPPER → DATABASE CONNECTION
+' ============================================
+CustomerMapper ..> ConnectionPool : uses
+EmployeeMapper ..> ConnectionPool : uses
+CarportMapper ..> ConnectionPool : uses
+DrawingMapper ..> ConnectionPool : uses
+OrderMapper ..> ConnectionPool : uses
+MaterialMapper ..> ConnectionPool : uses
+MaterialsLinesMapper ..> ConnectionPool : uses
 
-Order *-- BillOfMaterials
+' ============================================
+' UTILITY AND CONFIG DEPENDENCIES
+' ============================================
+CarportTopViewSvg ..> Carport : uses
+CarportTopViewSvg ..> CalculatorService : uses
+CarportTopViewSvg ..> SvgService : uses
+CarportTopViewSvg ..> Constants : uses
+
+CarportServiceImpl ..> Constants : uses
+OrderDetailsServiceImpl ..> Constants : uses
+
+GmailEmailSenderHTML ..> ThymeleafConfig : uses
+
+Order ..> Status : uses
+OrderWithDetailsDTO ..> Status : uses
+
 @enduml
 
