@@ -11,7 +11,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.Map;
 import java.util.Properties;
 
-public class GmailEmailSenderHTML
+public class EmailSenderHTML
 {
     private final String username;
     private final String password;
@@ -20,7 +20,7 @@ public class GmailEmailSenderHTML
     private static final String VERIFIED_SENDER_EMAIL = System.getenv("MAIL_FROM_ADDRESS");
     private static final String VERIFIED_SENDER_NAME = System.getenv("MAIL_FROM_NAME");
 
-    public GmailEmailSenderHTML()
+    public EmailSenderHTML()
     {
         // Hent login fra miljøvariabler
         this.username = System.getenv("MAIL_USERNAME");

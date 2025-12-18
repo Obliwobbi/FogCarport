@@ -1,7 +1,7 @@
 package app.services;
 
 import app.dto.OrderWithDetailsDTO;
-import app.util.GmailEmailSenderHTML;
+import app.util.EmailSenderHTML;
 import app.util.Status;
 import jakarta.mail.MessagingException;
 
@@ -11,11 +11,11 @@ import java.util.Map;
 
 public class EmailServiceImpl implements EmailService
 {
-    GmailEmailSenderHTML sender;
+    EmailSenderHTML sender;
 
     public EmailServiceImpl()
     {
-        sender = new GmailEmailSenderHTML();
+        sender = new EmailSenderHTML();
     }
 
     @Override
