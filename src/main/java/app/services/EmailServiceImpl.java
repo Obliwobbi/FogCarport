@@ -6,7 +6,10 @@ import app.util.Status;
 import jakarta.mail.MessagingException;
 
 import java.io.UnsupportedEncodingException;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 public class EmailServiceImpl implements EmailService
@@ -59,7 +62,11 @@ public class EmailServiceImpl implements EmailService
         variables.put("customerPhone", customerPhone);
         variables.put("customerAddress", customerAddress);
 
-        String orderDate = String.valueOf(orderDetails.getOrderDate().toLocalDate());
+        String orderDate = (orderDetails.getOrderDate()
+                .toLocalDate()
+                .format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)
+                        .withLocale(Locale.forLanguageTag("da-DK"))));
+
         String status = orderDetails.getStatus().getDisplayName();
 
         variables.put("orderId", orderId);
@@ -95,7 +102,11 @@ public class EmailServiceImpl implements EmailService
             emailText = "Tak for din Bestilling på en af vores carporte. Nedenfor finder du detaljerne for din Ordre.";
             variables.put("mailText", emailText);
 
-            String deliveryDate = String.valueOf(orderDetails.getDeliveryDate().toLocalDate());
+            String deliveryDate = orderDetails.getDeliveryDate()
+                    .toLocalDate()
+                    .format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)
+                            .withLocale(Locale.forLanguageTag("da-DK")));
+
             variables.put("deliveryDate", deliveryDate);
         }
         else
