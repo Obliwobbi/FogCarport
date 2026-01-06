@@ -446,23 +446,23 @@ public class OrderController
 
         int orderId = Integer.parseInt(ctx.pathParam("id"));
 
-        try {
+        try
+        {
             OrderWithDetailsDTO order = orderService.getOrderwithDetails(orderId);
             emailService.sendCarportOffer(order);
 
             flashSuccess(ctx, "Tilbuddet blev sendt til kunden!");
             ctx.redirect("/orders/details/" + orderId);
         }
-        catch (DatabaseException e) {
-
+        catch (DatabaseException e)
+        {
             //logger.severe("Database fejl ved hentning af ordre #" + orderId + ": " + e.getMessage());
             flashError(ctx, "Systemfejl - kontakt IT support");
             ctx.redirect("/orders/details/" + orderId);
         }
-        catch (EmailException e) {
-
-//            logger.warning("Email fejl (type: " + e.getErrorType() + "): " + e.getMessage());
-
+        catch (EmailException e)
+        {
+            //logger.warning("Email fejl (type: " + e.getErrorType() + "): " + e.getMessage());
             flashError(ctx, e.getErrorType().getUserMessage());
             ctx.redirect("/orders/details/" + orderId);
         }
