@@ -1,6 +1,7 @@
 package app.util;
 
 import app.config.ThymeleafConfig;
+import app.exceptions.EmailException;
 import jakarta.mail.*;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
@@ -42,36 +43,69 @@ public class EmailSenderHTML
         return templateEngine.process(templateName, context);
     }
 
-    public void sendHtmlEmail(String to, String subject, String htmlBody) throws MessagingException, UnsupportedEncodingException
+    public void sendHtmlEmail(String to, String subject, String htmlBody) throws EmailException
     {
-        Properties props = new Properties();
-        props.put("mail.smtp.host", System.getenv("MAIL_SMTP_HOST"));
-        props.put("mail.smtp.port", System.getenv("MAIL_SMTP_PORT"));
-        props.put("mail.smtp.starttls.enable", "true");
-        props.put("mail.smtp.auth", "true");
-        props.put("mail.smtp.ssl.trust", System.getenv("MAIL_SMTP_HOST"));
-        props.put("mail.debug", "true");
-        props.put("mail.smtp.debug", "true");
-
-        Session session = Session.getInstance(props, new Authenticator()
+        try
         {
-            protected PasswordAuthentication getPasswordAuthentication()
+            Properties props = new Properties();
+            props.put("mail.smtp.host", System.getenv("MAIL_SMTP_HOST"));
+            props.put("mail.smtp.port", System.getenv("MAIL_SMTP_PORT"));
+            props.put("mail.smtp.starttls.enable", "true");
+            props.put("mail.smtp.auth", "true");
+            props.put("mail.smtp.ssl.trust", System.getenv("MAIL_SMTP_HOST"));
+            props.put("mail.debug", "true");
+            props.put("mail.smtp.debug", "true");
+
+            Session session = Session.getInstance(props, new Authenticator()
             {
-                return new PasswordAuthentication(username, password);
+                protected PasswordAuthentication getPasswordAuthentication()
+                {
+                    return new PasswordAuthentication(username, password);
+                }
+            });
+
+            Message message = new MimeMessage(session);
+
+
+            try
+            {
+                message.setFrom(new InternetAddress(VERIFIED_SENDER_EMAIL, VERIFIED_SENDER_NAME, "UTF-8"));
             }
-        });
+            catch (UnsupportedEncodingException e)
+            {
+                throw new EmailException("Email konfigurationsfejl: encoding problem", EmailException.EmailErrorType.CONFIGURATION_ERROR, e);
+            }
 
-        Message message = new MimeMessage(session);
+            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to));
+            message.setSubject(subject);
+            message.setContent(htmlBody, "text/html; charset=UTF-8");
 
+            Transport.send(message);
+            System.out.println("HTML-mail sendt til " + to);
+        }
+        catch (MessagingException e)
+        {
+            EmailException.EmailErrorType errorType = parseMessagingException(e);
+            throw new EmailException("Kunne ikke sende email: " + e.getMessage(), errorType, e);
+        }
+    }
 
-        message.setFrom(new InternetAddress(VERIFIED_SENDER_EMAIL, VERIFIED_SENDER_NAME, "UTF-8"));
+    private EmailException.EmailErrorType parseMessagingException(MessagingException e) {
+        String msg = e.getMessage().toLowerCase();
 
+        if (msg.contains("authentication") || msg.contains("535")) {
+            return EmailException.EmailErrorType.AUTHENTICATION_FAILED;
+        }
+        if (msg.contains("550") || msg.contains("invalid")) {
+            return EmailException.EmailErrorType.INVALID_RECIPIENT;
+        }
+        if (msg.contains("timeout") || msg.contains("connection")) {
+            return EmailException.EmailErrorType.NETWORK_ERROR;
+        }
+        if (msg.contains("503") || msg.contains("service")) {
+            return EmailException.EmailErrorType.SERVICE_UNAVAILABLE;
+        }
 
-        message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to));
-        message.setSubject(subject);
-        message.setContent(htmlBody, "text/html; charset=UTF-8");
-
-        Transport.send(message);
-        System.out.println("HTML-mail sendt til " + to);
+        return EmailException.EmailErrorType.UNKNOWN;
     }
 }

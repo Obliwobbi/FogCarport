@@ -1,6 +1,7 @@
 package app.services;
 
 import app.dto.OrderWithDetailsDTO;
+import app.exceptions.EmailException;
 import app.util.EmailSenderHTML;
 import app.util.Status;
 import jakarta.mail.MessagingException;
@@ -14,7 +15,7 @@ import java.util.Map;
 
 public class EmailServiceImpl implements EmailService
 {
-    EmailSenderHTML sender;
+    private final EmailSenderHTML sender;
 
     public EmailServiceImpl()
     {
@@ -22,7 +23,7 @@ public class EmailServiceImpl implements EmailService
     }
 
     @Override
-    public void sendCarportOffer(OrderWithDetailsDTO orderDetails) throws MessagingException, UnsupportedEncodingException
+    public void sendCarportOffer(OrderWithDetailsDTO orderDetails) throws EmailException
     {
         int orderId = orderDetails.getOrderId();
         String email = orderDetails.getCustomer().getEmail();

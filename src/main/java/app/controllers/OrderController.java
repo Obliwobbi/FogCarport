@@ -6,6 +6,7 @@ import app.entities.Customer;
 import app.entities.Employee;
 import app.entities.MaterialsLine;
 import app.exceptions.DatabaseException;
+import app.exceptions.EmailException;
 import app.services.*;
 import app.util.Status;
 import io.javalin.Javalin;
@@ -419,22 +420,68 @@ public class OrderController
         }
     }
 
+    //TODO: sendOffer ved aflevering
+//
+//    private void sendOffer(Context ctx)
+//    {
+//        if (!orderService.requireEmployee(ctx)) return;
+//
+//        int orderId = Integer.parseInt(ctx.pathParam("id"));
+//
+//        try
+//        {
+//            OrderWithDetailsDTO order = orderService.getOrderwithDetails(orderId);
+//            emailService.sendCarportOffer(order);
+//            flashSuccess(ctx, "Tilbuddet blev sendt til kunden!");
+//            ctx.redirect("/orders/details/" + orderId);
+//        }
+//        catch (DatabaseException | MessagingException | UnsupportedEncodingException e)
+//        {
+//            flashError(ctx, "Kunne ikke sende email til kunden. Prøv igen senere.");
+//            ctx.redirect("/orders/details/" + orderId);
+//        }
+//    }
+
     private void sendOffer(Context ctx)
     {
         if (!orderService.requireEmployee(ctx)) return;
 
         int orderId = Integer.parseInt(ctx.pathParam("id"));
 
-        try
-        {
+        try {
             OrderWithDetailsDTO order = orderService.getOrderwithDetails(orderId);
             emailService.sendCarportOffer(order);
+
             flashSuccess(ctx, "Tilbuddet blev sendt til kunden!");
             ctx.redirect("/orders/details/" + orderId);
         }
-        catch (DatabaseException | MessagingException | UnsupportedEncodingException e)
-        {
-            flashError(ctx, "Kunne ikke sende email til kunden. Prøv igen senere.");
+        catch (DatabaseException e) {
+
+            //logger.severe("Database fejl ved hentning af ordre #" + orderId + ": " + e.getMessage());
+            flashError(ctx, "Systemfejl - kontakt IT support");
+            ctx.redirect("/orders/details/" + orderId);
+        }
+        catch (EmailException e) {
+
+            //logger.warning("Email fejl (type: " + e.getErrorType() + "): " + e.getMessage());
+
+            //mere specifik besked baseret på error type
+            String errorMessage = switch (e.getErrorType()) {
+                case AUTHENTICATION_FAILED ->
+                        "Email konfigurationsfejl - kontakt IT";
+                case INVALID_RECIPIENT ->
+                        "Kundens email-adresse er ugyldig - ret den i ordrens detaljer";
+                case NETWORK_ERROR ->
+                        "Netværksfejl - tjek internet forbindelse og prøv igen";
+                case SERVICE_UNAVAILABLE ->
+                        "Email service midlertidigt nede - prøv igen om 5 minutter";
+                case CONFIGURATION_ERROR ->
+                        "System konfigurationsfejl - kontakt IT support omgående";
+                default ->
+                        "Kunne ikke sende email - kontakt IT hvis problemet fortsætter";
+            };
+
+            flashError(ctx, errorMessage);
             ctx.redirect("/orders/details/" + orderId);
         }
     }

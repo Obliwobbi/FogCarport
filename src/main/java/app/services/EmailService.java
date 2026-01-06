@@ -1,11 +1,9 @@
 package app.services;
 
 import app.dto.OrderWithDetailsDTO;
-import jakarta.mail.MessagingException;
-
-import java.io.UnsupportedEncodingException;
+import app.exceptions.EmailException;
 
 public interface EmailService
 {
-    void sendCarportOffer(OrderWithDetailsDTO orderDetails) throws MessagingException, UnsupportedEncodingException;
+    void sendCarportOffer(OrderWithDetailsDTO orderDetails) throws EmailException;
 }
