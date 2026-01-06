@@ -463,25 +463,9 @@ public class OrderController
         }
         catch (EmailException e) {
 
-            //logger.warning("Email fejl (type: " + e.getErrorType() + "): " + e.getMessage());
+//            logger.warning("Email fejl (type: " + e.getErrorType() + "): " + e.getMessage());
 
-            //mere specifik besked baseret på error type
-            String errorMessage = switch (e.getErrorType()) {
-                case AUTHENTICATION_FAILED ->
-                        "Email konfigurationsfejl - kontakt IT";
-                case INVALID_RECIPIENT ->
-                        "Kundens email-adresse er ugyldig - ret den i ordrens detaljer";
-                case NETWORK_ERROR ->
-                        "Netværksfejl - tjek internet forbindelse og prøv igen";
-                case SERVICE_UNAVAILABLE ->
-                        "Email service midlertidigt nede - prøv igen om 5 minutter";
-                case CONFIGURATION_ERROR ->
-                        "System konfigurationsfejl - kontakt IT support omgående";
-                default ->
-                        "Kunne ikke sende email - kontakt IT hvis problemet fortsætter";
-            };
-
-            flashError(ctx, errorMessage);
+            flashError(ctx, e.getErrorType().getUserMessage());
             ctx.redirect("/orders/details/" + orderId);
         }
     }

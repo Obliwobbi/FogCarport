@@ -1,6 +1,7 @@
 package app.util;
 
 import app.config.ThymeleafConfig;
+import app.exceptions.EmailErrorType;
 import app.exceptions.EmailException;
 import jakarta.mail.*;
 import jakarta.mail.internet.InternetAddress;
@@ -43,7 +44,7 @@ public class EmailSenderHTML
         return templateEngine.process(templateName, context);
     }
 
-    public void sendHtmlEmail(String to, String subject, String htmlBody) throws EmailException
+    public void sendHtmlEmail(String emailRecipient, String subject, String htmlBody) throws EmailException
     {
         try
         {
@@ -53,8 +54,10 @@ public class EmailSenderHTML
             props.put("mail.smtp.starttls.enable", "true");
             props.put("mail.smtp.auth", "true");
             props.put("mail.smtp.ssl.trust", System.getenv("MAIL_SMTP_HOST"));
-            props.put("mail.debug", "true");
-            props.put("mail.smtp.debug", "true");
+
+            //debugging
+//            props.put("mail.debug", "true");
+//            props.put("mail.smtp.debug", "true");
 
             Session session = Session.getInstance(props, new Authenticator()
             {
@@ -73,39 +76,38 @@ public class EmailSenderHTML
             }
             catch (UnsupportedEncodingException e)
             {
-                throw new EmailException("Email konfigurationsfejl: encoding problem", EmailException.EmailErrorType.CONFIGURATION_ERROR, e);
+                throw new EmailException("Email konfigurationsfejl: encoding problem", EmailErrorType.CONFIGURATION_ERROR, e);
             }
 
-            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to));
+            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(emailRecipient));
             message.setSubject(subject);
             message.setContent(htmlBody, "text/html; charset=UTF-8");
 
             Transport.send(message);
-            System.out.println("HTML-mail sendt til " + to);
         }
         catch (MessagingException e)
         {
-            EmailException.EmailErrorType errorType = parseMessagingException(e);
-            throw new EmailException("Kunne ikke sende email: " + e.getMessage(), errorType, e);
+            EmailErrorType errorType = parseMessagingException(e);
+            throw new EmailException("SMTP send failed for recipient: " + emailRecipient, errorType, e);
         }
     }
 
-    private EmailException.EmailErrorType parseMessagingException(MessagingException e) {
-        String msg = e.getMessage().toLowerCase();
+    private EmailErrorType parseMessagingException(MessagingException e) {
+        String msg = String.valueOf(e.getMessage()).toLowerCase();
 
         if (msg.contains("authentication") || msg.contains("535")) {
-            return EmailException.EmailErrorType.AUTHENTICATION_FAILED;
+            return EmailErrorType.AUTHENTICATION_FAILED;
         }
         if (msg.contains("550") || msg.contains("invalid")) {
-            return EmailException.EmailErrorType.INVALID_RECIPIENT;
+            return EmailErrorType.INVALID_RECIPIENT;
         }
         if (msg.contains("timeout") || msg.contains("connection")) {
-            return EmailException.EmailErrorType.NETWORK_ERROR;
+            return EmailErrorType.NETWORK_ERROR;
         }
         if (msg.contains("503") || msg.contains("service")) {
-            return EmailException.EmailErrorType.SERVICE_UNAVAILABLE;
+            return EmailErrorType.SERVICE_UNAVAILABLE;
         }
 
-        return EmailException.EmailErrorType.UNKNOWN;
+        return EmailErrorType.UNKNOWN;
     }
 }
