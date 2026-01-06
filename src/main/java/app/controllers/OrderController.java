@@ -11,9 +11,7 @@ import app.services.*;
 import app.util.Status;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
-import jakarta.mail.MessagingException;
 
-import java.io.UnsupportedEncodingException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
